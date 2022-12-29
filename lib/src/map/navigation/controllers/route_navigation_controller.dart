@@ -81,6 +81,7 @@ class RouteNavigationRouteController extends GetxController{
     double y = Math.sin(dLon) * Math.cos(lat2);
     double x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
     double radian = (Math.atan2(y, x));
+    // double bearing  = (radian * 180)/pi;
     double bearing = math.degrees(radian);
 
     bearing = (360 - ((bearing + 360) % 360));

@@ -191,6 +191,11 @@ Symbol? symbol;
                 ],
               ),
               SizedBox(height: 16.0,),
+              MaterialButton(onPressed: (){
+
+              },
+                child: Text('Navigate'),
+              ),
               Container(
                 child: ElevatedButton.icon(
                     // color: NaxaAppColors.red,
