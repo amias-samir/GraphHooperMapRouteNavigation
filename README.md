@@ -65,7 +65,7 @@ This plugin is not available in IOS yet.
 MaterialButton(onPressed: () async{
                     ApiRequest apiRequest = ApiRequest();
 
-    DirectionRouteResponse directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(originLatLng, destinationLatLng, NavigationProfile.car);
+    DirectionRouteResponse directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(usersCurrentLatLng, destinationLatLng, NavigationProfile.car);
     Get.to(MapRouteNavigationScreenPage(directionRouteResponse, mapAccessToken));
               },
                 child: Text('Navigate'),
