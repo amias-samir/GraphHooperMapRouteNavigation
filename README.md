@@ -1,5 +1,5 @@
 # graphhooper_route_navigation
-A new plugin for map route navigation.
+A new plugin for map route navigation. (Only inside Nepal)
 
 
 ## Getting Started
