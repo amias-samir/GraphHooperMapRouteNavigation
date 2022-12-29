@@ -13,12 +13,12 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   text_to_speech: ^0.2.3
-  flutter_plugin_android_lifecycle: ^2.0.6
+  flutter_plugin_android_lifecycle: ^2.0.7
   expandable_bottom_sheet: ^1.1.1+1
   mapbox_gl: ^0.16.0
   get: ^4.6.5
-  http: ^0.13.4
-  cached_network_image: ^3.2.0
+  http: ^0.13.5
+  cached_network_image: ^3.2.3
 
 
 
