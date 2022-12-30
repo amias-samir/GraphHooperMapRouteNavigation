@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
     <string name="mapbox_access_token">YOUR_MAPBOX_PUBLIC_TOKEN</string>
-    <string name="app_name">Map Route Navigation</string>
+    <string name="app_name">Map Route Navigation Test</string>
 </resources>
