@@ -55,9 +55,6 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 
-#Example folder
-**example/
-
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
