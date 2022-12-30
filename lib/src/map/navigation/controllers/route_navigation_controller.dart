@@ -123,7 +123,8 @@ class RouteNavigationRouteController extends GetxController{
   updateDistanceBtnCOOrds({required double distance}){
 
     distanceBtnCOOrds.refresh();
-    distanceBtnCOOrds.value.first = double.parse(distance.toStringAsFixed(2));
+    List<double> list = [double.parse(distance.toStringAsFixed(2))];
+    distanceBtnCOOrds (list);
     distanceBtnCOOrds.refresh();
     remaingDistanceToTheInstructionPoint = distance;
     // update();

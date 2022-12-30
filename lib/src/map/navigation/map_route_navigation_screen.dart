@@ -213,7 +213,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
       compassEnabled: true,
       compassViewPosition: CompassViewPosition.TopRight,
       myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-      myLocationRenderMode: MyLocationRenderMode.GPS,
+      myLocationRenderMode: MyLocationRenderMode.COMPASS,
       onUserLocationUpdated: (userLocation){
         this.userLocation = userLocation;
 
@@ -258,11 +258,11 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                           );
                         }),
 
-                        // Obx((){
-                        //   // List<double> list = navigationController.distanceBtnCOOrds;
-                        //   return Padding(padding: const EdgeInsets.only(bottom: 8.0, right: 20.0),
-                        //   child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
-                        // }),
+                        Obx((){
+                          // List<double> list = navigationController.distanceBtnCOOrds;
+                          return Padding(padding: const EdgeInsets.only(bottom: 8.0, right: 20.0),
+                          child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
+                        }),
 
                         SizedBox(
                           height: 30.0,
