@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/app_styles.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/constants.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +26,8 @@ import 'utils/navigation_app_colors.dart';
 class MapRouteNavigationScreenPage extends StatefulWidget{
   DirectionRouteResponse directionRouteResponse;
   String mapAccesstoken;
+  static const IconData compass = IconData(0xf8ca, fontFamily: 'iconFont', fontPackage: 'iconFontPackage');
+
 
   MapRouteNavigationScreenPage(this.directionRouteResponse, this.mapAccesstoken);
 
@@ -207,7 +210,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
           directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
         zoom: mapZoomLevel,
       ),
-      minMaxZoomPreference: const MinMaxZoomPreference(6, 18),
+      minMaxZoomPreference: const MinMaxZoomPreference(6, 19),
       myLocationEnabled: true,
       trackCameraPosition: true,
       compassEnabled: true,
@@ -344,7 +347,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
         child: Column(
           children: [
             Obx(() {
-      if(navigationController.bearingBtnCOOrds.value != 0.0){
+      // if(navigationController.bearingBtnCOOrds.value != 0.0){
             return  InkWell(
               onTap: () {
                 controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
@@ -367,34 +370,54 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                       bottomRight: Radius.circular(25.0),
                     )),
                 child: Transform.rotate(
-                  angle: -navigationController.bearingBtnCOOrds.value * (math.pi / 180),
-                  child: Image.asset(
-                    "assets/icon/compass.png",
-                    height: 50,
-                    alignment: Alignment.centerLeft,
-                  ),
+                  angle: -navigationController.bearingBtnCOOrds.value * (math.pi / 180)-70 ,
+                  child:  const Center(child: Icon(CupertinoIcons.compass, color: NavigationColors.grey, size: 40.0,))
+                  // Image.asset(
+                  //   "assets/compass.png",
+                  //   height: 50,
+                  //   alignment: Alignment.centerLeft,
+                  // )
+                  ,
                 ),
               ),
             );
-      }else{
-            return  const SizedBox(
-              height: 50,
-              width: 50,
-            );
-      }
+      // }else{
+      //       return  const SizedBox(
+      //         height: 50,
+      //         width: 50,
+      //       );
+      // }
     }),
+
+            const SizedBox(height: 20.0,),
+
+            Obx((){
+              return FloatingActionButton(
+                onPressed: () async {
+                  navigationController.setEnableAudio(enableAudio: !navigationController.enabledAudio.value);
+                  },
+                backgroundColor: NavigationColors.white,
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(
+                      width: 1, color: NavigationColors.boxBorderColor),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 0,
+                child:  Icon(
+                  navigationController.enabledAudio.value ? Icons.volume_up : Icons.volume_off,
+                  size: 24,
+                  color: NavigationColors.grey,
+                ),
+              );
+            }),
+
 
             const SizedBox(height: 20.0,),
 
             FloatingActionButton(
               onPressed: () async {
-                _animateCameraToUserLoation(zoomLevel: 17.0, bearing: 0.0);
+                _animateCameraToUserLoation(zoomLevel: 19.0, bearing: 0.0);
               },
-              child: const Icon(
-                Icons.gps_fixed,
-                size: 24,
-                color: NavigationColors.grey,
-              ),
               backgroundColor: NavigationColors.white,
               shape: RoundedRectangleBorder(
                 side: const BorderSide(
@@ -402,7 +425,15 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                 borderRadius: BorderRadius.circular(30),
               ),
               elevation: 0,
-            )
+              child: const Icon(
+                Icons.gps_fixed,
+                size: 24,
+                color: NavigationColors.grey,
+              ),
+            ),
+
+
+
 
           ],
         ));
