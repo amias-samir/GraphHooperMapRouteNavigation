@@ -108,11 +108,10 @@ Symbol? symbol;
     ApiRequest apiRequest = ApiRequest();
 
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
-        customBaseUrl: 'https://route.naxa.com.np',
         source: userLocation!.position,
         destination: latLng,
         navigationType: NavigationProfile.car,
-    graphHooperApiKey: '');
+    graphHooperApiKey: 'Your GraphHooper API Key');
 
     if(directionRouteResponse.toJson().isNotEmpty){
       _addSourceAndLineLayer(directionRouteResponse);
@@ -203,13 +202,7 @@ Symbol? symbol;
                     onPressed: () async{
                       Get.back();
                       SchedulerBinding.instance.addPostFrameCallback((_) {
-
                         Get.to(MapRouteNavigationScreenPage(directionRouteResponse, mapAccessToken));
-
-                      //     Navigator.pushAndRemoveUntil(
-                      //         context,
-                      //         MaterialPageRoute(builder: (_) => MapRouteNavigationScreenPage(directionRouteResponse)), (route) => true);
-                      //
                       });
 
                     },
