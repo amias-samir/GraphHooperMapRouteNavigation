@@ -107,7 +107,12 @@ Symbol? symbol;
 
     ApiRequest apiRequest = ApiRequest();
 
-    directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(userLocation!.position, latLng, NavigationProfile.car);
+    directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
+        customBaseUrl: 'https://route.naxa.com.np',
+        source: userLocation!.position,
+        destination: latLng,
+        navigationType: NavigationProfile.car,
+    graphHooperApiKey: '');
 
     if(directionRouteResponse.toJson().isNotEmpty){
       _addSourceAndLineLayer(directionRouteResponse);
@@ -191,11 +196,7 @@ Symbol? symbol;
                 ],
               ),
               SizedBox(height: 16.0,),
-              MaterialButton(onPressed: (){
 
-              },
-                child: Text('Navigate'),
-              ),
               Container(
                 child: ElevatedButton.icon(
                     // color: NaxaAppColors.red,

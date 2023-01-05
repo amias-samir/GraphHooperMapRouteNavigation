@@ -66,7 +66,8 @@ class RouteNavigationRouteController extends GetxController{
   RxBool enabledAudio = true.obs;
 
   //initialize Text To Speech
-  Rx<TextToSpeech> tts = TextToSpeech().obs ;
+  // Rx<TextToSpeech> tts = TextToSpeech().obs ;
+  TextToSpeech tts = TextToSpeech() ;
 
 
   //Degrees between two coordinates
@@ -127,7 +128,7 @@ class RouteNavigationRouteController extends GetxController{
     distanceBtnCOOrds (list);
     distanceBtnCOOrds.refresh();
     remaingDistanceToTheInstructionPoint = distance;
-    // update();
+    update();
 
     debugPrint('RouteNavigationRouteController calculateDistance :  ${distanceBtnCOOrds.value}');
 
@@ -204,10 +205,12 @@ class RouteNavigationRouteController extends GetxController{
 
   findInstructionsCoordsAndIndex({required DirectionRouteResponse directionRouteResponse }) async{
     this.directionRouteResponse.value = directionRouteResponse;
+    setEnableAudio();
 
     InstructionsCoordsAndIndexList instructionsCoordsAndIndexList = await compute(computingInstructionsCoordsAndIndex, directionRouteResponse);
     instructionsIndexList.value = instructionsCoordsAndIndexList.instructionsIndexList;
     instructionsCoordList.value = instructionsCoordsAndIndexList.instructionsCoordsList;
+
 
     // debugPrint('findInstructionsCoordsAndIndex  indexList : ${instructionsCoordsAndIndexList.instructionsIndexList}');
     // debugPrint('findInstructionsCoordsAndIndex  coordsList : ${instructionsCoordsAndIndexList.instructionsCoordsList}');
@@ -262,12 +265,23 @@ class RouteNavigationRouteController extends GetxController{
     //
     // await compute(computeAndPlayInstructionAudio, audioInstruction);
 
+    if(!hadSpokenInstructionsIdentifier.contains('${instructions.distance}_${instructions.sign}_${instructions.time}')){
+      addHadSpokenInstructionsToList(instructions: instructions);
+
+      debugPrint('RouteNavigationRouteController addHadSpoken computeAndPlayInstructionAudio : ${hadSpokenInstructionsIdentifier.toString()}');
+
+      if(enabledAudio.value){
+        await tts.setLanguage('en-US');
+        await tts.speak(instructions.text! );
+      }
+    }
+
 
   }
 
-  setEnableAudio({required bool enableAudio, required TextToSpeech textToSpeech}){
+  setEnableAudio({bool enableAudio = true}){
     enabledAudio.value = enableAudio;
-    tts.value = textToSpeech;
+    // tts.value = textToSpeech;
   }
 
 addHadSpokenInstructionsToList({required Instructions instructions}) {
