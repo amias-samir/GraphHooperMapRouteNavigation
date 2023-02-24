@@ -5,3 +5,6 @@
 ## 0.0.2
 * Instruction text to speech added.
 * Fixes compass not showing issue. 
+
+## 0.0.3
+* Fixes floating button's hero tag issue. 
