@@ -39,7 +39,6 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   String mapAccessToken = 'YOUR_MAPBOX_PUBLIC_TOKEN';
 
-
   _onMapCreated(MapboxMapController controller) async   {
     this.controller = controller;
 
@@ -108,6 +107,7 @@ Symbol? symbol;
     ApiRequest apiRequest = ApiRequest();
 
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
+      customBaseUrl: '',
         source: userLocation!.position,
         destination: latLng,
         navigationType: NavigationProfile.car,
@@ -237,7 +237,7 @@ Symbol? symbol;
           onStyleLoadedCallback: _onStyleLoadedCallback,
           // initialCameraPosition: const CameraPosition(target: LatLng(27.7172, 85.3240)),
           initialCameraPosition: CameraPosition(target: LatLng(28.987280, 80.1652), zoom: mapZoomLevel,),
-            minMaxZoomPreference: const MinMaxZoomPreference(6, 18),
+            minMaxZoomPreference: const MinMaxZoomPreference(5, 19),
             myLocationEnabled: true,
             trackCameraPosition: true,
             compassEnabled: true,
