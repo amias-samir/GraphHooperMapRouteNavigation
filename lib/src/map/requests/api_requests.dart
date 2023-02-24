@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
+iimport 'package:mapbox_gl_modified/mapbox_gl_modified.dart';
 
 import '../navigation/model/direction_route_response.dart';
 import '../navigation/model/enums.dart';

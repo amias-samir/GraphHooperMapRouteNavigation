@@ -1,4 +1,4 @@
-import 'package:mapbox_gl/mapbox_gl.dart';
+iimport 'package:mapbox_gl_modified/mapbox_gl_modified.dart';
 
 import 'direction_route_response.dart';
 
