@@ -171,9 +171,59 @@ class MapRouteNavigationScreenPageState
   }
 
   Future<bool> _willPopCallback() async {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Get.back();
-    });
+    await Get.dialog(
+      SimpleDialog(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(30))),
+          titlePadding: const EdgeInsets.only(top: 32, left: 32, right: 32),
+          contentPadding:
+              const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 32),
+          title: const Text(
+            "Are you sure you want to exit navigation?",
+            style: kheading3Style,
+            textAlign: TextAlign.center,
+          ),
+          children: [
+            const Icon(
+              Icons.delete_forever_outlined,
+              color: Colors.redAccent,
+              size: 45,
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            TextButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            side: const BorderSide(color: Colors.blue)))),
+                child: Text(
+                  "Cancel",
+                  style: kheading3Style.copyWith(color: Colors.white),
+                ),
+                onPressed: () async {
+                  Get.back();
+                }),
+            const SizedBox(
+              height: 8,
+            ),
+            TextButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.blue),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          side: const BorderSide(color: Colors.blue)))),
+              onPressed: () async {},
+              child: Text('Exit Navigation'),
+            ),
+          ]),
+    );
+
     return Future.value(true);
   }
 
