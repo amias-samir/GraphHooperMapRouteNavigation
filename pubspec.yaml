@@ -1,6 +1,6 @@
 name: graphhooper_route_navigation
 description: A new plugin for graphhooper route navigation. Use Mapbox Map as a base layer & map styles and Graphhooper Map route navigation data for polyline, duration and time.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/amias-samir/GraphHooperMapRouteNavigation.git
 
 environment:
