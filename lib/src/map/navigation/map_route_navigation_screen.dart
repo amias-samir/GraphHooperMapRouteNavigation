@@ -433,6 +433,7 @@ class MapRouteNavigationScreenPageState
             ),
             Obx(() {
               return FloatingActionButton(
+                heroTag: 'volumeUp',
                 onPressed: () async {
                   navigationController.setEnableAudio(
                       enableAudio: !navigationController.enabledAudio.value);
@@ -457,6 +458,7 @@ class MapRouteNavigationScreenPageState
               height: 20.0,
             ),
             FloatingActionButton(
+              heroTag: 'gpstag',
               onPressed: () async {
                 _animateCameraToUserLoation(zoomLevel: 19.0, bearing: 0.0);
               },
