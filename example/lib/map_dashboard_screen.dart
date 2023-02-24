@@ -165,8 +165,6 @@ Symbol? symbol;
 
   }
 
-
-
   CalculatorUtils calculatorUtils = CalculatorUtils();
   buildNavigateToBottomSheetUI( DirectionRouteResponse directionRouteResponse){
 
