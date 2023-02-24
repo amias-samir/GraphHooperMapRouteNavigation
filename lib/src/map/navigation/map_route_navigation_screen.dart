@@ -205,7 +205,9 @@ class MapRouteNavigationScreenPageState
                   style: kheading3Style.copyWith(color: Colors.white),
                 ),
                 onPressed: () async {
-                  return Future.value(false);
+                  SchedulerBinding.instance.addPostFrameCallback((_) async {
+                    return Future.value(false);
+                  });
                 }),
             const SizedBox(
               height: 8,
@@ -219,10 +221,9 @@ class MapRouteNavigationScreenPageState
                           borderRadius: BorderRadius.circular(8.0),
                           side: const BorderSide(color: Colors.blue)))),
               onPressed: () async {
-                SchedulerBinding.instance.addPostFrameCallback((_) {
-                  Get.back();
+                SchedulerBinding.instance.addPostFrameCallback((_) async {
+                  return Future.value(true);
                 });
-                return Future.value(true);
               },
               child: Text('Exit Navigation'),
             ),
