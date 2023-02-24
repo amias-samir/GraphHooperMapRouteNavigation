@@ -171,7 +171,7 @@ class MapRouteNavigationScreenPageState
   }
 
   Future<bool> _willPopCallback() async {
-    await Get.dialog(
+    return await Get.dialog(
       SimpleDialog(
           shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(30))),
@@ -205,7 +205,7 @@ class MapRouteNavigationScreenPageState
                   style: kheading3Style.copyWith(color: Colors.white),
                 ),
                 onPressed: () async {
-                  Get.back();
+                  return Future.value(false);
                 }),
             const SizedBox(
               height: 8,
@@ -218,13 +218,16 @@ class MapRouteNavigationScreenPageState
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           side: const BorderSide(color: Colors.blue)))),
-              onPressed: () async {},
+              onPressed: () async {
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  Get.back();
+                });
+                return Future.value(true);
+              },
               child: Text('Exit Navigation'),
             ),
           ]),
     );
-
-    return Future.value(true);
   }
 
   @override
