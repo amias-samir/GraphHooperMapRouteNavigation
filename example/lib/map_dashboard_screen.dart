@@ -275,6 +275,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     );
   }
 
+// /modified
   void onFeatureTap(
       dynamic featureId, dynamic featureDetail, Point point, LatLng latlng) {
     if (directionRouteResponse.toJson().isNotEmpty) {
