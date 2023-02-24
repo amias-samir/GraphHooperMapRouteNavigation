@@ -1,13 +1,13 @@
-iimport 'package:mapbox_gl_modified/mapbox_gl_modified.dart';
+import 'package:mapbox_gl_modified/mapbox_gl_modified.dart';
 
 import 'direction_route_response.dart';
 
-class InstructionsCoordsAndIndexList{
+class InstructionsCoordsAndIndexList {
   List<List<double>> _instructionsCoordsList;
   List<int> _instructionsIndexList;
 
-
-  InstructionsCoordsAndIndexList(this._instructionsCoordsList, this._instructionsIndexList);
+  InstructionsCoordsAndIndexList(
+      this._instructionsCoordsList, this._instructionsIndexList);
 
   List<List<double>> get instructionsCoordsList => _instructionsCoordsList;
 
@@ -22,7 +22,7 @@ class InstructionsCoordsAndIndexList{
   }
 }
 
-class InstructionsCoordsIndexListAndUsersLoc{
+class InstructionsCoordsIndexListAndUsersLoc {
   List<List<double>> _instructionsCoordsList;
   List<int> _instructionsIndexList;
   DirectionRouteResponse _directionRouteResponse;
