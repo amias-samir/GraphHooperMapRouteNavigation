@@ -191,13 +191,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  mapbox_gl:
-    dependency: "direct main"
-    description:
-      name: mapbox_gl
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.16.0"
   mapbox_gl_dart:
     dependency: transitive
     description:
@@ -205,17 +198,24 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.1"
-  mapbox_gl_platform_interface:
+  mapbox_gl_modified:
+    dependency: "direct main"
+    description:
+      name: mapbox_gl_modified
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.17.0"
+  mapbox_gl_modified_platform_interface:
     dependency: transitive
     description:
-      name: mapbox_gl_platform_interface
+      name: mapbox_gl_modified_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.0"
-  mapbox_gl_web:
+  mapbox_gl_modified_web:
     dependency: transitive
     description:
-      name: mapbox_gl_web
+      name: mapbox_gl_modified_web
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.0"
