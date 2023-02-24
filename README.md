@@ -1,5 +1,5 @@
 # graphhooper_route_navigation
-A new plugin for map route navigation. (Only inside Nepal)
+A new plugin for map route navigation.
 
 
 ## Getting Started
@@ -17,6 +17,7 @@ Include your Mapbox Map Secret token to your gradle.properties. You can get your
     MAPBOX_SECRET_TOKEN= YOUR_MAPBOX_SECRET_TOKEN
 Also include this line of code in your project level build.gradle file
 
+```
 allprojects {
     repositories {
         google()
@@ -38,6 +39,7 @@ allprojects {
         }
     }
 }
+```
 #### Mapbox Map Access Token
 Include your Mapbox Map access token to string.xml file of the app/src/main/res/values/ directory of android section It starts with pk.
 

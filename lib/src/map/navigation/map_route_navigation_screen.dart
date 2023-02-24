@@ -270,9 +270,10 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                         SizedBox(
                           height: 30.0,
                           child: MaterialButton(
-                            child: const Text('Simulate'),
+                            child: const Text('Simulate', style: TextStyle(color: Colors.black),),
                           onPressed: (){
-                            navigationController.simulateRouting(directionRouteResponse!.paths![0].points!.coordinates!, userLocation!, simulateRoute: true);
+                              isSimulateRouting = !isSimulateRouting;
+                            navigationController.simulateRouting(directionRouteResponse!, userLocation!, simulateRoute: isSimulateRouting);
                           }),
                         ),
                       ],
@@ -393,6 +394,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
 
             Obx((){
               return FloatingActionButton(
+                heroTag: 'tag_sound_enable_disable',
                 onPressed: () async {
                   navigationController.setEnableAudio(enableAudio: !navigationController.enabledAudio.value);
                   },
@@ -415,6 +417,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
             const SizedBox(height: 20.0,),
 
             FloatingActionButton(
+              heroTag: 'tag_my_location_zoom',
               onPressed: () async {
                 _animateCameraToUserLoation(zoomLevel: 19.0, bearing: 0.0);
               },

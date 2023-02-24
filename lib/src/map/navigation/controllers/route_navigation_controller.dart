@@ -148,8 +148,11 @@ class RouteNavigationRouteController extends GetxController{
   }
 
 
-  simulateRouting(List<List<double>> points, UserLocation userLocation,
+  simulateRouting(DirectionRouteResponse? directionRouteResponse, UserLocation userLocation,
       {bool simulateRoute = true}) async {
+
+    List<List<double>> points = directionRouteResponse!.paths![0].points!.coordinates!;
+    hadSpokenInstructionsIdentifier.value = [];
 
     DateTime dateTimePrev = DateTime.now();
 
