@@ -438,7 +438,7 @@ class MapRouteNavigationScreenPageState
                 onTap: () {
                   controller!.animateCamera(CameraUpdate.newCameraPosition(
                       CameraPosition(
-                          target: usersLastLocation!.position,
+                          target: userLocation!.position,
                           zoom: mapZoomLevel,
                           tilt: 0,
                           bearing: 0.0)));
