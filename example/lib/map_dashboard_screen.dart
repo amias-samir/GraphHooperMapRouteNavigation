@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:maplibre_gl/mapbox_gl.dart';
 
 
 
@@ -20,7 +20,7 @@ class MapDashboardScreen extends StatefulWidget{
 }
 
 class MapDashboardScreenState extends State<MapDashboardScreen> {
-  MapboxMapController? controller;
+  MaplibreMapController? controller;
   // ScrollController? draggableSheetController;
   final watercolorRasterId = "watercolorRaster";
   int selectedStyleId = 0;
@@ -39,7 +39,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   String mapAccessToken = 'YOUR_MAPBOX_PUBLIC_TOKEN';
 
-  _onMapCreated(MapboxMapController controller) async   {
+  _onMapCreated(MaplibreMapController controller) async   {
     this.controller = controller;
 
     controller.onFeatureTapped.add(onFeatureTap);
@@ -107,7 +107,7 @@ Symbol? symbol;
     ApiRequest apiRequest = ApiRequest();
 
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
-      customBaseUrl: '',
+      customBaseUrl: 'https://route.naxa.com.np',
         source: userLocation!.position,
         destination: latLng,
         navigationType: NavigationProfile.car,
@@ -228,12 +228,10 @@ Symbol? symbol;
 
   buildMapUI(){
 
-          return MapboxMap(
-          styleString: MapboxStyles.MAPBOX_STREETS,
-          accessToken: mapAccessToken,
+          return MaplibreMap(
+            styleString: 'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
           onMapCreated: _onMapCreated,
-          onStyleLoadedCallback: _onStyleLoadedCallback,
-          // initialCameraPosition: const CameraPosition(target: LatLng(27.7172, 85.3240)),
+          // onStyleLoadedCallback: _onStyleLoadedCallback,
           initialCameraPosition: CameraPosition(target: LatLng(28.987280, 80.1652), zoom: mapZoomLevel,),
             minMaxZoomPreference: const MinMaxZoomPreference(5, 19),
             myLocationEnabled: true,

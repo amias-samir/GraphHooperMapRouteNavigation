@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:maplibre_gl/mapbox_gl.dart';
 
-import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
 
@@ -46,7 +46,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
   // TextToSpeech textToSpeech = TextToSpeech();
 
 
-  MapboxMapController? controller;
+  MaplibreMapController? controller;
   UserLocation? userLocation;
   UserLocation? usersLastLocation;
   Symbol? symbol;
@@ -59,7 +59,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
 
   double mapZoomLevel = 14.0;
 
-  _onMapCreated(MapboxMapController controller1) async   {
+  _onMapCreated(MaplibreMapController controller1) async   {
     controller = controller1;
 
     if(directionRouteResponse != null && directionRouteResponse!.toJson().isNotEmpty){
@@ -201,9 +201,8 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
   }
 
   buildMapUi(){
-    return MapboxMap(
-      styleString: MapboxStyles.MAPBOX_STREETS,
-      accessToken: widget.mapAccesstoken,
+    return MaplibreMap(
+      styleString: 'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       onMapCreated: _onMapCreated,
       onStyleLoadedCallback: _onStyleLoadedCallback,
       initialCameraPosition: CameraPosition(target: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
