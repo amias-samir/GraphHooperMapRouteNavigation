@@ -45,6 +45,9 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
 
+dependency_overrides:
+  js: ^0.6.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

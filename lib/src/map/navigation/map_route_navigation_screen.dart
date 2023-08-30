@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:maplibre_gl/mapbox_gl.dart';
 
-import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
 
@@ -46,10 +46,10 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
   // TextToSpeech textToSpeech = TextToSpeech();
 
 
-  MapboxMapController? controller;
+  MaplibreMapController? controller;
   UserLocation? userLocation;
   UserLocation? usersLastLocation;
-  Symbol? symbol;
+  Circle? symbol;
 
   DirectionRouteResponse? directionRouteResponse;
 
@@ -59,7 +59,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
 
   double mapZoomLevel = 14.0;
 
-  _onMapCreated(MapboxMapController controller1) async   {
+  _onMapCreated(MaplibreMapController controller1) async   {
     controller = controller1;
 
     if(directionRouteResponse != null && directionRouteResponse!.toJson().isNotEmpty){
@@ -76,7 +76,6 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
       mapZoomLevel = controller!.cameraPosition!.zoom;
     });
 
-    addStartAndEndMarker();
     // controller.onFeatureTapped.add(onFeatureTap);
 
     navigationSimulationListner();
@@ -130,6 +129,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
 
 
   _addSourceAndLineLayer(Map<String, dynamic> modifiedResponse ) async {
+    addStartAndEndMarker();
     final _fills = {
       "type": "FeatureCollection",
       "features": [
@@ -158,6 +158,8 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
         lineWidth: 6,
       ),
     );
+
+
   }
 
 
@@ -201,9 +203,8 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
   }
 
   buildMapUi(){
-    return MapboxMap(
-      styleString: MapboxStyles.MAPBOX_STREETS,
-      accessToken: widget.mapAccesstoken,
+    return MaplibreMap(
+      styleString: 'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       onMapCreated: _onMapCreated,
       onStyleLoadedCallback: _onStyleLoadedCallback,
       initialCameraPosition: CameraPosition(target: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
@@ -319,10 +320,9 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
     return Column(
       children: [
         ListTile(
-          leading: index != 0 && instructions.sign! == 0? const SizedBox() :
-          CachedNetworkImage(
-            imageUrl: navigationInstructionsImage.getImageUrlByInstructionType(instructionType: index == 0? 10: instructions.sign!),
-            fit: BoxFit.contain, height: 30.0, width: 30.0,),
+          leading: index != 0 && instructions.sign! == 0?
+          getDirectionIconByInstructionType(instructionType: index == 0? 10: instructions.sign!) :
+          getDirectionIconByInstructionType(instructionType: index == 0? 10: instructions.sign!),
           trailing: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -450,7 +450,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
         left: 8.0,
         child: Obx(() {
           if(navigationController.instruction.value.text!.isNotEmpty){
-            String imageUrl = navigationInstructionsImage.getImageUrlByInstructionType(instructionType: navigationController.instruction.value.sign!);
+            // String imageUrl = navigationInstructionsImage.getImageUrlByInstructionType(instructionType: navigationController.instruction.value.sign!);
             return  Container(
               width: MediaQuery.of(context).size.width*.7,
                 decoration: const BoxDecoration(
@@ -458,10 +458,12 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                         color: NavigationColors.cardBackgroundColor
                 ),
                 child: ListTile(
-                  leading: imageUrl.isEmpty ? const SizedBox() :
-                  CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.contain, height: 30.0, width: 30.0,),
+                  leading:
+                  // imageUrl.isEmpty ? const SizedBox() :
+                  // CachedNetworkImage(
+                  //   imageUrl: imageUrl,
+                  //   fit: BoxFit.contain, height: 30.0, width: 30.0,)
+                    getDirectionIconByInstructionType(instructionType: navigationController.instruction.value.sign!),
                   trailing: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -525,19 +527,26 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
   void navigationSimulationListner()  {
     navigationController.userLocation.stream.listen((userLocation) async {
 
-      if(userLocation != usersLastLocation && symbol != null){
-        await controller!.removeSymbol(symbol!);
+      if(userLocation != usersLastLocation && symbol == null){
+        await controller!.removeCircle(symbol!);
+       symbol = await controller!.addCircle(
+          CircleOptions(
+              geometry: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
+                  directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
+              circleColor: NavigationColors.green.toHexStringRGB(),
+              circleRadius: 12),
+        );
       }
 
+
+
       if(userLocation != null){
-        symbol = await controller!.addSymbol(
-          SymbolOptions(
-            iconSize: 0.8,
-            iconImage: constantValues.markerTracking,
-            geometry: userLocation.position,
-            iconAnchor: "bottom",
-          ),
-        );
+
+        controller!.updateCircle(symbol!, CircleOptions(
+            geometry: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
+                directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
+            circleColor: NavigationColors.green.toHexStringRGB(),
+            circleRadius: 12));
 
         // controller!.animateCamera(CameraUpdate.newCameraPosition(
         //     CameraPosition(target: LatLng(userLocation.position
@@ -551,32 +560,20 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
   }
 
   void addStartAndEndMarker() async {
-
-    var responseTracking = await http.get(Uri.parse(navigationInstructionsImage.trackingImg));
-    controller!.addImage(constantValues.markerTracking, responseTracking.bodyBytes);
-    var responseStart = await http.get(Uri.parse(navigationInstructionsImage.startPointImg));
-    var responseEnd = await http.get(Uri.parse(navigationInstructionsImage.endPointImg));
-    controller!.addImage(constantValues.markerStart, responseStart.bodyBytes);
-    controller!.addImage(constantValues.markerEnd, responseEnd.bodyBytes);
-
-    await controller!.addSymbol(
-       SymbolOptions(
-        iconSize: 2,
-        iconImage: constantValues.markerStart,
+    controller!.addCircle(
+      CircleOptions(
           geometry: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
-            directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
-        iconAnchor: "bottom",
-      ),
+              directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
+          circleColor: NavigationColors.green.toHexStringRGB(),
+      circleRadius: 12),
     );
 
-    await controller!.addSymbol(
-         SymbolOptions(
-        iconSize: 2,
-        iconImage: constantValues.markerEnd,
-             geometry: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.last[1],
-            directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.last[0]),
-        iconAnchor: "bottom",
-      ),
+    controller!.addCircle(
+      CircleOptions(
+          geometry: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.last[1],
+              directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.last[0]),
+          circleColor: NavigationColors.red.toHexStringRGB(),
+      circleRadius: 12),
     );
   }
 
