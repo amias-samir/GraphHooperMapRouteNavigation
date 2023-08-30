@@ -7,4 +7,9 @@
 * Fixes compass not showing issue. 
 
 ## 0.0.3
-* Fixes floating button's hero tag issue. 
+* Fixes floating button's hero tag issue.
+
+
+## 0.0.4
+* Using map libre flutter instead of mapbox gl flutter for base map.
+* replace direction instruction images by icons
