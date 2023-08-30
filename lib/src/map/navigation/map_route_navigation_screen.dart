@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'dart:math';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/app_styles.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/constants.dart';
@@ -13,9 +12,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:maplibre_gl/mapbox_gl.dart';
-
-import 'package:text_to_speech/text_to_speech.dart';
-
 
 import 'controllers/route_navigation_controller.dart';
 import 'model/direction_route_response.dart';
