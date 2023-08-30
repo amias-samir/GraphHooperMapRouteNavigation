@@ -318,10 +318,9 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
     return Column(
       children: [
         ListTile(
-          leading: index != 0 && instructions.sign! == 0? const SizedBox() :
-          CachedNetworkImage(
-            imageUrl: navigationInstructionsImage.getImageUrlByInstructionType(instructionType: index == 0? 10: instructions.sign!),
-            fit: BoxFit.contain, height: 30.0, width: 30.0,),
+          leading: index != 0 && instructions.sign! == 0?
+          getDirectionIconByInstructionType(instructionType: index == 0? 10: instructions.sign!) :
+          getDirectionIconByInstructionType(instructionType: index == 0? 10: instructions.sign!),
           trailing: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -449,7 +448,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
         left: 8.0,
         child: Obx(() {
           if(navigationController.instruction.value.text!.isNotEmpty){
-            String imageUrl = navigationInstructionsImage.getImageUrlByInstructionType(instructionType: navigationController.instruction.value.sign!);
+            // String imageUrl = navigationInstructionsImage.getImageUrlByInstructionType(instructionType: navigationController.instruction.value.sign!);
             return  Container(
               width: MediaQuery.of(context).size.width*.7,
                 decoration: const BoxDecoration(
@@ -457,10 +456,12 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                         color: NavigationColors.cardBackgroundColor
                 ),
                 child: ListTile(
-                  leading: imageUrl.isEmpty ? const SizedBox() :
-                  CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.contain, height: 30.0, width: 30.0,),
+                  leading:
+                  // imageUrl.isEmpty ? const SizedBox() :
+                  // CachedNetworkImage(
+                  //   imageUrl: imageUrl,
+                  //   fit: BoxFit.contain, height: 30.0, width: 30.0,)
+                    getDirectionIconByInstructionType(instructionType: navigationController.instruction.value.sign!),
                   trailing: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

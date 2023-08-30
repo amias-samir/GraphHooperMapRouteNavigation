@@ -198,7 +198,7 @@ Symbol? symbol;
                 child: ElevatedButton.icon(
                     // color: NaxaAppColors.red,
                     onPressed: () async{
-                      Get.back();
+                      // Get.back();
                       SchedulerBinding.instance.addPostFrameCallback((_) {
                         Get.to(MapRouteNavigationScreenPage(directionRouteResponse, mapAccessToken));
                       });
@@ -206,6 +206,7 @@ Symbol? symbol;
                     },
                     icon: const Icon(Icons.navigation_outlined, color: Colors.white,), label: Text('Start Navigation', style: CustomAppStyle.body14pxRegular(context).copyWith(color: NavigationColors.white.withOpacity(0.9)),)),
               ),
+
             ],
           ),
     );
