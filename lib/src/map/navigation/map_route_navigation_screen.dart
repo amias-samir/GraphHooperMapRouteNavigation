@@ -264,15 +264,15 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                         //   child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
                         // }),
 
-                        SizedBox(
-                          height: 30.0,
-                          child: MaterialButton(
-                            child: const Text('Simulate', style: TextStyle(color: Colors.black),),
-                          onPressed: (){
-                              isSimulateRouting = !isSimulateRouting;
-                            navigationController.simulateRouting(directionRouteResponse!, userLocation!, simulateRoute: isSimulateRouting);
-                          }),
-                        ),
+                        // SizedBox(
+                        //   height: 30.0,
+                        //   child: MaterialButton(
+                        //     child: const Text('Simulate', style: TextStyle(color: Colors.black),),
+                        //   onPressed: (){
+                        //       isSimulateRouting = !isSimulateRouting;
+                        //     navigationController.simulateRouting(directionRouteResponse!, userLocation!, simulateRoute: isSimulateRouting);
+                        //   }),
+                        // ),
                       ],
                     ),
                     Row(
