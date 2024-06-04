@@ -1,5 +1,4 @@
 library graphhooper_route_navigation;
-import 'package:maplibre_gl/maplibre_gl.dart';
 export 'package:maplibre_gl/maplibre_gl.dart';
 
 export 'package:graphhooper_route_navigation/src/map/requests/api_requests.dart';

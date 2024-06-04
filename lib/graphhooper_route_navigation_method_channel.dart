@@ -9,7 +9,6 @@ class MethodChannelGraphhooperRouteNavigation extends GraphhooperRouteNavigation
   @visibleForTesting
   final methodChannel = const MethodChannel('graphhooper_route_navigation');
 
-  @override
   Future<String?> getPlatformVersion() async {
     final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;

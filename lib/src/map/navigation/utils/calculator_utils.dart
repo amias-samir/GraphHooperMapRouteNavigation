@@ -37,15 +37,15 @@ class CalculatorUtils {
 
 
   bool isCoordinateInside({required LatLng instructionLatLng, double radius = 0.0002, required LatLng usersLatLng})  {
-    double circle_x = instructionLatLng.longitude;
-    double circle_y = instructionLatLng.latitude;
+    double circleX = instructionLatLng.longitude;
+    double circleY = instructionLatLng.latitude;
     double x = usersLatLng.longitude;
     double y = usersLatLng.latitude;
     // Compare radius of circle with
     // distance of its center from
     // given point
-    if ((x - circle_x) * (x - circle_x) +
-        (y - circle_y) * (y - circle_y) <= radius * radius) {
+    if ((x - circleX) * (x - circleY) +
+        (y - circleX) * (y - circleY) <= radius * radius) {
       return true;
     } else {
       return false;
