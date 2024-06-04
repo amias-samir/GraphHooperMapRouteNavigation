@@ -9,7 +9,7 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 import 'package:vector_math/vector_math.dart' as math;
 import 'dart:math' as Math;
-import 'dart:math' show Point, asin, atan2, cos, pi, sqrt ;
+import 'dart:math' show asin,  cos, sqrt ;
 
 import '../model/audio_instruction.dart';
 import '../model/direction_route_response.dart';

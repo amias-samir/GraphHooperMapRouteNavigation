@@ -18,7 +18,6 @@ class GraphhooperRouteNavigationWeb extends GraphhooperRouteNavigationPlatform {
   }
 
   /// Returns a [String] containing the version of the platform.
-  @override
   Future<String?> getPlatformVersion() async {
     final version = html.window.navigator.userAgent;
     return version;

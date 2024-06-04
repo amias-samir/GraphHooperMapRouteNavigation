@@ -105,7 +105,7 @@ Symbol? symbol;
     ApiRequest apiRequest = ApiRequest();
 
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
-      customBaseUrl: '',
+      customBaseUrl: 'https://route.naxa.com.np',
         source: userLocation!.position,
         destination: latLng,
         navigationType: NavigationProfile.car,
