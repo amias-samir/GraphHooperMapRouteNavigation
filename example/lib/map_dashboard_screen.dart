@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:get/get.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
 
 
 
 class MapDashboardScreen extends StatefulWidget{
+  const MapDashboardScreen({super.key});
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -35,7 +35,6 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String mapAccessToken = 'YOUR_MAPBOX_PUBLIC_TOKEN';
 
   _onMapCreated(MaplibreMapController controller) async   {
     this.controller = controller;
@@ -79,9 +78,9 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   }
 
-  _onStyleLoadedCallback() async {
-    controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: userLocation!.position, zoom: 13.0)),);
-  }
+  // _onStyleLoadedCallback() async {
+  //   controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: userLocation!.position, zoom: 13.0)),);
+  // }
 
 
 Symbol? symbol;
@@ -128,7 +127,7 @@ Symbol? symbol;
 
     // Add a polyLine between source and destination
     // Map geometry = getGeometryFromSharedPrefs(carouselData[index]['index']);
-    final _fills = {
+    final fills = {
       "type": "FeatureCollection",
       "features": [
         {
@@ -146,7 +145,7 @@ Symbol? symbol;
 
       try{
         // Add new source and lineLayer
-        await controller!.addSource("fills", GeojsonSourceProperties(data: _fills));
+        await controller!.addSource("fills", GeojsonSourceProperties(data: fills));
         await controller!.addLineLayer(
           "fills",
           "lines",
@@ -176,7 +175,7 @@ Symbol? symbol;
           ),
           borderRadius: const BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20))
       ),
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       height: 168.0,
       child: Column(
             children: [
@@ -190,20 +189,18 @@ Symbol? symbol;
                   }, icon: const Icon(Icons.close, color: NavigationColors.black,))
                 ],
               ),
-              SizedBox(height: 16.0,),
+              const SizedBox(height: 16.0,),
 
-              Container(
-                child: ElevatedButton.icon(
-                    // color: NaxaAppColors.red,
-                    onPressed: () async{
-                      // Get.back();
-                      SchedulerBinding.instance.addPostFrameCallback((_) {
-                        Get.to(MapRouteNavigationScreenPage(directionRouteResponse, mapAccessToken));
-                      });
+              ElevatedButton.icon(
+                  // color: NaxaAppColors.red,
+                  onPressed: () async{
+                    // Get.back();
+                    SchedulerBinding.instance.addPostFrameCallback((_) {
+                      Get.to(MapRouteNavigationScreenPage(directionRouteResponse));
+                    });
 
-                    },
-                    icon: const Icon(Icons.navigation_outlined, color: Colors.white,), label: Text('Start Navigation', style: CustomAppStyle.body14pxRegular(context).copyWith(color: NavigationColors.white.withOpacity(0.9)),)),
-              ),
+                  },
+                  icon: const Icon(Icons.navigation_outlined, color: Colors.white,), label: Text('Start Navigation', style: CustomAppStyle.body14pxRegular(context).copyWith(color: NavigationColors.white.withOpacity(0.9)),)),
 
             ],
           ),
@@ -231,7 +228,7 @@ Symbol? symbol;
             styleString: 'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
           onMapCreated: _onMapCreated,
           // onStyleLoadedCallback: _onStyleLoadedCallback,
-          initialCameraPosition: CameraPosition(target: userLocation!.position.latitude != 0.0 ? userLocation!.position :LatLng(27.700769, 85.300140), zoom: mapZoomLevel,),
+          initialCameraPosition: CameraPosition(target: userLocation!.position.latitude != 0.0 ? userLocation!.position :const LatLng(27.700769, 85.300140), zoom: mapZoomLevel,),
             minMaxZoomPreference: const MinMaxZoomPreference(5, 19),
             myLocationEnabled: true,
             trackCameraPosition: true,

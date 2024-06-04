@@ -1,30 +1,25 @@
 class Hints {
-  int? _visitedNodesSum;
-  int? _visitedNodesAverage;
+  int? visitedNodesSum;
+  int? visitedNodesAverage;
 
   Hints({int? visitedNodesSum, int? visitedNodesAverage}) {
     if (visitedNodesSum != null) {
-      this._visitedNodesSum = visitedNodesSum;
+      this.visitedNodesSum = visitedNodesSum;
     }
     if (visitedNodesAverage != null) {
-      this._visitedNodesAverage = visitedNodesAverage;
+      this.visitedNodesAverage = visitedNodesAverage;
     }
   }
 
-  int? get visitedNodesSum => _visitedNodesSum;
-  set visitedNodesSum(int? visitedNodesSum) => _visitedNodesSum = visitedNodesSum;
-  int? get visitedNodesAverage => _visitedNodesAverage;
-  set visitedNodesAverage(int? visitedNodesAverage) => _visitedNodesAverage = visitedNodesAverage;
-
   Hints.fromJson(Map<String, dynamic> json) {
-    _visitedNodesSum = json['visited_nodes.sum'].toInt();
-    _visitedNodesAverage = json['visited_nodes.average'].toInt();
+    visitedNodesSum = json['visited_nodes.sum'].toInt();
+    visitedNodesAverage = json['visited_nodes.average'].toInt();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['visited_nodes.sum'] = this._visitedNodesSum;
-    data['visited_nodes.average'] = this._visitedNodesAverage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['visited_nodes.sum'] = visitedNodesSum;
+    data['visited_nodes.average'] = visitedNodesAverage;
     return data;
   }
 }

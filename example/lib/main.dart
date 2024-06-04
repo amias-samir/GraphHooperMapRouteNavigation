@@ -1,11 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:get/get.dart';
 
 
 import 'package:flutter/services.dart';
+import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
 
 import 'bindings/controller_binding.dart';
 import 'bindings/http_overrides.dart';
@@ -51,7 +50,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(brightness: Brightness.light),
       darkTheme: ThemeData(brightness: Brightness.dark),
       themeMode: ThemeMode.dark,
-      home:  MapDashboardScreen(),
+      home:  const MapDashboardScreen(),
       initialBinding: ControllerBinding(),
     );
   }

@@ -1,30 +1,25 @@
 class Info {
-  List<String>? _copyrights;
-  int? _took;
+  List<String>? copyrights;
+  int? took;
 
   Info({List<String>? copyrights, int? took}) {
     if (copyrights != null) {
-      this._copyrights = copyrights;
+      this.copyrights = copyrights;
     }
     if (took != null) {
-      this._took = took;
+      this.took = took;
     }
   }
 
-  List<String>? get copyrights => _copyrights;
-  set copyrights(List<String>? copyrights) => _copyrights = copyrights;
-  int? get took => _took;
-  set took(int? took) => _took = took;
-
   Info.fromJson(Map<String, dynamic> json) {
-    _copyrights = json['copyrights'].cast<String>();
-    _took = json['took'];
+    copyrights = json['copyrights'].cast<String>();
+    took = json['took'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['copyrights'] = this._copyrights;
-    data['took'] = this._took;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['copyrights'] = copyrights;
+    data['took'] = took;
     return data;
   }
 }

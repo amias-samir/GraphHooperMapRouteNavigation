@@ -2,13 +2,12 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:text_to_speech/text_to_speech.dart';
-import 'package:vector_math/vector_math.dart' as math;
-import 'dart:math' as Math;
+import 'package:vector_math/vector_math.dart' as vector_math;
+import 'dart:math' as math;
 import 'dart:math' show asin,  cos, sqrt ;
 
 import '../model/audio_instruction.dart';
@@ -79,11 +78,11 @@ class RouteNavigationRouteController extends GetxController{
     double lng2 = endLatLng.longitude;
 
     double dLon = (lng2-lng1);
-    double y = Math.sin(dLon) * Math.cos(lat2);
-    double x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
-    double radian = (Math.atan2(y, x));
+    double y = math.sin(dLon) * math.cos(lat2);
+    double x = math.cos(lat1)*math.sin(lat2) - math.sin(lat1)*math.cos(lat2)*math.cos(dLon);
+    double radian = (math.atan2(y, x));
     // double bearing  = (radian * 180)/pi;
-    double bearing = math.degrees(radian);
+    double bearing = vector_math.degrees(radian);
 
     bearing = (360 - ((bearing + 360) % 360));
     debugPrint('RouteNavigationRouteController bearing :  $bearing');
@@ -130,7 +129,7 @@ class RouteNavigationRouteController extends GetxController{
     remaingDistanceToTheInstructionPoint = distance;
     update();
 
-    debugPrint('RouteNavigationRouteController calculateDistance :  ${distanceBtnCOOrds.value}');
+    debugPrint('RouteNavigationRouteController calculateDistance :  ${distanceBtnCOOrds.iterator.current}');
 
   }
 
@@ -253,7 +252,8 @@ class RouteNavigationRouteController extends GetxController{
     coordinates.add(usersLatLng.latitude);
     coordinates.add(usersLatLng.longitude);
 
-    InstructionsCoordsIndexListAndUsersLoc instructionsCoordsIndexListAndUsersLoc = InstructionsCoordsIndexListAndUsersLoc(instructionsCoordList.value, instructionsIndexList.value, directionRouteResponse.value, usersLatLng);
+    InstructionsCoordsIndexListAndUsersLoc instructionsCoordsIndexListAndUsersLoc = InstructionsCoordsIndexListAndUsersLoc(instructionsCoordList.toList(), instructionsIndexList.toList(), directionRouteResponse.value, usersLatLng);
+
 
     Instructions instructions = await compute(computingCoordinateInsideCircle, instructionsCoordsIndexListAndUsersLoc);
     debugPrint('RouteNavigationRouteController outCompute ${instructions.toJson()}');

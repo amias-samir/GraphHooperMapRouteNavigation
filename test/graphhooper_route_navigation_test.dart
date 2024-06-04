@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation_platform_interface.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -8,7 +7,6 @@ class MockGraphhooperRouteNavigationPlatform
     with MockPlatformInterfaceMixin
     implements GraphhooperRouteNavigationPlatform {
 
-  @override
   Future<String?> getPlatformVersion() => Future.value('42');
 }
 

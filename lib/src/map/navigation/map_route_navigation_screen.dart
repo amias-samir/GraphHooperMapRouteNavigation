@@ -3,10 +3,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/app_styles.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/constants.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -20,12 +18,11 @@ import 'utils/calculator_utils.dart';
 import 'utils/navigation_app_colors.dart';
 
 class MapRouteNavigationScreenPage extends StatefulWidget{
-  DirectionRouteResponse directionRouteResponse;
-  String mapAccesstoken;
+  final DirectionRouteResponse directionRouteResponse;
   static const IconData compass = IconData(0xf8ca, fontFamily: 'iconFont', fontPackage: 'iconFontPackage');
 
 
-  MapRouteNavigationScreenPage(this.directionRouteResponse, this.mapAccesstoken);
+  const MapRouteNavigationScreenPage(this.directionRouteResponse, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -126,7 +123,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
 
   _addSourceAndLineLayer(Map<String, dynamic> modifiedResponse ) async {
     addStartAndEndMarker();
-    final _fills = {
+    final fills = {
       "type": "FeatureCollection",
       "features": [
         {
@@ -143,7 +140,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
     await controller!.removeSource("fills");
 
     // Add new source and lineLayer
-    await controller!.addSource("fills", GeojsonSourceProperties(data: _fills));
+    await controller!.addSource("fills", GeojsonSourceProperties(data: fills));
     await controller!.addLineLayer(
       "fills",
       "lines",
@@ -159,7 +156,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
   }
 
 
-  Future<bool> _willPopCallback() async {
+  Future<bool> _willPopCallback(bool didPop) async {
     SchedulerBinding.instance.addPostFrameCallback((_) {
         Get.back();
       });
@@ -171,8 +168,11 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
     WidgetsFlutterBinding.ensureInitialized();
 
     // TODO: implement build
-    return WillPopScope(
-      onWillPop: _willPopCallback ,
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (bool didPop){
+        _willPopCallback(didPop);
+      },
       child: Scaffold(
         key: _scaffoldKeyRoute,
         body: SafeArea(
