@@ -184,7 +184,7 @@ Symbol? symbol;
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${calculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)} (${(directionRouteResponse.paths![0].distance!/1000).toStringAsFixed(2)}km)', style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal, height: 1.25, letterSpacing: 0.0, color: Colors.black),),
+                  Text('${calculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)} (${(directionRouteResponse.paths![0].distance!/1000).toStringAsFixed(2)}km)', style: CustomAppStyle.headline6(context),),
                   IconButton(onPressed: (){
                     Get.back();
                   }, icon: const Icon(Icons.close, color: NavigationColors.black,))
@@ -202,7 +202,7 @@ Symbol? symbol;
                       });
 
                     },
-                    icon: const Icon(Icons.navigation_outlined, color: Colors.white,), label: Text('Start Navigation', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w400, height: 1.43, letterSpacing: 0.0, color: NavigationColors.black).copyWith(color: NavigationColors.white.withOpacity(0.9)),)),
+                    icon: const Icon(Icons.navigation_outlined, color: Colors.white,), label: Text('Start Navigation', style: CustomAppStyle.body14pxRegular(context).copyWith(color: NavigationColors.white.withOpacity(0.9)),)),
               ),
 
             ],
@@ -231,7 +231,7 @@ Symbol? symbol;
             styleString: 'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
           onMapCreated: _onMapCreated,
           // onStyleLoadedCallback: _onStyleLoadedCallback,
-          initialCameraPosition: CameraPosition(target: LatLng(28.987280, 80.1652), zoom: mapZoomLevel,),
+          initialCameraPosition: CameraPosition(target: userLocation!.position.latitude != 0.0 ? userLocation!.position :LatLng(27.700769, 85.300140), zoom: mapZoomLevel,),
             minMaxZoomPreference: const MinMaxZoomPreference(5, 19),
             myLocationEnabled: true,
             trackCameraPosition: true,
