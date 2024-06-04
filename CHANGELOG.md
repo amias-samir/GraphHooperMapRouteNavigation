@@ -13,3 +13,7 @@
 ## 0.0.4
 * Using map libre flutter instead of mapbox gl flutter for base map.
 * replace direction instruction images by icons
+
+## 0.0.5
+* Minor enhancement
+
