@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
-import 'package:maplibre_gl/mapbox_gl.dart';
-
 
 
 
@@ -204,7 +202,7 @@ Symbol? symbol;
                       });
 
                     },
-                    icon: const Icon(Icons.navigation_outlined, color: Colors.white,), label: Text('Start Navigation', style: CustomAppStyle.body14pxRegular(context).copyWith(color: NavigationColors.white.withOpacity(0.9)),)),
+                    icon: const Icon(Icons.navigation_outlined, color: Colors.white,), label: Text('Start Navigation', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w400, height: 1.43, letterSpacing: 0.0, color: NavigationColors.black).copyWith(color: NavigationColors.white.withOpacity(0.9)),)),
               ),
 
             ],

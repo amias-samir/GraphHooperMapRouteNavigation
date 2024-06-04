@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:maplibre_gl/mapbox_gl.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 
 import 'controllers/route_navigation_controller.dart';
 import 'model/direction_route_response.dart';
@@ -254,7 +254,7 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                         Obx((){
                           return  Padding(
                             padding: const EdgeInsets.only(bottom: 8.0, left: 20.0),
-                            child: Text('Speed : ${navigationController.userSpeed.value}', style: CustomAppStyle.headline6(context)),
+                            child: Text('Speed : ${navigationController.userSpeed.value}', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600, height: 1.25, letterSpacing: 0.0, color: NavigationColors.black)),
                           );
                         }),
 
@@ -282,12 +282,12 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
 
                         Padding(
                           padding: const EdgeInsets.only(left: 20.0),
-                          child: Text('Distance : ${calculatorUtils.calculateDistance(distanceInMeter: directionRouteResponse!.paths![0].distance!)}', style: CustomAppStyle.headline6(context)),
+                          child: Text('Distance : ${calculatorUtils.calculateDistance(distanceInMeter: directionRouteResponse!.paths![0].distance!)}', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600, height: 1.25, letterSpacing: 0.0, color: NavigationColors.black)),
                         ),
 
                         Padding(
                           padding: const EdgeInsets.only(right: 20.0),
-                          child: Text('Time : ${calculatorUtils.calculateTime(miliSeconds: directionRouteResponse!.paths![0].time!)}', style: CustomAppStyle.headline6(context)),
+                          child: Text('Time : ${calculatorUtils.calculateTime(miliSeconds: directionRouteResponse!.paths![0].time!)}', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600, height: 1.25, letterSpacing: 0.0, color: NavigationColors.black)),
                         ),
                       ],
                     ),
@@ -323,11 +323,11 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text('${calculatorUtils.calculateDistance(distanceInMeter: instructions.distance!)}', style: CustomAppStyle.body12pxRegular(context)),
-              Text('${calculatorUtils.calculateTime(miliSeconds :instructions.time!)}', style: CustomAppStyle.body12pxRegular(context)),
+              Text('${calculatorUtils.calculateDistance(distanceInMeter: instructions.distance!)}', style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400, height: 1.5, letterSpacing: 0.0, color: NavigationColors.black)),
+              Text('${calculatorUtils.calculateTime(miliSeconds :instructions.time!)}', style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400, height: 1.5, letterSpacing: 0.0, color: NavigationColors.black)),
             ],
           ),
-          title:Text(instructions.text!, style: CustomAppStyle.body12pxBold(context)),
+          title:Text(instructions.text!, style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400, height: 1.5, letterSpacing: 0.0, color: NavigationColors.black)),
         ),
         Container(height: 1.0, width: MediaQuery.of(context).size.width,
           color: NavigationColors.greyLight,)
@@ -464,11 +464,11 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text('${calculatorUtils.calculateDistance(distanceInMeter: navigationController.instruction.value.distance!)}', style: CustomAppStyle.body12pxRegular(context)),
-                      Text('${calculatorUtils.calculateTime(miliSeconds :navigationController.instruction.value.time!)}', style: CustomAppStyle.body12pxRegular(context)),
+                      Text('${calculatorUtils.calculateDistance(distanceInMeter: navigationController.instruction.value.distance!)}', style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400, height: 1.5, letterSpacing: 0.0, color: NavigationColors.black)),
+                      Text('${calculatorUtils.calculateTime(miliSeconds :navigationController.instruction.value.time!)}', style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400, height: 1.5, letterSpacing: 0.0, color: NavigationColors.black)),
                     ],
                   ),
-                  title:Text(navigationController.instruction.value.text!, style: CustomAppStyle.body12pxBold(context)),
+                  title:Text(navigationController.instruction.value.text!, style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w700, height: 1.5, letterSpacing: 0.0, color: NavigationColors.black)),
                 ),
             );
           }else{

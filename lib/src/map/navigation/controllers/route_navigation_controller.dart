@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:maplibre_gl/mapbox_gl.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 import 'package:vector_math/vector_math.dart' as math;
 import 'dart:math' as Math;

@@ -1,5 +1,5 @@
 
-import 'package:maplibre_gl/mapbox_gl.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 
 import 'direction_route_response.dart';
 
