@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
 
-
-
-class MapDashboardScreen extends StatefulWidget{
+class MapDashboardScreen extends StatefulWidget {
   const MapDashboardScreen({super.key});
 
   @override
@@ -14,7 +12,6 @@ class MapDashboardScreen extends StatefulWidget{
     // TODO: implement createState
     return MapDashboardScreenState();
   }
-
 }
 
 class MapDashboardScreenState extends State<MapDashboardScreen> {
@@ -22,25 +19,35 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
   // ScrollController? draggableSheetController;
   final watercolorRasterId = "watercolorRaster";
   int selectedStyleId = 0;
-  UserLocation? userLocation = UserLocation(position:  const LatLng(28.987280, 80.1652), altitude: 1200.0,
-      bearing: 0.0, speed: 0.0, horizontalAccuracy: 0.0, verticalAccuracy: 0.0, timestamp: DateTime.now(),
-      heading: UserHeading(magneticHeading: 0.0, trueHeading: 0.0, headingAccuracy: 0.0, x: 0.0, y: 0.0, z: 0.0,
-          timestamp: DateTime.now()) );
+  UserLocation? userLocation = UserLocation(
+      position: const LatLng(28.987280, 80.1652),
+      altitude: 1200.0,
+      bearing: 0.0,
+      speed: 0.0,
+      horizontalAccuracy: 0.0,
+      verticalAccuracy: 0.0,
+      timestamp: DateTime.now(),
+      heading: UserHeading(
+          magneticHeading: 0.0,
+          trueHeading: 0.0,
+          headingAccuracy: 0.0,
+          x: 0.0,
+          y: 0.0,
+          z: 0.0,
+          timestamp: DateTime.now()));
   bool isInitialize = false;
 
-  double markerSize = 0.5 ;
+  double markerSize = 0.5;
   double mapZoomLevel = 14.0;
 
-  DirectionRouteResponse directionRouteResponse = DirectionRouteResponse();
+  DirectionRouteResponse? directionRouteResponse = DirectionRouteResponse();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
-  _onMapCreated(MaplibreMapController controller) async   {
+  _onMapCreated(MaplibreMapController controller) async {
     this.controller = controller;
 
     controller.onFeatureTapped.add(onFeatureTap);
-
 
     controller.addListener(() {
       mapZoomLevel = controller.cameraPosition!.zoom;
@@ -48,12 +55,8 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     // updateCameraONLocateMeTap();
   }
 
-
   @override
   void initState() {
-
-
-
     super.initState();
     initPlatformState();
     // updateCameraONLocateMeTap();
@@ -68,60 +71,54 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
   }
 
   addLayerToMap(DirectionRouteResponse directionRouteResponse) async {
-
     controller!.clearCircles();
     controller!.clearSymbols();
 
-      if( directionRouteResponse.paths![0].points!.toJson().isNotEmpty){
-        _addSourceAndLineLayer(directionRouteResponse);
-      }
-
+    if (directionRouteResponse.paths![0].points!.toJson().isNotEmpty) {
+      _addSourceAndLineLayer(directionRouteResponse);
+    }
   }
 
   // _onStyleLoadedCallback() async {
   //   controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: userLocation!.position, zoom: 13.0)),);
   // }
 
-
-Symbol? symbol;
+  Symbol? symbol;
   getDataFromTheServer(LatLng latLng) async {
+    debugPrint(
+      'getDataFromTheServer LatLng: ${latLng.toString()}  \n',
+    );
 
-    debugPrint('getDataFromTheServer LatLng: ${latLng.toString()}  \n', );
-
-    try{
+    try {
       controller!.removeSymbol(symbol!);
-    }catch(exception){
+    } catch (exception) {
       debugPrint('$exception');
     }
 
-    symbol = await controller!.addSymbol(
-        SymbolOptions(
-          geometry: latLng,
-          iconSize: markerSize,
-          iconImage: "assets/icon/health_icon.png",
-        ));
+    symbol = await controller!.addSymbol(SymbolOptions(
+      geometry: latLng,
+      iconSize: markerSize,
+      iconImage: "assets/icon/health_icon.png",
+    ));
 
     ApiRequest apiRequest = ApiRequest();
 
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
-      customBaseUrl: '',
+        customBaseUrl: 'https://route.naxa.com.np',
         source: userLocation!.position,
         destination: latLng,
         navigationType: NavigationProfile.car,
-    graphHooperApiKey: 'Your GraphHooper API Key');
+        graphHooperApiKey: 'Your GraphHooper API Key');
 
-    if(directionRouteResponse.toJson().isNotEmpty){
+    if (directionRouteResponse.toJson().isNotEmpty) {
       _addSourceAndLineLayer(directionRouteResponse);
     }
-
-
-
 
     // Fluttertoast.showToast(msg: 'Feature ID: ${featureId.toString()} \n '
     //     'details: ${placesDetailsDatabaseModel.toMap().toString()}');
   }
 
-  _addSourceAndLineLayer(DirectionRouteResponse directionRouteResponse ) async {
+  _addSourceAndLineLayer(DirectionRouteResponse directionRouteResponse) async {
     // Can animate camera to focus on the item
     // controller!.animateCamera(CameraUpdate.newCameraPosition(_kRestaurantsList[index]));
 
@@ -140,31 +137,30 @@ Symbol? symbol;
     };
 
     // Remove lineLayer and source if it exists
-      await controller!.removeLayer("lines");
-      await controller!.removeSource("fills");
+    await controller!.removeLayer("lines");
+    await controller!.removeSource("fills");
 
-      try{
-        // Add new source and lineLayer
-        await controller!.addSource("fills", GeojsonSourceProperties(data: fills));
-        await controller!.addLineLayer(
-          "fills",
-          "lines",
-          LineLayerProperties(
-            lineColor: Colors.blue.toHexStringRGB(),
-            lineCap: "round",
-            lineJoin: "round",
-            lineWidth: 5,
-          ),
-        );
-      }catch (exception){
-        debugPrint('$exception');
-      }
-
+    try {
+      // Add new source and lineLayer
+      await controller!
+          .addSource("fills", GeojsonSourceProperties(data: fills));
+      await controller!.addLineLayer(
+        "fills",
+        "lines",
+        LineLayerProperties(
+          lineColor: Colors.blue.toHexStringRGB(),
+          lineCap: "round",
+          lineJoin: "round",
+          lineWidth: 5,
+        ),
+      );
+    } catch (exception) {
+      debugPrint('$exception');
+    }
   }
 
   CalculatorUtils calculatorUtils = CalculatorUtils();
-  buildNavigateToBottomSheetUI( DirectionRouteResponse directionRouteResponse){
-
+  buildNavigateToBottomSheetUI(DirectionRouteResponse directionRouteResponse) {
     _addSourceAndLineLayer(directionRouteResponse);
 
     return Container(
@@ -173,46 +169,60 @@ Symbol? symbol;
           border: Border.all(
             color: Colors.white,
           ),
-          borderRadius: const BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20))
-      ),
+          borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(20), topLeft: Radius.circular(20))),
       padding: const EdgeInsets.all(16.0),
       height: 168.0,
       child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('${calculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)} (${(directionRouteResponse.paths![0].distance!/1000).toStringAsFixed(2)}km)', style: CustomAppStyle.headline6(context),),
-                  IconButton(onPressed: (){
-                    Get.back();
-                  }, icon: const Icon(Icons.close, color: NavigationColors.black,))
-                ],
+              Text(
+                '${calculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)} (${(directionRouteResponse.paths![0].distance! / 1000).toStringAsFixed(2)}km)',
+                style: CustomAppStyle.headline6(context),
               ),
-              const SizedBox(height: 16.0,),
-
-              ElevatedButton.icon(
-                  // color: NaxaAppColors.red,
-                  onPressed: () async{
-                    // Get.back();
-                    SchedulerBinding.instance.addPostFrameCallback((_) {
-                      Get.to(MapRouteNavigationScreenPage(directionRouteResponse));
-                    });
-
+              IconButton(
+                  onPressed: () {
+                    Get.back();
                   },
-                  icon: const Icon(Icons.navigation_outlined, color: Colors.white,), label: Text('Start Navigation', style: CustomAppStyle.body14pxRegular(context).copyWith(color: NavigationColors.white.withOpacity(0.9)),)),
-
+                  icon: const Icon(
+                    Icons.close,
+                    color: NavigationColors.black,
+                  ))
             ],
           ),
+          const SizedBox(
+            height: 16.0,
+          ),
+
+          // start navigation button
+          //
+          ElevatedButton.icon(
+              // color: NaxaAppColors.red,
+              onPressed: () async {
+                // Get.back();
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  Get.to(MapRouteNavigationScreenPage(directionRouteResponse));
+                });
+              },
+              icon: const Icon(
+                Icons.navigation_outlined,
+                color: Colors.white,
+              ),
+              label: Text(
+                'Start Navigation',
+                style: CustomAppStyle.body14pxRegular(context)
+                    .copyWith(color: NavigationColors.white.withOpacity(0.9)),
+              )),
+        ],
+      ),
     );
-
   }
-
-
 
   @override
   Widget build(BuildContext context) {
-
     // markerSize =  (MediaQuery.of(context).size.width*0.0015);
 
     // TODO: implement build
@@ -222,46 +232,48 @@ Symbol? symbol;
     );
   }
 
-  buildMapUI(){
-
-          return MaplibreMap(
-            styleString: 'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-          onMapCreated: _onMapCreated,
-          // onStyleLoadedCallback: _onStyleLoadedCallback,
-          initialCameraPosition: CameraPosition(target: userLocation!.position.latitude != 0.0 ? userLocation!.position :const LatLng(27.700769, 85.300140), zoom: mapZoomLevel,),
-            minMaxZoomPreference: const MinMaxZoomPreference(5, 19),
-            myLocationEnabled: true,
-            trackCameraPosition: true,
-            compassEnabled: true,
-            compassViewPosition: CompassViewPosition.TopRight,
-            myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-            myLocationRenderMode: MyLocationRenderMode.GPS,
-          onMapClick: (point, latLng){
-            getDataFromTheServer(latLng);
-          },
-          onUserLocationUpdated: (userLocation1){
-            userLocation = userLocation1;
-            controller!.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(target: LatLng(userLocation!.position
-                    .latitude, userLocation!.position.longitude),
-                    zoom: mapZoomLevel,
-                    bearing: userLocation!.bearing!)));
-          },
-          // cameraTargetBounds: CameraTargetBounds(LatLngBounds( southwest: const LatLng( 25.873742 ,79.338507), northeast: const LatLng(28.147416, 89.009072))),
-            );
-
+  buildMapUI() {
+    return MaplibreMap(
+      styleString:
+          'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+      onMapCreated: _onMapCreated,
+      // onStyleLoadedCallback: _onStyleLoadedCallback,
+      initialCameraPosition: CameraPosition(
+        target: userLocation!.position.latitude != 0.0
+            ? userLocation!.position
+            : const LatLng(27.700769, 85.300140),
+        zoom: mapZoomLevel,
+      ),
+      minMaxZoomPreference: const MinMaxZoomPreference(5, 19),
+      myLocationEnabled: true,
+      trackCameraPosition: true,
+      compassEnabled: true,
+      compassViewPosition: CompassViewPosition.TopRight,
+      myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
+      myLocationRenderMode: MyLocationRenderMode.GPS,
+      onMapClick: (point, latLng) {
+        getDataFromTheServer(latLng);
+      },
+      onUserLocationUpdated: (userLocation1) {
+        userLocation = userLocation1;
+        controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+            target: LatLng(userLocation!.position.latitude,
+                userLocation!.position.longitude),
+            zoom: mapZoomLevel,
+            bearing: userLocation!.bearing!)));
+      },
+      // cameraTargetBounds: CameraTargetBounds(LatLngBounds( southwest: const LatLng( 25.873742 ,79.338507), northeast: const LatLng(28.147416, 89.009072))),
+    );
   }
 
   void onFeatureTap(id, Point<double> point, LatLng coordinates) {
-
-    if(directionRouteResponse.toJson().isNotEmpty){
+    if (directionRouteResponse.toJson().isNotEmpty) {
       Get.bottomSheet(
         buildNavigateToBottomSheetUI(directionRouteResponse),
         enableDrag: true,
         persistent: false,
         ignoreSafeArea: true,
         isScrollControlled: true,
-
       );
     }
   }
