@@ -17,7 +17,6 @@ dependencies:
   plugin_platform_interface: ^2.1.8
   vector_math: ^2.1.4
   expandable_bottom_sheet: ^1.1.1+1
-  dartz: ^0.10.1
 
   #  mapbox_gl: ^0.16.0
   maplibre_gl: ^0.19.0+2
