@@ -274,11 +274,11 @@ class RouteNavigationRouteController extends GetxController {
     return InstructionsCoordsAndIndexList(instructionsCoordList, indexList);
   }
 
-  void getInstructionByIndex(
-      {required DirectionRouteResponse directionRouteResponse,
-      required int index}) {
-    instruction.value = directionRouteResponse.paths![0].instructions![index];
-  }
+  // void getInstructionByIndex(
+  //     {required DirectionRouteResponse directionRouteResponse,
+  //     required int index}) {
+  //   instruction.value = directionRouteResponse.paths![0].instructions![index];
+  // }
 
   void checkIsCoordinateInsideCircle({required LatLng usersLatLng}) async {
     List<double> coordinates = [];
@@ -354,7 +354,7 @@ Future<Instructions> computingCoordinateInsideCircle(
           usersLatLng: instructionsCoordsIndexListAndUsersLoc.usersLatLng)) {
 
 
-        instruction = directionRouteResponse1.paths![0].instructions![index];
+        instruction = directionRouteResponse1.paths![0].instructions!.reversed.toList()[index];
         debugPrint(
             'RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');
 

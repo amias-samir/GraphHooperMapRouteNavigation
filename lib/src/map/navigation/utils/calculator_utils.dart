@@ -44,7 +44,7 @@ class CalculatorUtils {
     // distance of its center from
     // given point
 
-    final distanceFromCircleOfCenter = (x - circleX) * (x - circleY) + (y - circleX) * (y - circleY);
+    final distanceFromCircleOfCenter = (x - circleX) * (x - circleX) + (y - circleY) * (y - circleY);
 
     if (distanceFromCircleOfCenter <=
         radius * radius) {
