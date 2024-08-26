@@ -17,9 +17,14 @@ class MapDashboardScreen extends StatefulWidget {
 class MapDashboardScreenState extends State<MapDashboardScreen> {
   MaplibreMapController? controller;
   // ScrollController? draggableSheetController;
+
+  // water
   final watercolorRasterId = "watercolorRaster";
+
   int selectedStyleId = 0;
-  UserLocation? userLocation = UserLocation(
+
+  // some static user location
+  UserLocation userLocation = UserLocation(
       position: const LatLng(28.987280, 80.1652),
       altitude: 1200.0,
       bearing: 0.0,
@@ -40,7 +45,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
   double markerSize = 0.5;
   double mapZoomLevel = 14.0;
 
-  DirectionRouteResponse? directionRouteResponse = DirectionRouteResponse();
+  DirectionRouteResponse directionRouteResponse = DirectionRouteResponse();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -84,7 +89,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
   // }
 
   Symbol? symbol;
-  getDataFromTheServer(LatLng latLng) async {
+  Future<void> getDataFromTheServer(LatLng latLng) async {
     debugPrint(
       'getDataFromTheServer LatLng: ${latLng.toString()}  \n',
     );
@@ -104,11 +109,11 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     ApiRequest apiRequest = ApiRequest();
 
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
-        customBaseUrl: 'https://route.naxa.com.np',
-        source: userLocation!.position,
+        // customBaseUrl: 'https://route.naxa.com.np',
+        source: userLocation.position,
         destination: latLng,
         navigationType: NavigationProfile.car,
-        graphHooperApiKey: 'Your GraphHooper API Key');
+        graphHooperApiKey: '9adf4607-bac4-4bae-83be-d29509ce743d');
 
     if (directionRouteResponse.toJson().isNotEmpty) {
       _addSourceAndLineLayer(directionRouteResponse);
@@ -118,7 +123,12 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     //     'details: ${placesDetailsDatabaseModel.toMap().toString()}');
   }
 
-  _addSourceAndLineLayer(DirectionRouteResponse directionRouteResponse) async {
+  Future<void> _addSourceAndLineLayer(
+      DirectionRouteResponse directionRouteResponse) async {
+    // if the controller is null returns from function
+    if (controller == null) {
+      return;
+    }
     // Can animate camera to focus on the item
     // controller!.animateCamera(CameraUpdate.newCameraPosition(_kRestaurantsList[index]));
 
@@ -159,8 +169,11 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     }
   }
 
-  CalculatorUtils calculatorUtils = CalculatorUtils();
-  buildNavigateToBottomSheetUI(DirectionRouteResponse directionRouteResponse) {
+  // CalculatorUtils calculatorUtils = CalculatorUtils();
+
+  // gives build navigate to bottom sheet ui
+  Widget buildNavigateToBottomSheetUI(
+      DirectionRouteResponse directionRouteResponse) {
     _addSourceAndLineLayer(directionRouteResponse);
 
     return Container(
@@ -180,7 +193,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${calculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)} (${(directionRouteResponse.paths![0].distance! / 1000).toStringAsFixed(2)}km)',
+                '${CalculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)} (${(directionRouteResponse.paths![0].distance! / 1000).toStringAsFixed(2)}km)',
                 style: CustomAppStyle.headline6(context),
               ),
               IconButton(
@@ -204,7 +217,8 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
               onPressed: () async {
                 // Get.back();
                 SchedulerBinding.instance.addPostFrameCallback((_) {
-                  Get.to(MapRouteNavigationScreenPage(directionRouteResponse));
+                  Get.to(() =>
+                      MapRouteNavigationScreenPage(directionRouteResponse));
                 });
               },
               icon: const Icon(
@@ -232,15 +246,15 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     );
   }
 
-  buildMapUI() {
+  Widget buildMapUI() {
     return MaplibreMap(
       styleString:
           'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       onMapCreated: _onMapCreated,
       // onStyleLoadedCallback: _onStyleLoadedCallback,
       initialCameraPosition: CameraPosition(
-        target: userLocation!.position.latitude != 0.0
-            ? userLocation!.position
+        target: userLocation.position.latitude != 0.0
+            ? userLocation.position
             : const LatLng(27.700769, 85.300140),
         zoom: mapZoomLevel,
       ),
@@ -254,14 +268,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
       onMapClick: (point, latLng) {
         getDataFromTheServer(latLng);
       },
-      onUserLocationUpdated: (userLocation1) {
-        userLocation = userLocation1;
-        controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-            target: LatLng(userLocation!.position.latitude,
-                userLocation!.position.longitude),
-            zoom: mapZoomLevel,
-            bearing: userLocation!.bearing!)));
-      },
+
       // cameraTargetBounds: CameraTargetBounds(LatLngBounds( southwest: const LatLng( 25.873742 ,79.338507), northeast: const LatLng(28.147416, 89.009072))),
     );
   }
