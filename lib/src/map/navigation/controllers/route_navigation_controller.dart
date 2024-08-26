@@ -228,6 +228,7 @@ class RouteNavigationRouteController extends GetxController {
     });
   }
 
+  /// This method finds instructions co-ordinates i.e latitude ra longitude
   void findInstructionsCoordsAndIndex(
       {required DirectionRouteResponse directionRouteResponse}) async {
     // initializes controller's directionRoute response variable
@@ -237,8 +238,12 @@ class RouteNavigationRouteController extends GetxController {
     setEnableAudio();
 
     InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
-        await compute(
-            computeInstructionsCoordsAndIndex, directionRouteResponse);
+    await computeInstructionsCoordsAndIndex(directionRouteResponse);
+        // await compute(
+        //     computeInstructionsCoordsAndIndex, directionRouteResponse);
+    // InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
+    //     await compute(
+    //         computeInstructionsCoordsAndIndex, directionRouteResponse);
 
     // update the rx variables in the controller
     instructionsIndexList.value =
@@ -254,7 +259,7 @@ class RouteNavigationRouteController extends GetxController {
   ///
   Future<InstructionsCoordsAndIndexList> computeInstructionsCoordsAndIndex(
       DirectionRouteResponse directionRouteResponse) async {
-    final instructions = directionRouteResponse.paths![0].instructions ?? [];
+    final instructions = directionRouteResponse.paths![0].instructions?.reversed.toList() ?? [];
 
     final indexList = <int>[];
     final instructionsCoordList = <List<double>>[];
@@ -275,21 +280,21 @@ class RouteNavigationRouteController extends GetxController {
     instruction.value = directionRouteResponse.paths![0].instructions![index];
   }
 
-  checkIsCoordinateInsideCircle({required LatLng usersLatLng}) async {
+  void checkIsCoordinateInsideCircle({required LatLng usersLatLng}) async {
     List<double> coordinates = [];
     coordinates.add(usersLatLng.latitude);
     coordinates.add(usersLatLng.longitude);
 
     InstructionsCoordsIndexListAndUsersLoc
-        instructionsCoordsIndexListAndUsersLoc =
-        InstructionsCoordsIndexListAndUsersLoc(
+        instructionsCoordsIndexListAndUsersLoc = InstructionsCoordsIndexListAndUsersLoc(
             instructionsCoordList.toList(),
             instructionsIndexList.toList(),
             directionRouteResponse.value,
             usersLatLng);
 
-    Instructions instructions = await compute(computingCoordinateInsideCircle,
-        instructionsCoordsIndexListAndUsersLoc);
+    Instructions instructions =  await computingCoordinateInsideCircle(instructionsCoordsIndexListAndUsersLoc);
+    // await compute(computingCoordinateInsideCircle,
+    //     instructionsCoordsIndexListAndUsersLoc);
     debugPrint(
         'RouteNavigationRouteController outCompute ${instructions.toJson()}');
 
@@ -347,6 +352,8 @@ Future<Instructions> computingCoordinateInsideCircle(
           instructionLatLng:
               LatLng(instructionPoints[index][1], instructionPoints[index][0]),
           usersLatLng: instructionsCoordsIndexListAndUsersLoc.usersLatLng)) {
+
+
         instruction = directionRouteResponse1.paths![0].instructions![index];
         debugPrint(
             'RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');
@@ -360,8 +367,7 @@ Future<Instructions> computingCoordinateInsideCircle(
       // }
     }
   }
-
-  return instruction;
+    return instruction;
 }
 
 computeAndPlayInstructionAudio(AudioInstruction audioInstruction) async {

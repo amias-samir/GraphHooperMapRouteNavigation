@@ -43,7 +43,10 @@ class CalculatorUtils {
     // Compare radius of circle with
     // distance of its center from
     // given point
-    if ((x - circleX) * (x - circleY) + (y - circleX) * (y - circleY) <=
+
+    final distanceFromCircleOfCenter = (x - circleX) * (x - circleY) + (y - circleX) * (y - circleY);
+
+    if (distanceFromCircleOfCenter <=
         radius * radius) {
       return true;
     } else {

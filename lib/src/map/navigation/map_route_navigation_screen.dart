@@ -36,10 +36,12 @@ class MapRouteNavigationScreenPageState
 
   // TextToSpeech textToSpeech = TextToSpeech();
 
-  MaplibreMapController? controller;
+  late MaplibreMapController controller;
   UserLocation? userLocation;
   UserLocation? usersLastLocation;
-  Circle? symbol;
+
+
+  Circle? startingUserLocationCircle;
 
   late DirectionRouteResponse directionRouteResponse;
 
@@ -66,19 +68,21 @@ class MapRouteNavigationScreenPageState
       _addSourceAndLineLayer(routeResponse);
     }
 
-    controller!.addListener(() {
-      mapZoomLevel = controller!.cameraPosition!.zoom;
+    controller.addListener(() {
+      mapZoomLevel = controller.cameraPosition!.zoom;
     });
 
     // controller.onFeatureTapped.add(onFeatureTap);
 
-    navigationSimulationListner();
+    navigationSimulationListener();
 
     rotateMapOnBearingChange();
   }
 
   @override
   void initState() {
+    super.initState();
+
     // initial user location
     userLocation = UserLocation(
         position: const LatLng(28.987280, 80.1652),
@@ -99,17 +103,17 @@ class MapRouteNavigationScreenPageState
 
     // direction route response initialization
     directionRouteResponse = widget.directionRouteResponse;
-    super.initState();
 
     // textToSpeech.setLanguage('en-US');
     // navigationController.setEnableAudio(enableAudio: true, textToSpeech: textToSpeech );
+
 
     navigationController.findInstructionsCoordsAndIndex(
         directionRouteResponse: directionRouteResponse);
   }
 
-  _onStyleLoadedCallback() async {
-    controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+  void _onStyleLoadedCallback() async {
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(
             directionRouteResponse
                 .paths![0].snappedWaypoints!.coordinates!.first[1],
@@ -118,15 +122,15 @@ class MapRouteNavigationScreenPageState
         zoom: mapZoomLevel)));
   }
 
-  _animateCameraToUserLoation({double? zoomLevel, double? bearing}) {
-    controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+  void _animateCameraToUserLoation({double? zoomLevel, double? bearing}) {
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(
             userLocation!.position.latitude, userLocation!.position.longitude),
         zoom: zoomLevel ?? mapZoomLevel,
         bearing: bearing ?? userLocation!.bearing!)));
   }
 
-  onFeatureTap(dynamic featureId, Point point, LatLng latLng) async {
+  void onFeatureTap(dynamic featureId, Point point, LatLng latLng) async {
     // Fluttertoast.showToast(msg: 'Feature ID: ${featureId.toString()} \n '
     //     'Coordinates: ${latLng.toString()}');
   }
@@ -139,7 +143,8 @@ class MapRouteNavigationScreenPageState
 
   /// adds source and line layer
   ///
-  _addSourceAndLineLayer(Map<String, dynamic> modifiedResponse) async {
+  void _addSourceAndLineLayer(Map<String, dynamic> modifiedResponse) async {
+    // add start and end marker i.e --> green and red respectively
     addStartAndEndMarker();
     final fills = {
       "type": "FeatureCollection",
@@ -154,12 +159,12 @@ class MapRouteNavigationScreenPageState
     };
 
     // Remove lineLayer and source if it exists
-    await controller!.removeLayer("lines");
-    await controller!.removeSource("fills");
+    await controller.removeLayer("lines");
+    await controller.removeSource("fills");
 
     // Add new source and lineLayer
-    await controller!.addSource("fills", GeojsonSourceProperties(data: fills));
-    await controller!.addLineLayer(
+    await controller.addSource("fills", GeojsonSourceProperties(data: fills));
+    await controller.addLineLayer(
       "fills",
       "lines",
       LineLayerProperties(
@@ -207,7 +212,7 @@ class MapRouteNavigationScreenPageState
         children: [buildMapUi(), buildCompass(), buildInstructionInfo()]);
   }
 
-  buildMapUi() {
+  Widget buildMapUi() {
     return MaplibreMap(
       styleString:
           'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
@@ -234,7 +239,7 @@ class MapRouteNavigationScreenPageState
         if (!isSimulateRouting) {
           navigationController.checkIsCoordinateInsideCircle(
               usersLatLng: userLocation.position);
-          controller!.animateCamera(CameraUpdate.newCameraPosition(
+          controller.animateCamera(CameraUpdate.newCameraPosition(
               CameraPosition(
                   target: LatLng(userLocation.position.latitude,
                       userLocation.position.longitude),
@@ -268,6 +273,7 @@ class MapRouteNavigationScreenPageState
                       children: [
                         Obx(() {
                           return Padding(
+
                             padding:
                                 const EdgeInsets.only(bottom: 8.0, left: 20.0),
                             child: Text(
@@ -384,7 +390,7 @@ class MapRouteNavigationScreenPageState
               // if(navigationController.bearingBtnCOOrds.value != 0.0){
               return InkWell(
                 onTap: () {
-                  controller!.animateCamera(CameraUpdate.newCameraPosition(
+                  controller.animateCamera(CameraUpdate.newCameraPosition(
                       CameraPosition(
                           target: usersLastLocation!.position,
                           zoom: mapZoomLevel,
@@ -529,7 +535,7 @@ class MapRouteNavigationScreenPageState
         }));
   }
 
-  buildPersistentHeaderUi() {
+ Container buildPersistentHeaderUi() {
     return Container(
       height: 20,
       width: MediaQuery.of(context).size.width,
@@ -559,7 +565,7 @@ class MapRouteNavigationScreenPageState
     );
   }
 
-  buildExpandableContentUi() {
+ Container buildExpandableContentUi() {
     return Container(
       height: MediaQuery.of(context).size.height * 0.71,
       color: Colors.white,
@@ -573,15 +579,23 @@ class MapRouteNavigationScreenPageState
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
   }
 
-  void navigationSimulationListner() {
+  /// Registers [UserLocation] listener
+  /// upon changing the user location the user's current location circle
+  /// updates as well.
+  ///
+  void navigationSimulationListener() {
     navigationController.userLocation.stream.listen((userLocation) async {
       // new location from response
+      // final newLocationFromRes = LatLng(
+      //   directionRouteResponse
+      //       .paths![0].snappedWaypoints!.coordinates!.first[1],
+      //   directionRouteResponse
+      //       .paths![0].snappedWaypoints!.coordinates!.first[0],
+      // );
+
       final newLocationFromRes = LatLng(
-        directionRouteResponse
-            .paths![0].snappedWaypoints!.coordinates!.first[1],
-        directionRouteResponse
-            .paths![0].snappedWaypoints!.coordinates!.first[0],
-      );
+      userLocation.position.latitude,
+      userLocation.position.longitude);
 
       // circle options
       final circleOptions = CircleOptions(
@@ -590,18 +604,25 @@ class MapRouteNavigationScreenPageState
         circleRadius: 12,
       );
 
-      if (userLocation != usersLastLocation) {
-        if (symbol != null) {
-          await controller!.removeCircle(symbol!);
-        }
 
-        symbol = await controller!.addCircle(circleOptions);
-      } else {
-        await controller!.updateCircle(symbol!, circleOptions);
+      if(startingUserLocationCircle == null){
+        startingUserLocationCircle = await controller.addCircle(circleOptions);
+      }else{
+        await controller.updateCircle(startingUserLocationCircle!, circleOptions);
       }
 
-      // update users last location
-      usersLastLocation = userLocation;
+      // if (userLocation != usersLastLocation) {
+      //   if (symbol != null) {
+      //     await controller.removeCircle(symbol!);
+      //   }
+      //
+      //   symbol = await controller.addCircle(circleOptions);
+      // } else {
+      //   await controller.updateCircle(symbol!, circleOptions);
+      // }
+      //
+      // // update users last location
+      // usersLastLocation = userLocation;
 
       // Optionally animate the camera to the user's location
       // controller!.animateCamera(CameraUpdate.newCameraPosition(
@@ -614,8 +635,14 @@ class MapRouteNavigationScreenPageState
     });
   }
 
+  /// This method adds start and end marker which is circle
+  /// [Red color] denotes the destination
+  /// [Green color] denotes the starting point for the user
+  ///
   void addStartAndEndMarker() async {
-    controller!.addCircle(
+
+  // starting circle
+  startingUserLocationCircle =await controller.addCircle(
       CircleOptions(
           geometry: LatLng(
               directionRouteResponse
@@ -626,7 +653,8 @@ class MapRouteNavigationScreenPageState
           circleRadius: 12),
     );
 
-    controller!.addCircle(
+  // destination circle
+    controller.addCircle(
       CircleOptions(
           geometry: LatLng(
               directionRouteResponse
@@ -642,7 +670,7 @@ class MapRouteNavigationScreenPageState
   ///
   void rotateMapOnBearingChange() {
     navigationController.bearingBtnCOOrds.stream.listen((event) {
-      controller!.animateCamera(
+      controller.animateCamera(
           CameraUpdate.bearingTo(navigationController.bearingBtnCOOrds.value));
       // navigationController.updateDistanceBtnCOOrds(distance: event);
     });
