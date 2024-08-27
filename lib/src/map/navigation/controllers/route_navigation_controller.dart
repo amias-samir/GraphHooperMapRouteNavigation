@@ -202,7 +202,7 @@ class RouteNavigationRouteController extends GetxController {
         }
       } else if (count == points.length) {
         UserLocation userLocation1 = UserLocation(
-            position: LatLng(points[count][1], points[count][0]),
+            position: LatLng(points[count-1][1], points[count-1][0]),
             altitude: userLocation.altitude,
             bearing: userLocation.bearing,
             speed: userLocation.speed,
@@ -354,6 +354,7 @@ Future<Instructions> computingCoordinateInsideCircle(
           usersLatLng: instructionsCoordsIndexListAndUsersLoc.usersLatLng)) {
 
 
+        // TODO: make he direction route response a single variable
         instruction = directionRouteResponse1.paths![0].instructions!.reversed.toList()[index];
         debugPrint(
             'RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');

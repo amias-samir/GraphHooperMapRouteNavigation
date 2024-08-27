@@ -624,14 +624,14 @@ class MapRouteNavigationScreenPageState
       // // update users last location
       // usersLastLocation = userLocation;
 
-      // Optionally animate the camera to the user's location
-      // controller!.animateCamera(CameraUpdate.newCameraPosition(
-      //   CameraPosition(
-      //     target: LatLng(userLocation.position.latitude, userLocation.position.longitude),
-      //     zoom: mapZoomLevel,
-      //     bearing: navigationController.bearingBtnCOOrds.value,
-      //   ),
-      // ));
+      //  Animate the camera to the user's location
+      controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(userLocation.position.latitude, userLocation.position.longitude),
+          zoom: mapZoomLevel,
+          bearing: navigationController.bearingBtnCOOrds.value,
+        ),
+      ));
     });
   }
 

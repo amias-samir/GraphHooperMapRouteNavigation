@@ -169,8 +169,6 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     }
   }
 
-  // CalculatorUtils calculatorUtils = CalculatorUtils();
-
   // gives build navigate to bottom sheet ui
   Widget buildNavigateToBottomSheetUI(
       DirectionRouteResponse directionRouteResponse) {
