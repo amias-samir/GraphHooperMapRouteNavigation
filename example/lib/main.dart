@@ -1,16 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
-
 import 'bindings/controller_binding.dart';
 import 'bindings/http_overrides.dart';
 import 'map_dashboard_screen.dart';
 
 Future<void> main() async {
+  // loads the env file if doesnt exist then throws error
   await dotenv.load(fileName: ".env");
 
   // ensures the initialization
@@ -34,10 +33,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
   }
-// loadEnvFile() async {
-//   await DotEnv().load('.env');
-//
-// }
+
   // Platform messages are asynchronous, so we initialize in an async method.
 
   @override
