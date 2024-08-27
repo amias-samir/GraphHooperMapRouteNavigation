@@ -143,15 +143,15 @@ class RouteNavigationRouteController extends GetxController {
   //   distanceToTheInstPoint.value  = double.parse(distance.toStringAsFixed(2));
   // }
 
-  updateSpeed({required double speed}) {
+  void updateSpeed({required double speed}) {
     userSpeed.value = double.parse(speed.toStringAsFixed(3));
   }
 
-  updateUserLocation({required UserLocation userLocation}) {
+ void  updateUserLocation({required UserLocation userLocation}) {
     this.userLocation.value = userLocation;
   }
 
-  simulateRouting(
+  void simulateRouting(
       DirectionRouteResponse? directionRouteResponse, UserLocation userLocation,
       {bool simulateRoute = true}) async {
     List<List<double>> points =

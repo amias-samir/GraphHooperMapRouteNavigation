@@ -35,7 +35,7 @@ class ApiRequest {
     required LatLng source,
     required LatLng destination,
     required NavigationProfile navigationType,
-    required String graphHooperApiKey,
+     required String graphHooperApiKey,
   }) async {
     // Compute the route URL
     String routeUrl = (customBaseUrl != null && customBaseUrl.isNotEmpty)

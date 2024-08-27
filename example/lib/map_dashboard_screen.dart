@@ -109,11 +109,10 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     ApiRequest apiRequest = ApiRequest();
 
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
-        // customBaseUrl: 'https://route.naxa.com.np',
         source: userLocation.position,
         destination: latLng,
         navigationType: NavigationProfile.car,
-        graphHooperApiKey: '9adf4607-bac4-4bae-83be-d29509ce743d');
+        graphHooperApiKey: 'Your Api Key Here');
 
     if (directionRouteResponse.toJson().isNotEmpty) {
       _addSourceAndLineLayer(directionRouteResponse);
