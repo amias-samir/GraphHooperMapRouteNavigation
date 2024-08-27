@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MapDashboardScreen extends StatefulWidget {
   const MapDashboardScreen({super.key});
@@ -112,7 +113,8 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
         source: userLocation.position,
         destination: latLng,
         navigationType: NavigationProfile.car,
-        graphHooperApiKey: 'Your Api Key Here');
+        graphHooperApiKey:
+            dotenv.env["API_KEY"] ?? "Include your API key in the env file");
 
     if (directionRouteResponse.toJson().isNotEmpty) {
       _addSourceAndLineLayer(directionRouteResponse);
