@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -8,7 +7,7 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 import 'package:vector_math/vector_math.dart' as vector_math;
 import 'dart:math' as math;
-import 'dart:math' show asin,  cos, sqrt ;
+import 'dart:math' show asin, cos, sqrt;
 
 import '../model/audio_instruction.dart';
 import '../model/direction_route_response.dart';
@@ -16,16 +15,25 @@ import '../model/instructions.dart';
 import '../model/instructions_coords_and_index_list.dart';
 import '../utils/calculator_utils.dart';
 
-
-
-class RouteNavigationRouteController extends GetxController{
-
+class RouteNavigationRouteController extends GetxController {
   // update user location  while simulating route
-  Rx<UserLocation> userLocation = UserLocation(position:  const LatLng(28.987280, 80.1652), altitude: 1200.0,
-      bearing: 0.0, speed: 0.0, horizontalAccuracy: 0.0, verticalAccuracy: 0.0, timestamp: DateTime.now(),
-      heading: UserHeading(magneticHeading: 0.0, trueHeading: 0.0, headingAccuracy: 0.0, x: 0.0, y: 0.0, z: 0.0,
-          timestamp: DateTime.now()) ).obs;
-
+  Rx<UserLocation> userLocation = UserLocation(
+          position: const LatLng(28.987280, 80.1652),
+          altitude: 1200.0,
+          bearing: 0.0,
+          speed: 0.0,
+          horizontalAccuracy: 0.0,
+          verticalAccuracy: 0.0,
+          timestamp: DateTime.now(),
+          heading: UserHeading(
+              magneticHeading: 0.0,
+              trueHeading: 0.0,
+              headingAccuracy: 0.0,
+              x: 0.0,
+              y: 0.0,
+              z: 0.0,
+              timestamp: DateTime.now()))
+      .obs;
 
   bool simulateNavigation = false;
 
@@ -42,16 +50,17 @@ class RouteNavigationRouteController extends GetxController{
   double remaingDistanceToTheInstructionPoint = 0.0;
 
   //nearest current instruction (identified based on user's location)
-  Rx<Instructions> instruction =  Instructions(text: '').obs;
+  Rx<Instructions> instruction = Instructions(text: '').obs;
 
   //list of instructions that had spoken once
-  RxList<Instructions> hadSpokenInstructions =  (List<Instructions>.of([])).obs;
-  
+  RxList<Instructions> hadSpokenInstructions = (List<Instructions>.of([])).obs;
+
   //list of instructions identifier that had spoken once (generate unique by using instructions multiple value)
-  RxList<String> hadSpokenInstructionsIdentifier =  (List<String>.of([])).obs;
+  RxList<String> hadSpokenInstructionsIdentifier = (List<String>.of([])).obs;
 
   //direction route response
-  Rx<DirectionRouteResponse> directionRouteResponse = DirectionRouteResponse().obs;
+  Rx<DirectionRouteResponse> directionRouteResponse =
+      DirectionRouteResponse().obs;
 
   //list of instruction's index value (instructions found in direction route response)
   RxList<int> instructionsIndexList = (List<int>.of([])).obs;
@@ -66,20 +75,19 @@ class RouteNavigationRouteController extends GetxController{
 
   //initialize Text To Speech
   // Rx<TextToSpeech> tts = TextToSpeech().obs ;
-  TextToSpeech tts = TextToSpeech() ;
-
+  TextToSpeech tts = TextToSpeech();
 
   //Degrees between two coordinates
   calculateBearingBtwn2Coords(LatLng startLatLng, LatLng endLatLng) async {
-
     double lat1 = startLatLng.latitude;
     double lat2 = endLatLng.latitude;
     double lng1 = startLatLng.longitude;
     double lng2 = endLatLng.longitude;
 
-    double dLon = (lng2-lng1);
+    double dLon = (lng2 - lng1);
     double y = math.sin(dLon) * math.cos(lat2);
-    double x = math.cos(lat1)*math.sin(lat2) - math.sin(lat1)*math.cos(lat2)*math.cos(dLon);
+    double x = math.cos(lat1) * math.sin(lat2) -
+        math.sin(lat1) * math.cos(lat2) * math.cos(dLon);
     double radian = (math.atan2(y, x));
     // double bearing  = (radian * 180)/pi;
     double bearing = vector_math.degrees(radian);
@@ -89,7 +97,7 @@ class RouteNavigationRouteController extends GetxController{
     updateBearing(bearing: bearing);
   }
 
-  double calculateDistance(LatLng startLatLng, LatLng endLatLng){
+  double calculateDistance(LatLng startLatLng, LatLng endLatLng) {
     // distance in Meters
     // if you want distance in Kilo Meters, Just divide by 1000
     double lat1 = startLatLng.latitude;
@@ -99,16 +107,16 @@ class RouteNavigationRouteController extends GetxController{
 
     var p = 0.017453292519943295;
     var c = cos;
-    var a = 0.5 - c((lat2 - lat1) * p)/2 +
-        c(lat1 * p) * c(lat2 * p) *
-            (1 - c((lng2 - lng1) * p))/2;
-    double distance =  12742 * asin(sqrt(a)) *1000;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lng2 - lng1) * p)) / 2;
+    double distance = 12742 * asin(sqrt(a)) * 1000;
 
     updateDistanceBtnCOOrds(distance: distance);
     return distance;
   }
 
-  double calculateSpeed (double distance, int time){
+  double calculateSpeed(double distance, int time) {
     double microToSecond = time / 1000000;
     double speed = distance / microToSecond;
     updateSpeed(speed: speed);
@@ -116,238 +124,273 @@ class RouteNavigationRouteController extends GetxController{
     return speed;
   }
 
-  updateBearing({required double bearing}){
+  updateBearing({required double bearing}) {
     bearingBtnCOOrds.value = double.parse(bearing.toStringAsFixed(3));
   }
 
-  updateDistanceBtnCOOrds({required double distance}){
-
+  updateDistanceBtnCOOrds({required double distance}) {
     distanceBtnCOOrds.refresh();
     List<double> list = [double.parse(distance.toStringAsFixed(2))];
-    distanceBtnCOOrds (list);
+    distanceBtnCOOrds(list);
     distanceBtnCOOrds.refresh();
     remaingDistanceToTheInstructionPoint = distance;
     update();
 
-    debugPrint('RouteNavigationRouteController calculateDistance :  ${distanceBtnCOOrds.iterator.current}');
-
+    // debugPrint('RouteNavigationRouteController calculateDistance :  ${distanceBtnCOOrds.iterator.current}');
   }
 
   // updateDistance(double distance){
   //   distanceToTheInstPoint.value  = double.parse(distance.toStringAsFixed(2));
   // }
 
-
-  updateSpeed({required double speed}){
+  void updateSpeed({required double speed}) {
     userSpeed.value = double.parse(speed.toStringAsFixed(3));
   }
 
-  updateUserLocation({required UserLocation userLocation}){
+ void  updateUserLocation({required UserLocation userLocation}) {
     this.userLocation.value = userLocation;
   }
 
-
-  simulateRouting(DirectionRouteResponse? directionRouteResponse, UserLocation userLocation,
+  void simulateRouting(
+      DirectionRouteResponse? directionRouteResponse, UserLocation userLocation,
       {bool simulateRoute = true}) async {
-
-    List<List<double>> points = directionRouteResponse!.paths![0].points!.coordinates!;
+    List<List<double>> points =
+        directionRouteResponse!.paths![0].points!.coordinates!;
     hadSpokenInstructionsIdentifier.value = [];
 
     DateTime dateTimePrev = DateTime.now();
 
     int count = 0;
-     Timer.periodic(const Duration(seconds: 2), (timer) {
+    Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (!simulateRoute) {
+        count = 0;
+        timer.cancel();
+      }
 
-       if(!simulateRoute){
-         count = 0;
-         timer.cancel();
-       }
-
-      if(count < points.length){
-        if(count < points.length-1){
-          UserLocation userLocation1 = UserLocation(position:  LatLng(points[count][1], points[count][0]), altitude: userLocation.altitude,
-              bearing: userLocation.bearing, speed: userLocation.speed, horizontalAccuracy: userLocation.horizontalAccuracy,
-              verticalAccuracy: userLocation.verticalAccuracy, timestamp: userLocation.timestamp,
-              heading: UserHeading(magneticHeading: 0.0, trueHeading: 0.0,
-                  headingAccuracy: 0.0, x: 0.0, y: 0.0,
-                  z: 0.0, timestamp: userLocation.timestamp) );
+      if (count < points.length) {
+        if (count < points.length - 1) {
+          UserLocation userLocation1 = UserLocation(
+              position: LatLng(points[count][1], points[count][0]),
+              altitude: userLocation.altitude,
+              bearing: userLocation.bearing,
+              speed: userLocation.speed,
+              horizontalAccuracy: userLocation.horizontalAccuracy,
+              verticalAccuracy: userLocation.verticalAccuracy,
+              timestamp: userLocation.timestamp,
+              heading: UserHeading(
+                  magneticHeading: 0.0,
+                  trueHeading: 0.0,
+                  headingAccuracy: 0.0,
+                  x: 0.0,
+                  y: 0.0,
+                  z: 0.0,
+                  timestamp: userLocation.timestamp));
           updateUserLocation(userLocation: userLocation1);
 
-
-          calculateBearingBtwn2Coords(LatLng(points[count][1], points[count][0]), LatLng(points[count+1][1], points[count+1][0]));
+          calculateBearingBtwn2Coords(
+              LatLng(points[count][1], points[count][0]),
+              LatLng(points[count + 1][1], points[count + 1][0]));
 
           Duration diff = DateTime.now().difference(dateTimePrev);
           dateTimePrev = DateTime.now();
-              calculateSpeed(calculateDistance(LatLng(points[count][1], points[count][0]), LatLng(points[count+1][1], points[count+1][0])),
+          calculateSpeed(
+              calculateDistance(LatLng(points[count][1], points[count][0]),
+                  LatLng(points[count + 1][1], points[count + 1][0])),
               diff.inMicroseconds);
 
           checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
         }
-      }else if(count == points.length){
-        UserLocation userLocation1 = UserLocation(position:  LatLng(points[count][1], points[count][0]), altitude: userLocation.altitude,
-            bearing: userLocation.bearing, speed: userLocation.speed, horizontalAccuracy: userLocation.horizontalAccuracy,
-            verticalAccuracy: userLocation.verticalAccuracy, timestamp: userLocation.timestamp,
-            heading: UserHeading(magneticHeading: 0.0, trueHeading: 0.0,
-                headingAccuracy: 0.0, x: 0.0, y: 0.0,
-                z: 0.0, timestamp: userLocation.timestamp) );
+      } else if (count == points.length) {
+        UserLocation userLocation1 = UserLocation(
+            position: LatLng(points[count-1][1], points[count-1][0]),
+            altitude: userLocation.altitude,
+            bearing: userLocation.bearing,
+            speed: userLocation.speed,
+            horizontalAccuracy: userLocation.horizontalAccuracy,
+            verticalAccuracy: userLocation.verticalAccuracy,
+            timestamp: userLocation.timestamp,
+            heading: UserHeading(
+                magneticHeading: 0.0,
+                trueHeading: 0.0,
+                headingAccuracy: 0.0,
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                timestamp: userLocation.timestamp));
         updateUserLocation(userLocation: userLocation1);
 
         checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
 
-
-
         timer.cancel();
       }
 
-
-      count = count+1;
-      });
+      count = count + 1;
+    });
   }
 
-
-  findInstructionsCoordsAndIndex({required DirectionRouteResponse directionRouteResponse }) async{
+  /// This method finds instructions co-ordinates i.e latitude ra longitude
+  void findInstructionsCoordsAndIndex(
+      {required DirectionRouteResponse directionRouteResponse}) async {
+    // initializes controller's directionRoute response variable
     this.directionRouteResponse.value = directionRouteResponse;
+
+    // call func
     setEnableAudio();
 
-    InstructionsCoordsAndIndexList instructionsCoordsAndIndexList = await compute(computingInstructionsCoordsAndIndex, directionRouteResponse);
-    instructionsIndexList.value = instructionsCoordsAndIndexList.instructionsIndexList;
-    instructionsCoordList.value = instructionsCoordsAndIndexList.instructionsCoordsList;
+    InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
+    await computeInstructionsCoordsAndIndex(directionRouteResponse);
+        // await compute(
+        //     computeInstructionsCoordsAndIndex, directionRouteResponse);
+    // InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
+    //     await compute(
+    //         computeInstructionsCoordsAndIndex, directionRouteResponse);
 
+    // update the rx variables in the controller
+    instructionsIndexList.value =
+        instructionsCoordsAndIndexList.instructionsIndexList;
+    instructionsCoordList.value =
+        instructionsCoordsAndIndexList.instructionsCoordsList;
 
     // debugPrint('findInstructionsCoordsAndIndex  indexList : ${instructionsCoordsAndIndexList.instructionsIndexList}');
     // debugPrint('findInstructionsCoordsAndIndex  coordsList : ${instructionsCoordsAndIndexList.instructionsCoordsList}');
-
   }
 
-  Future<InstructionsCoordsAndIndexList> computingInstructionsCoordsAndIndex(DirectionRouteResponse directionRouteResponse)async {
+  /// compute instructions cordinates and index
+  ///
+  Future<InstructionsCoordsAndIndexList> computeInstructionsCoordsAndIndex(
+      DirectionRouteResponse directionRouteResponse) async {
+    final instructions = directionRouteResponse.paths![0].instructions?.reversed.toList() ?? [];
 
-    List<Instructions> instructions = directionRouteResponse.paths![0].instructions!;
+    final indexList = <int>[];
+    final instructionsCoordList = <List<double>>[];
 
-    List<int> indexList = [];
-    List<List<double>> instructionsCoordList = [];
-    InstructionsCoordsAndIndexList instructionsCoordsAndIndexList = InstructionsCoordsAndIndexList(instructionsCoordList, indexList);
-
-    if(instructions.isNotEmpty){
-      for(int index = 0 ; index < instructions.length ; index++){
-        Instructions instruction = instructions[index];
-
-        indexList.add(instruction.interval![0]);
-        instructionsCoordList.add(directionRouteResponse.paths![0].points!.coordinates![instruction.interval![0]]);
-      }
+    for (final instruction in instructions) {
+      final index = instruction.interval![0];
+      indexList.add(index);
+      instructionsCoordList
+          .add(directionRouteResponse.paths![0].points!.coordinates![index]);
     }
 
-    instructionsCoordsAndIndexList =  InstructionsCoordsAndIndexList(instructionsCoordList, indexList);
-
-    return instructionsCoordsAndIndexList;
+    return InstructionsCoordsAndIndexList(instructionsCoordList, indexList);
   }
 
-  getInstructionByIndex({required DirectionRouteResponse directionRouteResponse, required int index}){
-    instruction.value = directionRouteResponse.paths![0].instructions![index];
-  }
+  // void getInstructionByIndex(
+  //     {required DirectionRouteResponse directionRouteResponse,
+  //     required int index}) {
+  //   instruction.value = directionRouteResponse.paths![0].instructions![index];
+  // }
 
-
-  checkIsCoordinateInsideCircle({required LatLng usersLatLng}) async {
-
+  void checkIsCoordinateInsideCircle({required LatLng usersLatLng}) async {
     List<double> coordinates = [];
     coordinates.add(usersLatLng.latitude);
     coordinates.add(usersLatLng.longitude);
 
-    InstructionsCoordsIndexListAndUsersLoc instructionsCoordsIndexListAndUsersLoc = InstructionsCoordsIndexListAndUsersLoc(instructionsCoordList.toList(), instructionsIndexList.toList(), directionRouteResponse.value, usersLatLng);
+    InstructionsCoordsIndexListAndUsersLoc
+        instructionsCoordsIndexListAndUsersLoc = InstructionsCoordsIndexListAndUsersLoc(
+            instructionsCoordList.toList(),
+            instructionsIndexList.toList(),
+            directionRouteResponse.value,
+            usersLatLng);
 
-
-    Instructions instructions = await compute(computingCoordinateInsideCircle, instructionsCoordsIndexListAndUsersLoc);
-    debugPrint('RouteNavigationRouteController outCompute ${instructions.toJson()}');
+    Instructions instructions =  await computingCoordinateInsideCircle(instructionsCoordsIndexListAndUsersLoc);
+    // await compute(computingCoordinateInsideCircle,
+    //     instructionsCoordsIndexListAndUsersLoc);
+    debugPrint(
+        'RouteNavigationRouteController outCompute ${instructions.toJson()}');
 
     instruction.refresh();
     instruction.value = instructions;
     instruction.refresh();
-
 
     // AudioInstruction audioInstruction = AudioInstruction(tts: tts.value, instructions: instructions, enableAudio: enabledAudio.value,
     //     instructionsList: hadSpokenInstructions, instructionsIdentifier: hadSpokenInstructionsIdentifier );
     //
     // await compute(computeAndPlayInstructionAudio, audioInstruction);
 
-    if(!hadSpokenInstructionsIdentifier.contains('${instructions.distance}_${instructions.sign}_${instructions.time}')){
+    if (!hadSpokenInstructionsIdentifier.contains(
+        '${instructions.distance}_${instructions.sign}_${instructions.time}')) {
       addHadSpokenInstructionsToList(instructions: instructions);
 
-      debugPrint('RouteNavigationRouteController addHadSpoken computeAndPlayInstructionAudio : ${hadSpokenInstructionsIdentifier.toString()}');
+      debugPrint(
+          'RouteNavigationRouteController addHadSpoken computeAndPlayInstructionAudio : ${hadSpokenInstructionsIdentifier.toString()}');
 
-      if(enabledAudio.value){
+      if (enabledAudio.value) {
         await tts.setLanguage('en-US');
-        await tts.speak(instructions.text! );
+        await tts.speak(instructions.text!);
       }
     }
-
-
   }
 
-  setEnableAudio({bool enableAudio = true}){
+  setEnableAudio({bool enableAudio = true}) {
     enabledAudio.value = enableAudio;
     // tts.value = textToSpeech;
   }
 
-addHadSpokenInstructionsToList({required Instructions instructions}) {
+  addHadSpokenInstructionsToList({required Instructions instructions}) {
     hadSpokenInstructions.add(instructions);
-    hadSpokenInstructionsIdentifier.add('${instructions.distance}_${instructions.sign}_${instructions.time}');
+    hadSpokenInstructionsIdentifier.add(
+        '${instructions.distance}_${instructions.sign}_${instructions.time}');
 
-    debugPrint('RouteNavigationRouteController addHadSpokenInstructionsToList : ${hadSpokenInstructionsIdentifier.toString()}');
-
+    debugPrint(
+        'RouteNavigationRouteController addHadSpokenInstructionsToList : ${hadSpokenInstructionsIdentifier.toString()}');
+  }
 }
 
-
-}
-
-
-Future<Instructions> computingCoordinateInsideCircle(InstructionsCoordsIndexListAndUsersLoc instructionsCoordsIndexListAndUsersLoc)async {
-
+Future<Instructions> computingCoordinateInsideCircle(
+    InstructionsCoordsIndexListAndUsersLoc
+        instructionsCoordsIndexListAndUsersLoc) async {
   final controller = RouteNavigationRouteController();
-  DirectionRouteResponse directionRouteResponse1 = instructionsCoordsIndexListAndUsersLoc.directionRouteResponse;
+  DirectionRouteResponse directionRouteResponse1 =
+      instructionsCoordsIndexListAndUsersLoc.directionRouteResponse;
   Instructions instruction = Instructions(text: '');
-  List<List<double>> instructionPoints = instructionsCoordsIndexListAndUsersLoc.instructionsCoordsList;
+  List<List<double>> instructionPoints =
+      instructionsCoordsIndexListAndUsersLoc.instructionsCoordsList;
+
+  if (instructionPoints.isNotEmpty) {
+    for (int index = 0; index < instructionPoints.length; index++) {
+      if (CalculatorUtils.isCoordinateInside(
+          instructionLatLng:
+              LatLng(instructionPoints[index][1], instructionPoints[index][0]),
+          usersLatLng: instructionsCoordsIndexListAndUsersLoc.usersLatLng)) {
 
 
+        // TODO: make he direction route response a single variable
+        instruction = directionRouteResponse1.paths![0].instructions!.reversed.toList()[index];
+        debugPrint(
+            'RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');
 
-  if(instructionPoints.isNotEmpty){
-    for(int index = 0 ; index < instructionPoints.length ; index++){
-
-
-      if(calculatorUtils.isCoordinateInside(
-          instructionLatLng: LatLng(instructionPoints[index][1], instructionPoints[index][0]),
-          usersLatLng: instructionsCoordsIndexListAndUsersLoc.usersLatLng)){
-        instruction = directionRouteResponse1.paths![0].instructions![index];
-        debugPrint('RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');
-
-        controller.calculateDistance(instructionsCoordsIndexListAndUsersLoc.usersLatLng, LatLng(instructionPoints[index][1], instructionPoints[index][0]));
+        controller.calculateDistance(
+            instructionsCoordsIndexListAndUsersLoc.usersLatLng,
+            LatLng(instructionPoints[index][1], instructionPoints[index][0]));
       }
       // else{
       //    instruction = directionRouteResponse1.paths![0].instructions![index];
       // }
-
     }
   }
-
-  return instruction;
+    return instruction;
 }
 
-
-computeAndPlayInstructionAudio(AudioInstruction audioInstruction) async{
-  switch(audioInstruction.enableAudio){
+computeAndPlayInstructionAudio(AudioInstruction audioInstruction) async {
+  switch (audioInstruction.enableAudio) {
     case true:
-      RouteNavigationRouteController routeNavigationRouteController = RouteNavigationRouteController();
+      RouteNavigationRouteController routeNavigationRouteController =
+          RouteNavigationRouteController();
       // TextToSpeech tts =TextToSpeech();
-      if(!audioInstruction.instructionsIdentifier.contains('${audioInstruction.instructions.distance}_${audioInstruction.instructions.sign}_${audioInstruction.instructions.time}')){
-        routeNavigationRouteController.addHadSpokenInstructionsToList(instructions: audioInstruction.instructions);
+      if (!audioInstruction.instructionsIdentifier.contains(
+          '${audioInstruction.instructions.distance}_${audioInstruction.instructions.sign}_${audioInstruction.instructions.time}')) {
+        routeNavigationRouteController.addHadSpokenInstructionsToList(
+            instructions: audioInstruction.instructions);
 
-        debugPrint('RouteNavigationRouteController addHadSpoken computeAndPlayInstructionAudio : ${audioInstruction.instructionsIdentifier.toString()}');
+        debugPrint(
+            'RouteNavigationRouteController addHadSpoken computeAndPlayInstructionAudio : ${audioInstruction.instructionsIdentifier.toString()}');
         // await audioInstruction.tts.setLanguage('en-US');
         // await audioInstruction.tts.speak(audioInstruction.instructions.text! );
       }
       break;
 
-    case false :
+    case false:
       // await audioInstruction.tts.stop();
       break;
   }
-
 }

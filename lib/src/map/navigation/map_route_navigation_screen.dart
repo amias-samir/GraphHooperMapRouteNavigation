@@ -17,111 +17,134 @@ import 'model/instructions.dart';
 import 'utils/calculator_utils.dart';
 import 'utils/navigation_app_colors.dart';
 
-class MapRouteNavigationScreenPage extends StatefulWidget{
+class MapRouteNavigationScreenPage extends StatefulWidget {
   final DirectionRouteResponse directionRouteResponse;
-  static const IconData compass = IconData(0xf8ca, fontFamily: 'iconFont', fontPackage: 'iconFontPackage');
-
+  static const IconData compass =
+      IconData(0xf8ca, fontFamily: 'iconFont', fontPackage: 'iconFontPackage');
 
   const MapRouteNavigationScreenPage(this.directionRouteResponse, {super.key});
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return MapRouteNavigationScreenPageState();
   }
-
 }
 
-class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPage> {
-
+class MapRouteNavigationScreenPageState
+    extends State<MapRouteNavigationScreenPage> {
   final navigationController = Get.put(RouteNavigationRouteController());
 
   // TextToSpeech textToSpeech = TextToSpeech();
 
-
-  MaplibreMapController? controller;
+  late MaplibreMapController controller;
   UserLocation? userLocation;
   UserLocation? usersLastLocation;
-  Circle? symbol;
 
-  DirectionRouteResponse? directionRouteResponse;
+
+  Circle? startingUserLocationCircle;
+
+  late DirectionRouteResponse directionRouteResponse;
 
   bool isSimulateRouting = false;
 
-  final GlobalKey<ScaffoldMessengerState> _scaffoldKeyRoute = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKeyRoute =
+      GlobalKey<ScaffoldMessengerState>();
 
+  /// gives map zoom level
+  ///
   double mapZoomLevel = 14.0;
 
-  _onMapCreated(MaplibreMapController controller1) async   {
+  /// function called when the map is created for the first time
+  ///
+  _onMapCreated(MaplibreMapController controller1) async {
     controller = controller1;
 
-    if(directionRouteResponse != null && directionRouteResponse!.toJson().isNotEmpty){
+    if (directionRouteResponse.toJson().isNotEmpty) {
       Map<String, dynamic> routeResponse = {
-        "geometry": directionRouteResponse!.paths![0].points!.toJson(),
-        "duration": directionRouteResponse!.paths![0].time,
-        "distance": directionRouteResponse!.paths![0].distance,
+        "geometry": directionRouteResponse.paths![0].points!.toJson(),
+        "duration": directionRouteResponse.paths![0].time,
+        "distance": directionRouteResponse.paths![0].distance,
       };
       _addSourceAndLineLayer(routeResponse);
     }
 
-
-    controller!.addListener(() {
-      mapZoomLevel = controller!.cameraPosition!.zoom;
+    controller.addListener(() {
+      mapZoomLevel = controller.cameraPosition!.zoom;
     });
 
     // controller.onFeatureTapped.add(onFeatureTap);
 
-    navigationSimulationListner();
+    navigationSimulationListener();
 
     rotateMapOnBearingChange();
-
   }
-
 
   @override
   void initState() {
-    userLocation = UserLocation(position:  const LatLng(28.987280, 80.1652), altitude: 1200.0, bearing: 0.0, speed: 0.0, horizontalAccuracy: 0.0, verticalAccuracy: 0.0, timestamp: DateTime.now(),
-        heading: UserHeading(magneticHeading: 0.0, trueHeading: 0.0, headingAccuracy: 0.0, x: 0.0, y: 0.0, z: 0.0, timestamp: DateTime.now()) );
-    directionRouteResponse = widget.directionRouteResponse;
     super.initState();
+
+    // initial user location
+    userLocation = UserLocation(
+        position: const LatLng(28.987280, 80.1652),
+        altitude: 1200.0,
+        bearing: 0.0,
+        speed: 0.0,
+        horizontalAccuracy: 0.0,
+        verticalAccuracy: 0.0,
+        timestamp: DateTime.now(),
+        heading: UserHeading(
+            magneticHeading: 0.0,
+            trueHeading: 0.0,
+            headingAccuracy: 0.0,
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            timestamp: DateTime.now()));
+
+    // direction route response initialization
+    directionRouteResponse = widget.directionRouteResponse;
 
     // textToSpeech.setLanguage('en-US');
     // navigationController.setEnableAudio(enableAudio: true, textToSpeech: textToSpeech );
-    navigationController.findInstructionsCoordsAndIndex(directionRouteResponse: directionRouteResponse!);
 
+
+    navigationController.findInstructionsCoordsAndIndex(
+        directionRouteResponse: directionRouteResponse);
   }
 
-  _onStyleLoadedCallback() async {
-    controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
-        directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
+  void _onStyleLoadedCallback() async {
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(
+            directionRouteResponse
+                .paths![0].snappedWaypoints!.coordinates!.first[1],
+            directionRouteResponse
+                .paths![0].snappedWaypoints!.coordinates!.first[0]),
         zoom: mapZoomLevel)));
-
   }
 
-  _animateCameraToUserLoation({double? zoomLevel, double? bearing}){
-      controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-          target: LatLng(userLocation!.position.latitude, userLocation!.position.longitude),
-          zoom:  zoomLevel?? mapZoomLevel,
-      bearing: bearing ?? userLocation!.bearing!)));
-
+  void _animateCameraToUserLoation({double? zoomLevel, double? bearing}) {
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(
+            userLocation!.position.latitude, userLocation!.position.longitude),
+        zoom: zoomLevel ?? mapZoomLevel,
+        bearing: bearing ?? userLocation!.bearing!)));
   }
 
-
-
-  onFeatureTap(dynamic featureId, Point point, LatLng latLng) async {
+  void onFeatureTap(dynamic featureId, Point point, LatLng latLng) async {
     // Fluttertoast.showToast(msg: 'Feature ID: ${featureId.toString()} \n '
     //     'Coordinates: ${latLng.toString()}');
-
   }
 
   void showInSnackBar(String value) {
-    _scaffoldKeyRoute.currentState?.showSnackBar( SnackBar(content: Text(value),
+    _scaffoldKeyRoute.currentState?.showSnackBar(SnackBar(
+      content: Text(value),
     ));
-
   }
 
-
-  _addSourceAndLineLayer(Map<String, dynamic> modifiedResponse ) async {
+  /// adds source and line layer
+  ///
+  void _addSourceAndLineLayer(Map<String, dynamic> modifiedResponse) async {
+    // add start and end marker i.e --> green and red respectively
     addStartAndEndMarker();
     final fills = {
       "type": "FeatureCollection",
@@ -136,12 +159,12 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
     };
 
     // Remove lineLayer and source if it exists
-    await controller!.removeLayer("lines");
-    await controller!.removeSource("fills");
+    await controller.removeLayer("lines");
+    await controller.removeSource("fills");
 
     // Add new source and lineLayer
-    await controller!.addSource("fills", GeojsonSourceProperties(data: fills));
-    await controller!.addLineLayer(
+    await controller.addSource("fills", GeojsonSourceProperties(data: fills));
+    await controller.addLineLayer(
       "fills",
       "lines",
       LineLayerProperties(
@@ -151,15 +174,12 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
         lineWidth: 6,
       ),
     );
-
-
   }
-
 
   Future<bool> _willPopCallback(bool didPop) async {
     SchedulerBinding.instance.addPostFrameCallback((_) {
-        Get.back();
-      });
+      Get.back();
+    });
     return Future.value(true);
   }
 
@@ -170,16 +190,15 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
     // TODO: implement build
     return PopScope(
       canPop: true,
-      onPopInvoked: (bool didPop){
+      onPopInvoked: (bool didPop) {
         _willPopCallback(didPop);
       },
       child: Scaffold(
         key: _scaffoldKeyRoute,
         body: SafeArea(
           child: ExpandableBottomSheet(
-            persistentContentHeight: MediaQuery.of(context).size.height*0.1,
+            persistentContentHeight: MediaQuery.of(context).size.height * 0.1,
             background: buildBackgroundUi(),
-
             persistentHeader: buildPersistentHeaderUi(),
             expandableContent: buildExpandableContentUi(),
           ),
@@ -188,23 +207,23 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
     );
   }
 
-  buildBackgroundUi(){
+  buildBackgroundUi() {
     return Stack(
-        children:[
-          buildMapUi(),
-          buildCompass(),
-          buildInstructionInfo()
-        ]
-    );
+        children: [buildMapUi(), buildCompass(), buildInstructionInfo()]);
   }
 
-  buildMapUi(){
+  Widget buildMapUi() {
     return MaplibreMap(
-      styleString: 'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+      styleString:
+          'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       onMapCreated: _onMapCreated,
       onStyleLoadedCallback: _onStyleLoadedCallback,
-      initialCameraPosition: CameraPosition(target: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
-          directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
+      initialCameraPosition: CameraPosition(
+        target: LatLng(
+            directionRouteResponse
+                .paths![0].snappedWaypoints!.coordinates!.first[1],
+            directionRouteResponse
+                .paths![0].snappedWaypoints!.coordinates!.first[0]),
         zoom: mapZoomLevel,
       ),
       minMaxZoomPreference: const MinMaxZoomPreference(6, 19),
@@ -214,14 +233,16 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
       compassViewPosition: CompassViewPosition.TopRight,
       myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
       myLocationRenderMode: MyLocationRenderMode.GPS,
-      onUserLocationUpdated: (userLocation){
+      onUserLocationUpdated: (userLocation) {
         this.userLocation = userLocation;
 
-        if(!isSimulateRouting) {
-          navigationController.checkIsCoordinateInsideCircle(usersLatLng: userLocation.position);
-          controller!.animateCamera(CameraUpdate.newCameraPosition(
-              CameraPosition(target: LatLng(userLocation.position
-                  .latitude, userLocation.position.longitude),
+        if (!isSimulateRouting) {
+          navigationController.checkIsCoordinateInsideCircle(
+              usersLatLng: userLocation.position);
+          controller.animateCamera(CameraUpdate.newCameraPosition(
+              CameraPosition(
+                  target: LatLng(userLocation.position.latitude,
+                      userLocation.position.longitude),
                   zoom: mapZoomLevel,
                   bearing: userLocation.bearing!)));
 
@@ -239,11 +260,10 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
       width: MediaQuery.of(context).size.width,
       child: Column(
         children: [
-
           Column(
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height*0.08,
+                height: MediaQuery.of(context).size.height * 0.08,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -251,10 +271,14 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Obx((){
-                          return  Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0, left: 20.0),
-                            child: Text('Speed : ${navigationController.userSpeed.value}', style: CustomAppStyle.headline6(context)),
+                        Obx(() {
+                          return Padding(
+
+                            padding:
+                                const EdgeInsets.only(bottom: 8.0, left: 20.0),
+                            child: Text(
+                                'Speed : ${navigationController.userSpeed.value}',
+                                style: CustomAppStyle.headline6(context)),
                           );
                         }),
 
@@ -264,136 +288,164 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                         //   child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
                         // }),
 
-                        // SizedBox(
-                        //   height: 30.0,
-                        //   child: MaterialButton(
-                        //     child: const Text('Simulate', style: TextStyle(color: Colors.black),),
-                        //   onPressed: (){
-                        //       isSimulateRouting = !isSimulateRouting;
-                        //     navigationController.simulateRouting(directionRouteResponse!, userLocation!, simulateRoute: isSimulateRouting);
-                        //   }),
-                        // ),
+                        SizedBox(
+                          height: 30.0,
+                          child: MaterialButton(
+                              child: const Text(
+                                'Simulate',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              onPressed: () {
+                                isSimulateRouting = !isSimulateRouting;
+                                navigationController.simulateRouting(
+                                    directionRouteResponse, userLocation!,
+                                    simulateRoute: isSimulateRouting);
+                              }),
+                        ),
                       ],
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-
                         Padding(
                           padding: const EdgeInsets.only(left: 20.0),
-                          child: Text('Distance : ${calculatorUtils.calculateDistance(distanceInMeter: directionRouteResponse!.paths![0].distance!)}', style: CustomAppStyle.headline6(context)),
+                          child: Text(
+                              'Distance : ${CalculatorUtils.calculateDistance(distanceInMeter: directionRouteResponse.paths![0].distance!)}',
+                              style: CustomAppStyle.headline6(context)),
                         ),
-
                         Padding(
                           padding: const EdgeInsets.only(right: 20.0),
-                          child: Text('Time : ${calculatorUtils.calculateTime(miliSeconds: directionRouteResponse!.paths![0].time!)}', style: CustomAppStyle.headline6(context)),
+                          child: Text(
+                              'Time : ${CalculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)}',
+                              style: CustomAppStyle.headline6(context)),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-
               SizedBox(
-                height: MediaQuery.of(context).size.height*0.6,
+                height: MediaQuery.of(context).size.height * 0.6,
                 child: ListView.builder(
-                  itemCount: directionRouteResponse!.paths![0].instructions!.length,
-                    itemBuilder: (buildContext, index){
-
-                    return buildNavigationInfoItemUi(index:index  ,instructions: directionRouteResponse!.paths![0].instructions![index]);
+                    itemCount:
+                        directionRouteResponse.paths![0].instructions!.length,
+                    itemBuilder: (buildContext, index) {
+                      return buildNavigationInfoItemUi(
+                          index: index,
+                          instructions: directionRouteResponse
+                              .paths![0].instructions![index]);
                     }),
               )
             ],
           )
-
         ],
       ),
     );
   }
 
-  buildNavigationInfoItemUi({required index, required Instructions instructions}){
+  buildNavigationInfoItemUi(
+      {required index, required Instructions instructions}) {
     return Column(
       children: [
         ListTile(
-          leading: index != 0 && instructions.sign! == 0?
-          getDirectionIconByInstructionType(instructionType: index == 0? 10: instructions.sign!) :
-          getDirectionIconByInstructionType(instructionType: index == 0? 10: instructions.sign!),
+          leading: index != 0 && instructions.sign! == 0
+              ? getDirectionIconByInstructionType(
+                  instructionType: index == 0 ? 10 : instructions.sign!)
+              : getDirectionIconByInstructionType(
+                  instructionType: index == 0 ? 10 : instructions.sign!),
           trailing: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text('${calculatorUtils.calculateDistance(distanceInMeter: instructions.distance!)}', style: CustomAppStyle.body12pxRegular(context)),
-              Text('${calculatorUtils.calculateTime(miliSeconds :instructions.time!)}', style: CustomAppStyle.body12pxRegular(context)),
+              Text(
+                  CalculatorUtils.calculateDistance(
+                      distanceInMeter: instructions.distance!),
+                  style: CustomAppStyle.body12pxRegular(context)),
+              Text(
+                  CalculatorUtils.calculateTime(
+                      miliSeconds: instructions.time!),
+                  style: CustomAppStyle.body12pxRegular(context)),
             ],
           ),
-          title:Text(instructions.text!, style: CustomAppStyle.body12pxRegular(context)),
+          title: Text(instructions.text!,
+              style: CustomAppStyle.body12pxRegular(context)),
         ),
-        Container(height: 1.0, width: MediaQuery.of(context).size.width,
-          color: NavigationColors.greyLight,)
+        Container(
+          height: 1.0,
+          width: MediaQuery.of(context).size.width,
+          color: NavigationColors.greyLight,
+        )
       ],
     );
   }
 
-
   buildCompass() {
-
     return Positioned(
         top: 20.0,
         right: 16.0,
         child: Column(
           children: [
             Obx(() {
-      // if(navigationController.bearingBtnCOOrds.value != 0.0){
-            return  InkWell(
-              onTap: () {
-                controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-                    target: usersLastLocation!.position,
-                    zoom: mapZoomLevel,
-                    tilt: 0,
-                    bearing: 0.0)));
+              // if(navigationController.bearingBtnCOOrds.value != 0.0){
+              return InkWell(
+                onTap: () {
+                  controller.animateCamera(CameraUpdate.newCameraPosition(
+                      CameraPosition(
+                          target: usersLastLocation!.position,
+                          zoom: mapZoomLevel,
+                          tilt: 0,
+                          bearing: 0.0)));
 
-                navigationController.updateBearing(bearing: 0.0);
-              },
-              child: Container(
-                height: 50,
-                width: 50,
-                decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(25.0),
-                      topRight: Radius.circular(25.0),
-                      bottomLeft: Radius.circular(25.0),
-                      bottomRight: Radius.circular(25.0),
-                    )),
-                child: Transform.rotate(
-                  angle: -navigationController.bearingBtnCOOrds.value * (math.pi / 180)-70 ,
-                  child:  const Center(child: Icon(CupertinoIcons.compass, color: NavigationColors.grey, size: 40.0,))
-                  // Image.asset(
-                  //   "assets/compass.png",
-                  //   height: 50,
-                  //   alignment: Alignment.centerLeft,
-                  // )
-                  ,
+                  navigationController.updateBearing(bearing: 0.0);
+                },
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25.0),
+                        topRight: Radius.circular(25.0),
+                        bottomLeft: Radius.circular(25.0),
+                        bottomRight: Radius.circular(25.0),
+                      )),
+                  child: Transform.rotate(
+                    angle: -navigationController.bearingBtnCOOrds.value *
+                            (math.pi / 180) -
+                        70,
+                    child: const Center(
+                        child: Icon(
+                      CupertinoIcons.compass,
+                      color: NavigationColors.grey,
+                      size: 40.0,
+                    ))
+                    // Image.asset(
+                    //   "assets/compass.png",
+                    //   height: 50,
+                    //   alignment: Alignment.centerLeft,
+                    // )
+                    ,
+                  ),
                 ),
-              ),
-            );
-      // }else{
-      //       return  const SizedBox(
-      //         height: 50,
-      //         width: 50,
-      //       );
-      // }
-    }),
-
-            const SizedBox(height: 20.0,),
-
-            Obx((){
+              );
+              // }else{
+              //       return  const SizedBox(
+              //         height: 50,
+              //         width: 50,
+              //       );
+              // }
+            }),
+            const SizedBox(
+              height: 20.0,
+            ),
+            Obx(() {
               return FloatingActionButton(
                 heroTag: 'tag_sound_enable_disable',
                 onPressed: () async {
-                  navigationController.setEnableAudio(enableAudio: !navigationController.enabledAudio.value);
-                  },
+                  navigationController.setEnableAudio(
+                      enableAudio: !navigationController.enabledAudio.value);
+                },
                 backgroundColor: NavigationColors.white,
                 shape: RoundedRectangleBorder(
                   side: const BorderSide(
@@ -401,17 +453,18 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                   borderRadius: BorderRadius.circular(30),
                 ),
                 elevation: 0,
-                child:  Icon(
-                  navigationController.enabledAudio.value ? Icons.volume_up : Icons.volume_off,
+                child: Icon(
+                  navigationController.enabledAudio.value
+                      ? Icons.volume_up
+                      : Icons.volume_off,
                   size: 24,
                   color: NavigationColors.grey,
                 ),
               );
             }),
-
-
-            const SizedBox(height: 20.0,),
-
+            const SizedBox(
+              height: 20.0,
+            ),
             FloatingActionButton(
               heroTag: 'tag_my_location_zoom',
               onPressed: () async {
@@ -430,54 +483,59 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                 color: NavigationColors.grey,
               ),
             ),
-
-
-
-
           ],
         ));
   }
 
   buildInstructionInfo() {
-
     return Positioned(
         top: 10.0,
-        right: (MediaQuery.of(context).size.width*0.2)+8.0,
+        right: (MediaQuery.of(context).size.width * 0.2) + 8.0,
         left: 8.0,
         child: Obx(() {
-          if(navigationController.instruction.value.text!.isNotEmpty){
+          if (navigationController.instruction.value.text!.isNotEmpty) {
             // String imageUrl = navigationInstructionsImage.getImageUrlByInstructionType(instructionType: navigationController.instruction.value.sign!);
-            return  Container(
-              width: MediaQuery.of(context).size.width*.7,
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                        color: NavigationColors.cardBackgroundColor
+            return Container(
+              width: MediaQuery.of(context).size.width * .7,
+              decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  color: NavigationColors.cardBackgroundColor),
+              child: ListTile(
+                leading:
+                    // imageUrl.isEmpty ? const SizedBox() :
+                    // CachedNetworkImage(
+                    //   imageUrl: imageUrl,
+                    //   fit: BoxFit.contain, height: 30.0, width: 30.0,)
+                    getDirectionIconByInstructionType(
+                        instructionType:
+                            navigationController.instruction.value.sign!),
+                trailing: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                        CalculatorUtils.calculateDistance(
+                            distanceInMeter: navigationController
+                                .instruction.value.distance!),
+                        style: CustomAppStyle.body12pxRegular(context)),
+                    Text(
+                        CalculatorUtils.calculateTime(
+                            miliSeconds:
+                                navigationController.instruction.value.time!),
+                        style: CustomAppStyle.body12pxRegular(context)),
+                  ],
                 ),
-                child: ListTile(
-                  leading:
-                  // imageUrl.isEmpty ? const SizedBox() :
-                  // CachedNetworkImage(
-                  //   imageUrl: imageUrl,
-                  //   fit: BoxFit.contain, height: 30.0, width: 30.0,)
-                    getDirectionIconByInstructionType(instructionType: navigationController.instruction.value.sign!),
-                  trailing: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text('${calculatorUtils.calculateDistance(distanceInMeter: navigationController.instruction.value.distance!)}', style: CustomAppStyle.body12pxRegular(context)),
-                      Text('${calculatorUtils.calculateTime(miliSeconds :navigationController.instruction.value.time!)}', style: CustomAppStyle.body12pxRegular(context)),
-                    ],
-                  ),
-                  title:Text(navigationController.instruction.value.text!, style: CustomAppStyle.body12pxBold(context)),
-                ),
+                title: Text(navigationController.instruction.value.text!,
+                    style: CustomAppStyle.body12pxBold(context)),
+              ),
             );
-          }else{
-            return  Container();
+          } else {
+            return Container();
           }
         }));
   }
 
-  buildPersistentHeaderUi(){
+ Container buildPersistentHeaderUi() {
     return Container(
       height: 20,
       width: MediaQuery.of(context).size.width,
@@ -486,8 +544,8 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
           border: Border.all(
             color: Colors.white,
           ),
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
-      ),
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       child: Center(
         child: SizedBox(
           height: 6.0,
@@ -498,17 +556,18 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
                 border: Border.all(
                   color: Colors.grey.withOpacity(0.1),
                 ),
-                borderRadius: BorderRadius.circular(3) // use instead of BorderRadius.all(Radius.circular(20))
-            ),
+                borderRadius: BorderRadius.circular(
+                    3) // use instead of BorderRadius.all(Radius.circular(20))
+                ),
           ),
         ),
       ),
     );
   }
 
-  buildExpandableContentUi(){
+ Container buildExpandableContentUi() {
     return Container(
-      height: MediaQuery.of(context).size.height*0.71,
+      height: MediaQuery.of(context).size.height * 0.71,
       color: Colors.white,
       child: buildNavigationInfoUi(),
     );
@@ -516,66 +575,103 @@ class MapRouteNavigationScreenPageState extends State<MapRouteNavigationScreenPa
 
   Future<Uint8List> loadMarkerImage(String assetsPath) async {
     var byteData = await rootBundle.load(assetsPath);
-    return byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+    return byteData.buffer
+        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
   }
 
-
-  void navigationSimulationListner()  {
+  /// Registers [UserLocation] listener
+  /// upon changing the user location the user's current location circle
+  /// updates as well.
+  ///
+  void navigationSimulationListener() {
     navigationController.userLocation.stream.listen((userLocation) async {
+      // new location from response
+      // final newLocationFromRes = LatLng(
+      //   directionRouteResponse
+      //       .paths![0].snappedWaypoints!.coordinates!.first[1],
+      //   directionRouteResponse
+      //       .paths![0].snappedWaypoints!.coordinates!.first[0],
+      // );
 
-      if(userLocation != usersLastLocation && symbol == null){
-        await controller!.removeCircle(symbol!);
-       symbol = await controller!.addCircle(
-          CircleOptions(
-              geometry: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
-                  directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
-              circleColor: NavigationColors.green.toHexStringRGB(),
-              circleRadius: 12),
-        );
+      final newLocationFromRes = LatLng(
+      userLocation.position.latitude,
+      userLocation.position.longitude);
+
+      // circle options
+      final circleOptions = CircleOptions(
+        geometry: newLocationFromRes,
+        circleColor: NavigationColors.green.toHexStringRGB(),
+        circleRadius: 12,
+      );
+
+
+      if(startingUserLocationCircle == null){
+        startingUserLocationCircle = await controller.addCircle(circleOptions);
+      }else{
+        await controller.updateCircle(startingUserLocationCircle!, circleOptions);
       }
 
+      // if (userLocation != usersLastLocation) {
+      //   if (symbol != null) {
+      //     await controller.removeCircle(symbol!);
+      //   }
+      //
+      //   symbol = await controller.addCircle(circleOptions);
+      // } else {
+      //   await controller.updateCircle(symbol!, circleOptions);
+      // }
+      //
+      // // update users last location
+      // usersLastLocation = userLocation;
 
-
-      if(userLocation != null){
-
-        controller!.updateCircle(symbol!, CircleOptions(
-            geometry: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
-                directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
-            circleColor: NavigationColors.green.toHexStringRGB(),
-            circleRadius: 12));
-
-        // controller!.animateCamera(CameraUpdate.newCameraPosition(
-        //     CameraPosition(target: LatLng(userLocation.position
-        //         .latitude, userLocation.position.longitude),
-        //         zoom: mapZoomLevel,
-        //         bearing: navigationController.bearingBtnCOOrds.value)));
-      }
-
-      usersLastLocation = userLocation;
+      //  Animate the camera to the user's location
+      controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(userLocation.position.latitude, userLocation.position.longitude),
+          zoom: mapZoomLevel,
+          bearing: navigationController.bearingBtnCOOrds.value,
+        ),
+      ));
     });
   }
 
+  /// This method adds start and end marker which is circle
+  /// [Red color] denotes the destination
+  /// [Green color] denotes the starting point for the user
+  ///
   void addStartAndEndMarker() async {
-    controller!.addCircle(
+
+  // starting circle
+  startingUserLocationCircle =await controller.addCircle(
       CircleOptions(
-          geometry: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[1],
-              directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.first[0]),
+          geometry: LatLng(
+              directionRouteResponse
+                  .paths![0].snappedWaypoints!.coordinates!.first[1],
+              directionRouteResponse
+                  .paths![0].snappedWaypoints!.coordinates!.first[0]),
           circleColor: NavigationColors.green.toHexStringRGB(),
-      circleRadius: 12),
+          circleRadius: 12),
     );
 
-    controller!.addCircle(
+  // destination circle
+    controller.addCircle(
       CircleOptions(
-          geometry: LatLng(directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.last[1],
-              directionRouteResponse!.paths![0].snappedWaypoints!.coordinates!.last[0]),
+          geometry: LatLng(
+              directionRouteResponse
+                  .paths![0].snappedWaypoints!.coordinates!.last[1],
+              directionRouteResponse
+                  .paths![0].snappedWaypoints!.coordinates!.last[0]),
           circleColor: NavigationColors.red.toHexStringRGB(),
-      circleRadius: 12),
+          circleRadius: 12),
     );
   }
 
+  /// This function rotates the map on the bearing change
+  ///
   void rotateMapOnBearingChange() {
     navigationController.bearingBtnCOOrds.stream.listen((event) {
-      controller!.animateCamera(CameraUpdate.bearingTo(navigationController.bearingBtnCOOrds.value));
+      controller.animateCamera(
+          CameraUpdate.bearingTo(navigationController.bearingBtnCOOrds.value));
       // navigationController.updateDistanceBtnCOOrds(distance: event);
     });
   }
