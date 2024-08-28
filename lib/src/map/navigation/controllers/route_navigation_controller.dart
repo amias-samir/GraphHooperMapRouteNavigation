@@ -50,10 +50,10 @@ class RouteNavigationRouteController extends GetxController {
   double remaingDistanceToTheInstructionPoint = 0.0;
 
   //nearest current instruction (identified based on user's location)
-  Rx<Instructions> instruction = Instructions(text: '').obs;
+  Rx<Instruction> instruction = Instruction(text: '').obs;
 
   //list of instructions that had spoken once
-  RxList<Instructions> hadSpokenInstructions = (List<Instructions>.of([])).obs;
+  RxList<Instruction> hadSpokenInstructions = (List<Instruction>.of([])).obs;
 
   //list of instructions identifier that had spoken once (generate unique by using instructions multiple value)
   RxList<String> hadSpokenInstructionsIdentifier = (List<String>.of([])).obs;
@@ -147,7 +147,7 @@ class RouteNavigationRouteController extends GetxController {
     userSpeed.value = double.parse(speed.toStringAsFixed(3));
   }
 
- void  updateUserLocation({required UserLocation userLocation}) {
+  void updateUserLocation({required UserLocation userLocation}) {
     this.userLocation.value = userLocation;
   }
 
@@ -202,7 +202,7 @@ class RouteNavigationRouteController extends GetxController {
         }
       } else if (count == points.length) {
         UserLocation userLocation1 = UserLocation(
-            position: LatLng(points[count-1][1], points[count-1][0]),
+            position: LatLng(points[count - 1][1], points[count - 1][0]),
             altitude: userLocation.altitude,
             bearing: userLocation.bearing,
             speed: userLocation.speed,
@@ -238,9 +238,9 @@ class RouteNavigationRouteController extends GetxController {
     setEnableAudio();
 
     InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
-    await computeInstructionsCoordsAndIndex(directionRouteResponse);
-        // await compute(
-        //     computeInstructionsCoordsAndIndex, directionRouteResponse);
+        await computeInstructionsCoordsAndIndex(directionRouteResponse);
+    // await compute(
+    //     computeInstructionsCoordsAndIndex, directionRouteResponse);
     // InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
     //     await compute(
     //         computeInstructionsCoordsAndIndex, directionRouteResponse);
@@ -259,7 +259,8 @@ class RouteNavigationRouteController extends GetxController {
   ///
   Future<InstructionsCoordsAndIndexList> computeInstructionsCoordsAndIndex(
       DirectionRouteResponse directionRouteResponse) async {
-    final instructions = directionRouteResponse.paths![0].instructions?.reversed.toList() ?? [];
+    final instructions =
+        directionRouteResponse.paths![0].instructions?.reversed.toList() ?? [];
 
     final indexList = <int>[];
     final instructionsCoordList = <List<double>>[];
@@ -286,13 +287,15 @@ class RouteNavigationRouteController extends GetxController {
     coordinates.add(usersLatLng.longitude);
 
     InstructionsCoordsIndexListAndUsersLoc
-        instructionsCoordsIndexListAndUsersLoc = InstructionsCoordsIndexListAndUsersLoc(
+        instructionsCoordsIndexListAndUsersLoc =
+        InstructionsCoordsIndexListAndUsersLoc(
             instructionsCoordList.toList(),
             instructionsIndexList.toList(),
             directionRouteResponse.value,
             usersLatLng);
 
-    Instructions instructions =  await computingCoordinateInsideCircle(instructionsCoordsIndexListAndUsersLoc);
+    Instruction instructions = await computingCoordinateInsideCircle(
+        instructionsCoordsIndexListAndUsersLoc);
     // await compute(computingCoordinateInsideCircle,
     //     instructionsCoordsIndexListAndUsersLoc);
     debugPrint(
@@ -326,7 +329,7 @@ class RouteNavigationRouteController extends GetxController {
     // tts.value = textToSpeech;
   }
 
-  addHadSpokenInstructionsToList({required Instructions instructions}) {
+  addHadSpokenInstructionsToList({required Instruction instructions}) {
     hadSpokenInstructions.add(instructions);
     hadSpokenInstructionsIdentifier.add(
         '${instructions.distance}_${instructions.sign}_${instructions.time}');
@@ -336,13 +339,13 @@ class RouteNavigationRouteController extends GetxController {
   }
 }
 
-Future<Instructions> computingCoordinateInsideCircle(
+Future<Instruction> computingCoordinateInsideCircle(
     InstructionsCoordsIndexListAndUsersLoc
         instructionsCoordsIndexListAndUsersLoc) async {
   final controller = RouteNavigationRouteController();
   DirectionRouteResponse directionRouteResponse1 =
       instructionsCoordsIndexListAndUsersLoc.directionRouteResponse;
-  Instructions instruction = Instructions(text: '');
+  Instruction instruction = Instruction(text: '');
   List<List<double>> instructionPoints =
       instructionsCoordsIndexListAndUsersLoc.instructionsCoordsList;
 
@@ -352,10 +355,9 @@ Future<Instructions> computingCoordinateInsideCircle(
           instructionLatLng:
               LatLng(instructionPoints[index][1], instructionPoints[index][0]),
           usersLatLng: instructionsCoordsIndexListAndUsersLoc.usersLatLng)) {
-
-
         // TODO: make he direction route response a single variable
-        instruction = directionRouteResponse1.paths![0].instructions!.reversed.toList()[index];
+        instruction = directionRouteResponse1.paths![0].instructions!.reversed
+            .toList()[index];
         debugPrint(
             'RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');
 
@@ -368,7 +370,7 @@ Future<Instructions> computingCoordinateInsideCircle(
       // }
     }
   }
-    return instruction;
+  return instruction;
 }
 
 computeAndPlayInstructionAudio(AudioInstruction audioInstruction) async {

@@ -9,13 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/widgets/instruction_info_widget.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
-import 'controllers/route_navigation_controller.dart';
-import 'model/direction_route_response.dart';
-import 'model/instructions.dart';
-import 'utils/calculator_utils.dart';
-import 'utils/navigation_app_colors.dart';
+import '../controllers/route_navigation_controller.dart';
+import '../model/direction_route_response.dart';
+import '../model/instructions.dart';
+import '../utils/calculator_utils.dart';
+import '../utils/navigation_app_colors.dart';
 
 class MapRouteNavigationScreenPage extends StatefulWidget {
   final DirectionRouteResponse directionRouteResponse;
@@ -39,7 +40,6 @@ class MapRouteNavigationScreenPageState
   late MaplibreMapController controller;
   UserLocation? userLocation;
   UserLocation? usersLastLocation;
-
 
   Circle? startingUserLocationCircle;
 
@@ -106,7 +106,6 @@ class MapRouteNavigationScreenPageState
 
     // textToSpeech.setLanguage('en-US');
     // navigationController.setEnableAudio(enableAudio: true, textToSpeech: textToSpeech );
-
 
     navigationController.findInstructionsCoordsAndIndex(
         directionRouteResponse: directionRouteResponse);
@@ -207,9 +206,9 @@ class MapRouteNavigationScreenPageState
     );
   }
 
-  buildBackgroundUi() {
+  Widget buildBackgroundUi() {
     return Stack(
-        children: [buildMapUi(), buildCompass(), buildInstructionInfo()]);
+        children: [buildMapUi(), buildCompass(), const InstructionInfo()]);
   }
 
   Widget buildMapUi() {
@@ -229,7 +228,7 @@ class MapRouteNavigationScreenPageState
       minMaxZoomPreference: const MinMaxZoomPreference(6, 19),
       myLocationEnabled: true,
       trackCameraPosition: true,
-      compassEnabled: true,
+      compassEnabled: false,
       compassViewPosition: CompassViewPosition.TopRight,
       myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
       myLocationRenderMode: MyLocationRenderMode.GPS,
@@ -273,7 +272,6 @@ class MapRouteNavigationScreenPageState
                       children: [
                         Obx(() {
                           return Padding(
-
                             padding:
                                 const EdgeInsets.only(bottom: 8.0, left: 20.0),
                             child: Text(
@@ -345,14 +343,14 @@ class MapRouteNavigationScreenPageState
   }
 
   buildNavigationInfoItemUi(
-      {required index, required Instructions instructions}) {
+      {required index, required Instruction instructions}) {
     return Column(
       children: [
         ListTile(
           leading: index != 0 && instructions.sign! == 0
-              ? getDirectionIconByInstructionType(
+              ? NavigationInstructionsType.getDirectionIconByInstructionType(
                   instructionType: index == 0 ? 10 : instructions.sign!)
-              : getDirectionIconByInstructionType(
+              : NavigationInstructionsType.getDirectionIconByInstructionType(
                   instructionType: index == 0 ? 10 : instructions.sign!),
           trailing: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -380,7 +378,7 @@ class MapRouteNavigationScreenPageState
     );
   }
 
-  buildCompass() {
+  Widget buildCompass() {
     return Positioned(
         top: 20.0,
         right: 16.0,
@@ -487,55 +485,7 @@ class MapRouteNavigationScreenPageState
         ));
   }
 
-  buildInstructionInfo() {
-    return Positioned(
-        top: 10.0,
-        right: (MediaQuery.of(context).size.width * 0.2) + 8.0,
-        left: 8.0,
-        child: Obx(() {
-          if (navigationController.instruction.value.text!.isNotEmpty) {
-            // String imageUrl = navigationInstructionsImage.getImageUrlByInstructionType(instructionType: navigationController.instruction.value.sign!);
-            return Container(
-              width: MediaQuery.of(context).size.width * .7,
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: NavigationColors.cardBackgroundColor),
-              child: ListTile(
-                leading:
-                    // imageUrl.isEmpty ? const SizedBox() :
-                    // CachedNetworkImage(
-                    //   imageUrl: imageUrl,
-                    //   fit: BoxFit.contain, height: 30.0, width: 30.0,)
-                    getDirectionIconByInstructionType(
-                        instructionType:
-                            navigationController.instruction.value.sign!),
-                trailing: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                        CalculatorUtils.calculateDistance(
-                            distanceInMeter: navigationController
-                                .instruction.value.distance!),
-                        style: CustomAppStyle.body12pxRegular(context)),
-                    Text(
-                        CalculatorUtils.calculateTime(
-                            miliSeconds:
-                                navigationController.instruction.value.time!),
-                        style: CustomAppStyle.body12pxRegular(context)),
-                  ],
-                ),
-                title: Text(navigationController.instruction.value.text!,
-                    style: CustomAppStyle.body12pxBold(context)),
-              ),
-            );
-          } else {
-            return Container();
-          }
-        }));
-  }
-
- Container buildPersistentHeaderUi() {
+  Container buildPersistentHeaderUi() {
     return Container(
       height: 20,
       width: MediaQuery.of(context).size.width,
@@ -565,7 +515,7 @@ class MapRouteNavigationScreenPageState
     );
   }
 
- Container buildExpandableContentUi() {
+  Container buildExpandableContentUi() {
     return Container(
       height: MediaQuery.of(context).size.height * 0.71,
       color: Colors.white,
@@ -594,8 +544,7 @@ class MapRouteNavigationScreenPageState
       // );
 
       final newLocationFromRes = LatLng(
-      userLocation.position.latitude,
-      userLocation.position.longitude);
+          userLocation.position.latitude, userLocation.position.longitude);
 
       // circle options
       final circleOptions = CircleOptions(
@@ -604,11 +553,11 @@ class MapRouteNavigationScreenPageState
         circleRadius: 12,
       );
 
-
-      if(startingUserLocationCircle == null){
+      if (startingUserLocationCircle == null) {
         startingUserLocationCircle = await controller.addCircle(circleOptions);
-      }else{
-        await controller.updateCircle(startingUserLocationCircle!, circleOptions);
+      } else {
+        await controller.updateCircle(
+            startingUserLocationCircle!, circleOptions);
       }
 
       // if (userLocation != usersLastLocation) {
@@ -627,7 +576,8 @@ class MapRouteNavigationScreenPageState
       //  Animate the camera to the user's location
       controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
-          target: LatLng(userLocation.position.latitude, userLocation.position.longitude),
+          target: LatLng(
+              userLocation.position.latitude, userLocation.position.longitude),
           zoom: mapZoomLevel,
           bearing: navigationController.bearingBtnCOOrds.value,
         ),
@@ -640,9 +590,8 @@ class MapRouteNavigationScreenPageState
   /// [Green color] denotes the starting point for the user
   ///
   void addStartAndEndMarker() async {
-
-  // starting circle
-  startingUserLocationCircle =await controller.addCircle(
+    // starting circle
+    startingUserLocationCircle = await controller.addCircle(
       CircleOptions(
           geometry: LatLng(
               directionRouteResponse
@@ -653,7 +602,7 @@ class MapRouteNavigationScreenPageState
           circleRadius: 12),
     );
 
-  // destination circle
+    // destination circle
     controller.addCircle(
       CircleOptions(
           geometry: LatLng(

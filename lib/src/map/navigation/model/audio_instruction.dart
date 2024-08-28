@@ -2,11 +2,11 @@ import 'package:text_to_speech/text_to_speech.dart';
 
 import 'instructions.dart';
 
-class AudioInstruction{
-  TextToSpeech? _tts ;
-  List<Instructions>? _instructionsList;
+class AudioInstruction {
+  TextToSpeech? _tts;
+  List<Instruction>? _instructionsList;
   List<String>? _instructionsIdentifier;
-  Instructions? _instructions;
+  Instruction? _instructions;
   bool? _enableAudio;
 
   TextToSpeech get tts => _tts!;
@@ -21,15 +21,15 @@ class AudioInstruction{
     _enableAudio = value;
   }
 
-  Instructions get instructions => _instructions!;
+  Instruction get instructions => _instructions!;
 
-  set instructions(Instructions value) {
+  set instructions(Instruction value) {
     _instructions = value;
   }
 
-  List<Instructions> get instructionsList => _instructionsList!;
+  List<Instruction> get instructionsList => _instructionsList!;
 
-  set instructionsList(List<Instructions> value) {
+  set instructionsList(List<Instruction> value) {
     _instructionsList = value;
   }
 
@@ -39,12 +39,16 @@ class AudioInstruction{
     _instructionsIdentifier = value;
   }
 
-  AudioInstruction({required TextToSpeech tts,  List<Instructions>? instructionsList, List<String>? instructionsIdentifier,
-    required Instructions instructions, required bool enableAudio}){
+  AudioInstruction(
+      {required TextToSpeech tts,
+      List<Instruction>? instructionsList,
+      List<String>? instructionsIdentifier,
+      required Instruction instructions,
+      required bool enableAudio}) {
     _tts = tts;
-    _instructionsList = instructionsList ;
-    _instructionsIdentifier = instructionsIdentifier ;
-    _instructions = instructions ;
+    _instructionsList = instructionsList;
+    _instructionsIdentifier = instructionsIdentifier;
+    _instructions = instructions;
     _enableAudio = enableAudio;
   }
 }

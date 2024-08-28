@@ -1,4 +1,4 @@
-class Instructions {
+class Instruction {
   double? distance;
   double? heading;
   int? sign;
@@ -8,7 +8,15 @@ class Instructions {
   String? streetName;
   double? lastHeading;
 
-  Instructions({double? distance, double? heading, int? sign, List<int>? interval, String? text, int? time, String? streetName, double? lastHeading}) {
+  Instruction(
+      {double? distance,
+      double? heading,
+      int? sign,
+      List<int>? interval,
+      String? text,
+      int? time,
+      String? streetName,
+      double? lastHeading}) {
     if (distance != null) {
       this.distance = distance;
     }
@@ -35,8 +43,7 @@ class Instructions {
     }
   }
 
-
-  Instructions.fromJson(Map<String, dynamic> json) {
+  Instruction.fromJson(Map<String, dynamic> json) {
     distance = json['distance'];
     heading = json['heading'];
     sign = json['sign'];
