@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/navigation_instruction_controller.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 import 'package:vector_math/vector_math.dart' as vector_math;
@@ -48,9 +49,6 @@ class RouteNavigationRouteController extends GetxController {
 
   //remaining distance from user's location to the nearest instruction point
   double remaingDistanceToTheInstructionPoint = 0.0;
-
-  //nearest current instruction (identified based on user's location)
-  Rx<Instruction> instruction = Instruction(text: '').obs;
 
   //list of instructions that had spoken once
   RxList<Instruction> hadSpokenInstructions = (List<Instruction>.of([])).obs;
@@ -281,7 +279,9 @@ class RouteNavigationRouteController extends GetxController {
   //   instruction.value = directionRouteResponse.paths![0].instructions![index];
   // }
 
-  void checkIsCoordinateInsideCircle({required LatLng usersLatLng}) async {
+  void checkIsCoordinateInsideCircle({
+    required LatLng usersLatLng,
+  }) async {
     List<double> coordinates = [];
     coordinates.add(usersLatLng.latitude);
     coordinates.add(usersLatLng.longitude);
@@ -294,16 +294,17 @@ class RouteNavigationRouteController extends GetxController {
             directionRouteResponse.value,
             usersLatLng);
 
-    Instruction instructions = await computingCoordinateInsideCircle(
+    Instruction instruction = await computingCoordinateInsideCircle(
         instructionsCoordsIndexListAndUsersLoc);
     // await compute(computingCoordinateInsideCircle,
     //     instructionsCoordsIndexListAndUsersLoc);
     debugPrint(
-        'RouteNavigationRouteController outCompute ${instructions.toJson()}');
+        'RouteNavigationRouteController outCompute ${instruction.toJson()}');
 
-    instruction.refresh();
-    instruction.value = instructions;
-    instruction.refresh();
+    if (instruction.text != null && instruction.text!.isNotEmpty) {
+      // update the intruction with response
+      navigationInstructionProvider.updateInstructions(instruction);
+    }
 
     // AudioInstruction audioInstruction = AudioInstruction(tts: tts.value, instructions: instructions, enableAudio: enabledAudio.value,
     //     instructionsList: hadSpokenInstructions, instructionsIdentifier: hadSpokenInstructionsIdentifier );
@@ -311,15 +312,15 @@ class RouteNavigationRouteController extends GetxController {
     // await compute(computeAndPlayInstructionAudio, audioInstruction);
 
     if (!hadSpokenInstructionsIdentifier.contains(
-        '${instructions.distance}_${instructions.sign}_${instructions.time}')) {
-      addHadSpokenInstructionsToList(instructions: instructions);
+        '${instruction.distance}_${instruction.sign}_${instruction.time}')) {
+      addHadSpokenInstructionsToList(instructions: instruction);
 
       debugPrint(
           'RouteNavigationRouteController addHadSpoken computeAndPlayInstructionAudio : ${hadSpokenInstructionsIdentifier.toString()}');
 
       if (enabledAudio.value) {
         await tts.setLanguage('en-US');
-        await tts.speak(instructions.text!);
+        await tts.speak(instruction.text!);
       }
     }
   }

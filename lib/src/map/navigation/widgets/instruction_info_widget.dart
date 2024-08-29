@@ -26,7 +26,7 @@ class InstructionInfo extends StatelessWidget {
             top: 10.0,
             right: MediaQuery.of(context).size.width * 0.2 + 8.0,
             left: 8.0,
-            child: instruction.text!.isNotEmpty
+            child: (instruction.text != null && instruction.text!.isNotEmpty)
                 ? Container(
                     width: MediaQuery.of(context).size.width * .7,
                     decoration: const BoxDecoration(

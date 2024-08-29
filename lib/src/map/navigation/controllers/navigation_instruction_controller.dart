@@ -1,5 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/model/instructions.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/screens/wrapper_screen.dart';
+
+///
+/// [NavigationInstructionController] global instance which is used in [WrapperScreen] to pass down values to widget
+/// This is used in the wrapper screen .
+/// Only use this instance to call the methods of the controller not to get state values
+///
+final navigationInstructionProvider = NavigationInstructionController();
 
 /// [NavigationInstructionController] holds all the logic for showing the navigation instruction
 /// on the screen.

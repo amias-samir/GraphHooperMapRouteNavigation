@@ -30,14 +30,10 @@ class WrapperScreen extends StatefulWidget {
 }
 
 class _WrapperScreenState extends State<WrapperScreen> {
-  // Instantiating controllers for different state management purposes.
-  final NavigationInstructionController navigationInstructionController =
-      NavigationInstructionController();
-
   @override
   Widget build(BuildContext context) {
     return NavigationInstructionProvider(
-      navigationInstructionController: navigationInstructionController,
+      navigationInstructionController: navigationInstructionProvider,
       child: MapRouteNavigationScreenPage(widget.directionRouteResponse),
     );
   }
