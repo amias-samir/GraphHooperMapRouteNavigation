@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:graphhooper_route_navigation/src/map/navigation/controllers/map_contoller.dart';
 
 import 'package:flutter/material.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/map_controller.dart';
 
 /// [MapScreenController] instance which is used in wrapper scree
 ///

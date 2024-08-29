@@ -8,8 +8,6 @@ import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_co
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/map_utils.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:text_to_speech/text_to_speech.dart';
-import 'package:vector_math/vector_math.dart' as vector_math;
-import 'dart:math' as math;
 import 'dart:math' show asin, cos, sqrt;
 
 import '../model/audio_instruction.dart';
@@ -39,9 +37,6 @@ class RouteNavigationRouteController extends GetxController {
       .obs;
 
   bool simulateNavigation = false;
-
-  //degrees between two coordinates
-  RxDouble bearingBtnCOOrds = 0.0.obs;
 
   //distance between two coordinates in list
   RxList<double> distanceBtnCOOrds = (List<double>.of([0.0])).obs;
@@ -104,10 +99,6 @@ class RouteNavigationRouteController extends GetxController {
     return speed;
   }
 
-  updateBearing({required double bearing}) {
-    bearingBtnCOOrds.value = double.parse(bearing.toStringAsFixed(3));
-  }
-
   updateDistanceBtnCOOrds({required double distance}) {
     distanceBtnCOOrds.refresh();
     List<double> list = [double.parse(distance.toStringAsFixed(2))];
@@ -141,7 +132,7 @@ class RouteNavigationRouteController extends GetxController {
     DateTime dateTimePrev = DateTime.now();
 
     int count = 0;
-    Timer.periodic(const Duration(seconds: 2), (timer) {
+    Timer.periodic(const Duration(seconds: 2), (timer) async {
       if (!simulateRoute) {
         count = 0;
         timer.cancel();
@@ -165,7 +156,10 @@ class RouteNavigationRouteController extends GetxController {
                   y: 0.0,
                   z: 0.0,
                   timestamp: userLocation.timestamp));
-          updateUserLocation(userLocation: userLocation1);
+
+          // use map controller to animate camera with bearing value
+          await mapScreenController
+              .updateUserLocationCircleAndAnimate(userLocation1);
 
           // use map controller to update bearing
           mapScreenController.animateCameraWithBearingValue(
@@ -200,7 +194,10 @@ class RouteNavigationRouteController extends GetxController {
                 y: 0.0,
                 z: 0.0,
                 timestamp: userLocation.timestamp));
-        updateUserLocation(userLocation: userLocation1);
+
+        // use map controller to animate camera with bearing value
+        await mapScreenController
+            .updateUserLocationCircleAndAnimate(userLocation1);
 
         checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
 

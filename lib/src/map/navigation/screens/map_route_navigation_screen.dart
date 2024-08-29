@@ -1,5 +1,6 @@
 import 'dart:math';
-import 'package:flutter/cupertino.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/map_controller.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/app_styles.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/constants.dart';
 
@@ -54,30 +55,28 @@ class MapRouteNavigationScreenPageState
   ///
   double mapZoomLevel = 14.0;
 
-  /// function called when the map is created for the first time
-  ///
-  _onMapCreated(MaplibreMapController controller1) async {
-    controller = controller1;
+  // /// function called when the map is created for the first time
+  // ///
+  // _onMapCreated(MaplibreMapController controller1) async {
+  //   controller = controller1;
 
-    if (directionRouteResponse.toJson().isNotEmpty) {
-      Map<String, dynamic> routeResponse = {
-        "geometry": directionRouteResponse.paths![0].points!.toJson(),
-        "duration": directionRouteResponse.paths![0].time,
-        "distance": directionRouteResponse.paths![0].distance,
-      };
-      // _addSourceAndLineLayer(routeResponse);
-    }
+  //   if (directionRouteResponse.toJson().isNotEmpty) {
+  //     Map<String, dynamic> routeResponse = {
+  //       "geometry": directionRouteResponse.paths![0].points!.toJson(),
+  //       "duration": directionRouteResponse.paths![0].time,
+  //       "distance": directionRouteResponse.paths![0].distance,
+  //     };
+  //     _addSourceAndLineLayer(routeResponse);
+  //   }
 
-    controller.addListener(() {
-      mapZoomLevel = controller.cameraPosition!.zoom;
-    });
+  //   controller.addListener(() {
+  //     mapZoomLevel = controller.cameraPosition!.zoom;
+  //   });
 
-    // controller.onFeatureTapped.add(onFeatureTap);
+  //   // controller.onFeatureTapped.add(onFeatureTap);
 
-    // navigationSimulationListener();
-
-    rotateMapOnBearingChange();
-  }
+  //   // navigationSimulationListener();
+  // }
 
   @override
   void initState() {
@@ -103,6 +102,10 @@ class MapRouteNavigationScreenPageState
 
     // direction route response initialization
     directionRouteResponse = widget.directionRouteResponse;
+
+    // initialize direction route response of Map controller class
+    mapScreenController.initializeDirectionRouteRes(
+        directionRouteResponse: directionRouteResponse);
 
     // textToSpeech.setLanguage('en-US');
     // navigationController.setEnableAudio(enableAudio: true, textToSpeech: textToSpeech );
@@ -249,7 +252,7 @@ class MapRouteNavigationScreenPageState
                               onPressed: () {
                                 isSimulateRouting = !isSimulateRouting;
                                 navigationController.simulateRouting(
-                                    directionRouteResponse, userLocation!,
+                                    directionRouteResponse, userLocation,
                                     simulateRoute: isSimulateRouting);
                               }),
                         ),
@@ -517,11 +520,11 @@ class MapRouteNavigationScreenPageState
 
   /// This function rotates the map on the bearing change
   ///
-  void rotateMapOnBearingChange() {
-    navigationController.bearingBtnCOOrds.stream.listen((event) {
-      controller.animateCamera(
-          CameraUpdate.bearingTo(navigationController.bearingBtnCOOrds.value));
-      // navigationController.updateDistanceBtnCOOrds(distance: event);
-    });
-  }
+  // void rotateMapOnBearingChange() {
+  //   navigationController.bearingBtnCOOrds.stream.listen((event) {
+  //     controller.animateCamera(
+  //         CameraUpdate.bearingTo(navigationController.bearingBtnCOOrds.value));
+  //     // navigationController.updateDistanceBtnCOOrds(distance: event);
+  //   });
+  // }
 }

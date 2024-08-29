@@ -60,8 +60,6 @@ class MapScreenController extends ChangeNotifier {
     if (extraFunc != null) {
       extraFunc.call();
     }
-
-    notifyListeners();
   }
 
   /// Method to add Source and Line layer
@@ -141,7 +139,8 @@ class MapScreenController extends ChangeNotifier {
   /// Method to update [UserLocation] circle
   /// And animate camera to user location
   ///
-  void updateUserLocationCircleAndAnimate(UserLocation userLocation) async {
+  Future<void> updateUserLocationCircleAndAnimate(
+      UserLocation userLocation) async {
     if (mapController == null) return;
 
     final newLocationFromRes =
