@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/controllers/navigation_instruction_controller.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/utils/map_utils.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 import 'package:vector_math/vector_math.dart' as vector_math;
@@ -74,26 +76,6 @@ class RouteNavigationRouteController extends GetxController {
   //initialize Text To Speech
   // Rx<TextToSpeech> tts = TextToSpeech().obs ;
   TextToSpeech tts = TextToSpeech();
-
-  //Degrees between two coordinates
-  calculateBearingBtwn2Coords(LatLng startLatLng, LatLng endLatLng) async {
-    double lat1 = startLatLng.latitude;
-    double lat2 = endLatLng.latitude;
-    double lng1 = startLatLng.longitude;
-    double lng2 = endLatLng.longitude;
-
-    double dLon = (lng2 - lng1);
-    double y = math.sin(dLon) * math.cos(lat2);
-    double x = math.cos(lat1) * math.sin(lat2) -
-        math.sin(lat1) * math.cos(lat2) * math.cos(dLon);
-    double radian = (math.atan2(y, x));
-    // double bearing  = (radian * 180)/pi;
-    double bearing = vector_math.degrees(radian);
-
-    bearing = (360 - ((bearing + 360) % 360));
-    debugPrint('RouteNavigationRouteController bearing :  $bearing');
-    updateBearing(bearing: bearing);
-  }
 
   double calculateDistance(LatLng startLatLng, LatLng endLatLng) {
     // distance in Meters
@@ -185,9 +167,12 @@ class RouteNavigationRouteController extends GetxController {
                   timestamp: userLocation.timestamp));
           updateUserLocation(userLocation: userLocation1);
 
-          calculateBearingBtwn2Coords(
-              LatLng(points[count][1], points[count][0]),
-              LatLng(points[count + 1][1], points[count + 1][0]));
+          // use map controller to update bearing
+          mapScreenController.animateCameraWithBearingValue(
+            bearingValue: MapUtils.calculateBearingBtnTwoCords(
+                startLatLng: LatLng(points[count][1], points[count][0]),
+                endLatLng: LatLng(points[count + 1][1], points[count + 1][0])),
+          );
 
           Duration diff = DateTime.now().difference(dateTimePrev);
           dateTimePrev = DateTime.now();

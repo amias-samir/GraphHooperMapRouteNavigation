@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/controllers/navigation_instruction_controller.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/screens/map_route_navigation_screen.dart';
 
 /// WrapperScreen: A composite screen that chains multiple InheritedWidgets to manage
@@ -32,9 +33,12 @@ class WrapperScreen extends StatefulWidget {
 class _WrapperScreenState extends State<WrapperScreen> {
   @override
   Widget build(BuildContext context) {
-    return NavigationInstructionProvider(
-      navigationInstructionController: navigationInstructionProvider,
-      child: MapRouteNavigationScreenPage(widget.directionRouteResponse),
+    return MapControllerProvider(
+      mapController: mapScreenController,
+      child: NavigationInstructionProvider(
+        navigationInstructionController: navigationInstructionProvider,
+        child: MapRouteNavigationScreenPage(widget.directionRouteResponse),
+      ),
     );
   }
 }
