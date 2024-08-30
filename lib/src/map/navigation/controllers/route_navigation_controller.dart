@@ -70,26 +70,26 @@ class RouteNavigationRouteController extends GetxController {
 
   //initialize Text To Speech
   // Rx<TextToSpeech> tts = TextToSpeech().obs ;
-  TextToSpeech tts = TextToSpeech();
+  // TextToSpeech tts = TextToSpeech();
 
-  double calculateDistance(LatLng startLatLng, LatLng endLatLng) {
-    // distance in Meters
-    // if you want distance in Kilo Meters, Just divide by 1000
-    double lat1 = startLatLng.latitude;
-    double lat2 = endLatLng.latitude;
-    double lng1 = startLatLng.longitude;
-    double lng2 = endLatLng.longitude;
+  // double calculateDistance(LatLng startLatLng, LatLng endLatLng) {
+  //   // distance in Meters
+  //   // if you want distance in Kilo Meters, Just divide by 1000
+  //   double lat1 = startLatLng.latitude;
+  //   double lat2 = endLatLng.latitude;
+  //   double lng1 = startLatLng.longitude;
+  //   double lng2 = endLatLng.longitude;
 
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
-        c((lat2 - lat1) * p) / 2 +
-        c(lat1 * p) * c(lat2 * p) * (1 - c((lng2 - lng1) * p)) / 2;
-    double distance = 12742 * asin(sqrt(a)) * 1000;
+  //   var p = 0.017453292519943295;
+  //   var c = cos;
+  //   var a = 0.5 -
+  //       c((lat2 - lat1) * p) / 2 +
+  //       c(lat1 * p) * c(lat2 * p) * (1 - c((lng2 - lng1) * p)) / 2;
+  //   double distance = 12742 * asin(sqrt(a)) * 1000;
 
-    // updateDistanceBtnCOOrds(distance: distance);
-    return distance;
-  }
+  //   // updateDistanceBtnCOOrds(distance: distance);
+  //   return distance;
+  // }
 
   double calculateSpeed(double distance, int time) {
     double microToSecond = time / 1000000;
@@ -171,10 +171,11 @@ class RouteNavigationRouteController extends GetxController {
 
           Duration diff = DateTime.now().difference(dateTimePrev);
           dateTimePrev = DateTime.now();
-          calculateSpeed(
-              calculateDistance(LatLng(points[count][1], points[count][0]),
-                  LatLng(points[count + 1][1], points[count + 1][0])),
-              diff.inMicroseconds);
+
+          // calculateSpeed(
+          //     calculateDistance(LatLng(points[count][1], points[count][0]),
+          //         LatLng(points[count + 1][1], points[count + 1][0])),
+          //     diff.inMicroseconds);
 
           checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
         }
@@ -297,7 +298,6 @@ class RouteNavigationRouteController extends GetxController {
 Instruction computingCoordinateInsideCircle(
     InstructionsCoordsIndexListAndUsersLoc
         instructionsCoordsIndexListAndUsersLoc) {
-  final controller = RouteNavigationRouteController();
   DirectionRouteResponse directionRouteResponse1 =
       instructionsCoordsIndexListAndUsersLoc.directionRouteResponse;
   Instruction instruction = Instruction(text: '');
@@ -315,10 +315,6 @@ Instruction computingCoordinateInsideCircle(
             .toList()[index];
         debugPrint(
             'RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');
-
-        controller.calculateDistance(
-            instructionsCoordsIndexListAndUsersLoc.usersLatLng,
-            LatLng(instructionPoints[index][1], instructionPoints[index][0]));
       }
       // else{
       //    instruction = directionRouteResponse1.paths![0].instructions![index];
