@@ -39,7 +39,7 @@ class RouteNavigationRouteController extends GetxController {
   bool simulateNavigation = false;
 
   //distance between two coordinates in list
-  RxList<double> distanceBtnCOOrds = (List<double>.of([0.0])).obs;
+  // RxList<double> distanceBtnCOOrds = (List<double>.of([0.0])).obs;
 
   //user's speed
   RxDouble userSpeed = 0.0.obs;
@@ -87,7 +87,7 @@ class RouteNavigationRouteController extends GetxController {
         c(lat1 * p) * c(lat2 * p) * (1 - c((lng2 - lng1) * p)) / 2;
     double distance = 12742 * asin(sqrt(a)) * 1000;
 
-    updateDistanceBtnCOOrds(distance: distance);
+    // updateDistanceBtnCOOrds(distance: distance);
     return distance;
   }
 
@@ -99,16 +99,16 @@ class RouteNavigationRouteController extends GetxController {
     return speed;
   }
 
-  updateDistanceBtnCOOrds({required double distance}) {
-    distanceBtnCOOrds.refresh();
-    List<double> list = [double.parse(distance.toStringAsFixed(2))];
-    distanceBtnCOOrds(list);
-    distanceBtnCOOrds.refresh();
-    remaingDistanceToTheInstructionPoint = distance;
-    update();
+  // updateDistanceBtnCOOrds({required double distance}) {
+  //   distanceBtnCOOrds.refresh();
+  //   List<double> list = [double.parse(distance.toStringAsFixed(2))];
+  //   distanceBtnCOOrds(list);
+  //   distanceBtnCOOrds.refresh();
+  //   remaingDistanceToTheInstructionPoint = distance;
+  //   update();
 
-    // debugPrint('RouteNavigationRouteController calculateDistance :  ${distanceBtnCOOrds.iterator.current}');
-  }
+  //   // debugPrint('RouteNavigationRouteController calculateDistance :  ${distanceBtnCOOrds.iterator.current}');
+  // }
 
   // updateDistance(double distance){
   //   distanceToTheInstPoint.value  = double.parse(distance.toStringAsFixed(2));
@@ -127,7 +127,8 @@ class RouteNavigationRouteController extends GetxController {
       {bool simulateRoute = true}) async {
     List<List<double>> points =
         directionRouteResponse!.paths![0].points!.coordinates!;
-    hadSpokenInstructionsIdentifier.value = [];
+
+    // hadSpokenInstructionsIdentifier.value = [];
 
     DateTime dateTimePrev = DateTime.now();
 
@@ -215,7 +216,7 @@ class RouteNavigationRouteController extends GetxController {
     this.directionRouteResponse.value = directionRouteResponse;
 
     // call func
-    setEnableAudio();
+    // setEnableAudio();
 
     InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
         await computeInstructionsCoordsAndIndex(directionRouteResponse);
@@ -237,8 +238,8 @@ class RouteNavigationRouteController extends GetxController {
 
   /// compute instructions cordinates and index
   ///
-  Future<InstructionsCoordsAndIndexList> computeInstructionsCoordsAndIndex(
-      DirectionRouteResponse directionRouteResponse) async {
+  InstructionsCoordsAndIndexList computeInstructionsCoordsAndIndex(
+      DirectionRouteResponse directionRouteResponse) {
     final instructions =
         directionRouteResponse.paths![0].instructions?.reversed.toList() ?? [];
 
@@ -264,10 +265,6 @@ class RouteNavigationRouteController extends GetxController {
   void checkIsCoordinateInsideCircle({
     required LatLng usersLatLng,
   }) async {
-    List<double> coordinates = [];
-    coordinates.add(usersLatLng.latitude);
-    coordinates.add(usersLatLng.longitude);
-
     InstructionsCoordsIndexListAndUsersLoc
         instructionsCoordsIndexListAndUsersLoc =
         InstructionsCoordsIndexListAndUsersLoc(
@@ -276,8 +273,8 @@ class RouteNavigationRouteController extends GetxController {
             directionRouteResponse.value,
             usersLatLng);
 
-    Instruction instruction = await computingCoordinateInsideCircle(
-        instructionsCoordsIndexListAndUsersLoc);
+    Instruction instruction =
+        computingCoordinateInsideCircle(instructionsCoordsIndexListAndUsersLoc);
     // await compute(computingCoordinateInsideCircle,
     //     instructionsCoordsIndexListAndUsersLoc);
     debugPrint(
@@ -293,38 +290,13 @@ class RouteNavigationRouteController extends GetxController {
     //
     // await compute(computeAndPlayInstructionAudio, audioInstruction);
 
-    if (!hadSpokenInstructionsIdentifier.contains(
-        '${instruction.distance}_${instruction.sign}_${instruction.time}')) {
-      addHadSpokenInstructionsToList(instructions: instruction);
-
-      debugPrint(
-          'RouteNavigationRouteController addHadSpoken computeAndPlayInstructionAudio : ${hadSpokenInstructionsIdentifier.toString()}');
-
-      if (enabledAudio.value) {
-        await tts.setLanguage('en-US');
-        await tts.speak(instruction.text!);
-      }
-    }
-  }
-
-  setEnableAudio({bool enableAudio = true}) {
-    enabledAudio.value = enableAudio;
-    // tts.value = textToSpeech;
-  }
-
-  addHadSpokenInstructionsToList({required Instruction instructions}) {
-    hadSpokenInstructions.add(instructions);
-    hadSpokenInstructionsIdentifier.add(
-        '${instructions.distance}_${instructions.sign}_${instructions.time}');
-
-    debugPrint(
-        'RouteNavigationRouteController addHadSpokenInstructionsToList : ${hadSpokenInstructionsIdentifier.toString()}');
+    //TODO: call speakInstruction() method here
   }
 }
 
-Future<Instruction> computingCoordinateInsideCircle(
+Instruction computingCoordinateInsideCircle(
     InstructionsCoordsIndexListAndUsersLoc
-        instructionsCoordsIndexListAndUsersLoc) async {
+        instructionsCoordsIndexListAndUsersLoc) {
   final controller = RouteNavigationRouteController();
   DirectionRouteResponse directionRouteResponse1 =
       instructionsCoordsIndexListAndUsersLoc.directionRouteResponse;
@@ -356,26 +328,26 @@ Future<Instruction> computingCoordinateInsideCircle(
   return instruction;
 }
 
-computeAndPlayInstructionAudio(AudioInstruction audioInstruction) async {
-  switch (audioInstruction.enableAudio) {
-    case true:
-      RouteNavigationRouteController routeNavigationRouteController =
-          RouteNavigationRouteController();
-      // TextToSpeech tts =TextToSpeech();
-      if (!audioInstruction.instructionsIdentifier.contains(
-          '${audioInstruction.instructions.distance}_${audioInstruction.instructions.sign}_${audioInstruction.instructions.time}')) {
-        routeNavigationRouteController.addHadSpokenInstructionsToList(
-            instructions: audioInstruction.instructions);
+// computeAndPlayInstructionAudio(AudioInstruction audioInstruction) async {
+//   switch (audioInstruction.enableAudio) {
+//     case true:
+//       RouteNavigationRouteController routeNavigationRouteController =
+//           RouteNavigationRouteController();
+//       // TextToSpeech tts =TextToSpeech();
+//       if (!audioInstruction.instructionsIdentifier.contains(
+//           '${audioInstruction.instructions.distance}_${audioInstruction.instructions.sign}_${audioInstruction.instructions.time}')) {
+//         routeNavigationRouteController.addHadSpokenInstructionsToList(
+//             instructions: audioInstruction.instructions);
 
-        debugPrint(
-            'RouteNavigationRouteController addHadSpoken computeAndPlayInstructionAudio : ${audioInstruction.instructionsIdentifier.toString()}');
-        // await audioInstruction.tts.setLanguage('en-US');
-        // await audioInstruction.tts.speak(audioInstruction.instructions.text! );
-      }
-      break;
+//         debugPrint(
+//             'RouteNavigationRouteController addHadSpoken computeAndPlayInstructionAudio : ${audioInstruction.instructionsIdentifier.toString()}');
+//         // await audioInstruction.tts.setLanguage('en-US');
+//         // await audioInstruction.tts.speak(audioInstruction.instructions.text! );
+//       }
+//       break;
 
-    case false:
-      // await audioInstruction.tts.stop();
-      break;
-  }
-}
+//     case false:
+//       // await audioInstruction.tts.stop();
+//       break;
+//   }
+// }

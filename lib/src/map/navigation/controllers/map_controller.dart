@@ -29,6 +29,25 @@ class MapScreenController extends ChangeNotifier {
   ///
   double bearingBtnTwoCoords = 0.0;
 
+  /// User's starting location [UserLocation]
+  ///
+  final UserLocation userLocation = UserLocation(
+      position: const LatLng(28.987280, 80.1652),
+      altitude: 1200.0,
+      bearing: 0.0,
+      speed: 0.0,
+      horizontalAccuracy: 0.0,
+      verticalAccuracy: 0.0,
+      timestamp: DateTime.now(),
+      heading: UserHeading(
+          magneticHeading: 0.0,
+          trueHeading: 0.0,
+          headingAccuracy: 0.0,
+          x: 0.0,
+          y: 0.0,
+          z: 0.0,
+          timestamp: DateTime.now()));
+
   /// Method to handle on map created callback
   ///
   void onMapCreated({
@@ -183,6 +202,20 @@ class MapScreenController extends ChangeNotifier {
     bearingBtnTwoCoords = bearingValue;
 
     mapController!.animateCamera(CameraUpdate.bearingTo(bearingBtnTwoCoords));
+  }
+
+  /// Method to animate camera to user's current location
+  ///
+  void animateUserToCurrentLocation({
+    double? zoomLevel,
+    double? bearing,
+  }) {
+    // TODO: update user location as he or she starts to move using maplibre onUserLocation updated
+    mapController?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(
+            userLocation.position.latitude, userLocation.position.longitude),
+        zoom: zoomLevel ?? mapZoomLevel,
+        bearing: bearing ?? userLocation.bearing!)));
   }
 
   /// Method to intialize Direction route response

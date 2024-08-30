@@ -1,9 +1,7 @@
 import 'dart:math';
-import 'package:graphhooper_route_navigation/src/map/navigation/controllers/map_controller.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/app_styles.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/constants.dart';
-
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -12,8 +10,8 @@ import 'package:get/get.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/instruction_info_widget.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/map_compass_widget.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/map_widget.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/widgets/my_location_zoom_icon_widget.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
-
 import '../controllers/route_navigation_controller.dart';
 import '../model/direction_route_response.dart';
 import '../model/instructions.dart';
@@ -40,9 +38,7 @@ class MapRouteNavigationScreenPageState
   // TextToSpeech textToSpeech = TextToSpeech();
 
   late MaplibreMapController controller;
-  late UserLocation userLocation;
-
-  Circle? startingUserLocationCircle;
+  // late UserLocation userLocation;
 
   late DirectionRouteResponse directionRouteResponse;
 
@@ -51,54 +47,9 @@ class MapRouteNavigationScreenPageState
   final GlobalKey<ScaffoldMessengerState> _scaffoldKeyRoute =
       GlobalKey<ScaffoldMessengerState>();
 
-  /// gives map zoom level
-  ///
-  double mapZoomLevel = 14.0;
-
-  // /// function called when the map is created for the first time
-  // ///
-  // _onMapCreated(MaplibreMapController controller1) async {
-  //   controller = controller1;
-
-  //   if (directionRouteResponse.toJson().isNotEmpty) {
-  //     Map<String, dynamic> routeResponse = {
-  //       "geometry": directionRouteResponse.paths![0].points!.toJson(),
-  //       "duration": directionRouteResponse.paths![0].time,
-  //       "distance": directionRouteResponse.paths![0].distance,
-  //     };
-  //     _addSourceAndLineLayer(routeResponse);
-  //   }
-
-  //   controller.addListener(() {
-  //     mapZoomLevel = controller.cameraPosition!.zoom;
-  //   });
-
-  //   // controller.onFeatureTapped.add(onFeatureTap);
-
-  //   // navigationSimulationListener();
-  // }
-
   @override
   void initState() {
     super.initState();
-
-    // initial user location
-    userLocation = UserLocation(
-        position: const LatLng(28.987280, 80.1652),
-        altitude: 1200.0,
-        bearing: 0.0,
-        speed: 0.0,
-        horizontalAccuracy: 0.0,
-        verticalAccuracy: 0.0,
-        timestamp: DateTime.now(),
-        heading: UserHeading(
-            magneticHeading: 0.0,
-            trueHeading: 0.0,
-            headingAccuracy: 0.0,
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-            timestamp: DateTime.now()));
 
     // direction route response initialization
     directionRouteResponse = widget.directionRouteResponse;
@@ -114,14 +65,6 @@ class MapRouteNavigationScreenPageState
         directionRouteResponse: directionRouteResponse);
   }
 
-  void _animateCameraToUserLoation({double? zoomLevel, double? bearing}) {
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(
-            userLocation.position.latitude, userLocation.position.longitude),
-        zoom: zoomLevel ?? mapZoomLevel,
-        bearing: bearing ?? userLocation.bearing!)));
-  }
-
   void onFeatureTap(dynamic featureId, Point point, LatLng latLng) async {
     // Fluttertoast.showToast(msg: 'Feature ID: ${featureId.toString()} \n '
     //     'Coordinates: ${latLng.toString()}');
@@ -132,41 +75,6 @@ class MapRouteNavigationScreenPageState
       content: Text(value),
     ));
   }
-
-  /// adds source and line layer
-  ///
-  // void _addSourceAndLineLayer(Map<String, dynamic> modifiedResponse) async {
-  //   // add start and end marker i.e --> green and red respectively
-  //   addStartAndEndMarker();
-  //   final fills = {
-  //     "type": "FeatureCollection",
-  //     "features": [
-  //       {
-  //         "type": "Feature",
-  //         "id": 0,
-  //         "properties": <String, dynamic>{},
-  //         "geometry": modifiedResponse['geometry'],
-  //       },
-  //     ],
-  //   };
-
-  //   // Remove lineLayer and source if it exists
-  //   await controller.removeLayer("lines");
-  //   await controller.removeSource("fills");
-
-  //   // Add new source and lineLayer
-  //   await controller.addSource("fills", GeojsonSourceProperties(data: fills));
-  //   await controller.addLineLayer(
-  //     "fills",
-  //     "lines",
-  //     LineLayerProperties(
-  //       lineColor: NavigationColors.blue.toHexStringRGB(),
-  //       lineCap: "round",
-  //       lineJoin: "round",
-  //       lineWidth: 6,
-  //     ),
-  //   );
-  // }
 
   Future<bool> _willPopCallback(bool didPop) async {
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -252,7 +160,8 @@ class MapRouteNavigationScreenPageState
                               onPressed: () {
                                 isSimulateRouting = !isSimulateRouting;
                                 navigationController.simulateRouting(
-                                    directionRouteResponse, userLocation,
+                                    directionRouteResponse,
+                                    mapScreenController.userLocation,
                                     simulateRoute: isSimulateRouting);
                               }),
                         ),
@@ -340,7 +249,7 @@ class MapRouteNavigationScreenPageState
         right: 16.0,
         child: Column(
           children: [
-            MapCompassWidget(userLocation: userLocation),
+            const MapCompassWidget(),
             const SizedBox(
               height: 20.0,
             ),
@@ -370,24 +279,15 @@ class MapRouteNavigationScreenPageState
             const SizedBox(
               height: 20.0,
             ),
-            FloatingActionButton(
-              heroTag: 'tag_my_location_zoom',
-              onPressed: () async {
-                _animateCameraToUserLoation(zoomLevel: 19.0, bearing: 0.0);
-              },
-              backgroundColor: NavigationColors.white,
-              shape: RoundedRectangleBorder(
-                side: const BorderSide(
-                    width: 1, color: NavigationColors.boxBorderColor),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              elevation: 0,
-              child: const Icon(
-                Icons.gps_fixed,
-                size: 24,
-                color: NavigationColors.grey,
-              ),
-            ),
+            CustomFloatingActionButton(
+                heroTag: 'tag_my_location_zoom',
+                onPressed: () {
+                  // animate user to current location
+                  final mapScreenController = MapControllerProvider.of(context);
+                  mapScreenController.animateUserToCurrentLocation(
+                      zoomLevel: 19.0, bearing: 0.0);
+                },
+                iconData: Icons.gps_fixed),
           ],
         ));
   }
@@ -435,88 +335,6 @@ class MapRouteNavigationScreenPageState
     return byteData.buffer
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
   }
-
-  // /// Registers [UserLocation] listener
-  // /// upon changing the user location the user's current location circle
-  // /// updates as well.
-  // ///
-  // void navigationSimulationListener() {
-  //   navigationController.userLocation.stream.listen((userLocation) async {
-  //     // new location from response
-  //     // final newLocationFromRes = LatLng(
-  //     //   directionRouteResponse
-  //     //       .paths![0].snappedWaypoints!.coordinates!.first[1],
-  //     //   directionRouteResponse
-  //     //       .paths![0].snappedWaypoints!.coordinates!.first[0],
-  //     // );
-
-  //     final newLocationFromRes = LatLng(
-  //         userLocation.position.latitude, userLocation.position.longitude);
-
-  //     // circle options
-  //     final circleOptions = CircleOptions(
-  //       geometry: newLocationFromRes,
-  //       circleColor: NavigationColors.green.toHexStringRGB(),
-  //       circleRadius: 12,
-  //     );
-
-  //     if (startingUserLocationCircle == null) {
-  //       startingUserLocationCircle = await controller.addCircle(circleOptions);
-  //     } else {
-  //       await controller.updateCircle(
-  //           startingUserLocationCircle!, circleOptions);
-  //     }
-
-  //     // if (userLocation != usersLastLocation) {
-  //     //   if (symbol != null) {
-  //     //     await controller.removeCircle(symbol!);
-  //     //   }
-  //     //
-  //     //   symbol = await controller.addCircle(circleOptions);
-  //     // } else {
-  //     //   await controller.updateCircle(symbol!, circleOptions);
-  //     // }
-  //     //
-  //     // // update users last location
-  //     // usersLastLocation = userLocation;
-
-  //     //  Animate the camera to the user's location
-  //     controller.animateCamera(CameraUpdate.newCameraPosition(
-  //       CameraPosition(
-  //         target: LatLng(
-  //             userLocation.position.latitude, userLocation.position.longitude),
-  //         zoom: mapZoomLevel,
-  //         bearing: navigationController.bearingBtnCOOrds.value,
-  //       ),
-  //     ));
-  //   });
-  // }
-
-  // void addStartAndEndMarker() async {
-  //   // starting circle
-  //   startingUserLocationCircle = await controller.addCircle(
-  //     CircleOptions(
-  //         geometry: LatLng(
-  //             directionRouteResponse
-  //                 .paths![0].snappedWaypoints!.coordinates!.first[1],
-  //             directionRouteResponse
-  //                 .paths![0].snappedWaypoints!.coordinates!.first[0]),
-  //         circleColor: NavigationColors.green.toHexStringRGB(),
-  //         circleRadius: 12),
-  //   );
-
-  //   // destination circle
-  //   controller.addCircle(
-  //     CircleOptions(
-  //         geometry: LatLng(
-  //             directionRouteResponse
-  //                 .paths![0].snappedWaypoints!.coordinates!.last[1],
-  //             directionRouteResponse
-  //                 .paths![0].snappedWaypoints!.coordinates!.last[0]),
-  //         circleColor: NavigationColors.red.toHexStringRGB(),
-  //         circleRadius: 12),
-  //   );
-  // }
 
   /// This function rotates the map on the bearing change
   ///

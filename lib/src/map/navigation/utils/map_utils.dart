@@ -1,6 +1,7 @@
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
 import 'dart:math' as math;
 import 'package:vector_math/vector_math.dart' as vector_math;
+import 'dart:math' show asin, cos, sqrt;
 
 class MapUtils {
   /// Calculate Bearing value between two coordinates
@@ -25,5 +26,28 @@ class MapUtils {
     bearing = (360 - ((bearing + 360) % 360));
 
     return bearing;
+  }
+
+  /// Calculates Distance between two coordinates
+  ///
+  double calculateDistanceBtnTwoCoords({
+    required LatLng startLatLng,
+    required LatLng endLatLng,
+  }) {
+    // distance in Meters
+    // if you want distance in Kilo Meters, Just divide by 1000
+    double lat1 = startLatLng.latitude;
+    double lat2 = endLatLng.latitude;
+    double lng1 = startLatLng.longitude;
+    double lng2 = endLatLng.longitude;
+
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lng2 - lng1) * p)) / 2;
+    double distance = 12742 * asin(sqrt(a)) * 1000;
+
+    return distance;
   }
 }

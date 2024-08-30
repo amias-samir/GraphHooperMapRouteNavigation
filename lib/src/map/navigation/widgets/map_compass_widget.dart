@@ -5,27 +5,26 @@ import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_co
 import 'dart:math' as math;
 
 class MapCompassWidget extends StatelessWidget {
-  final UserLocation userLocation;
-
   const MapCompassWidget({
     super.key,
-    required this.userLocation,
   });
 
   @override
   Widget build(BuildContext context) {
     final mapController = MapControllerProvider.of(context);
-    final mapLibreMapController = mapController.mapController;
+    // final mapLibreMapController = mapController.mapController;
 
     return InkWell(
       onTap: () {
         // animate camera to user location
-        mapLibreMapController?.animateCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(
-                target: userLocation.position,
-                zoom: mapController.mapZoomLevel,
-                tilt: 0,
-                bearing: 0.0)));
+        // mapLibreMapController?.animateCamera(CameraUpdate.newCameraPosition(
+        //     CameraPosition(
+        //         target: userLocation.position,
+        //         zoom: mapController.mapZoomLevel,
+        //         tilt: 0,
+        //         bearing: 0.0)))
+        //         ;
+        mapController.animateCameraWithBearingValue(bearingValue: 0.0);
       },
       child: Container(
         height: 50,
