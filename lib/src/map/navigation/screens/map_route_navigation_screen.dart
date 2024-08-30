@@ -55,15 +55,8 @@ class MapRouteNavigationScreenPageState
     // direction route response initialization
     directionRouteResponse = widget.directionRouteResponse;
 
-    // initialize direction route response of Map controller class
-    mapScreenController.initializeDirectionRouteRes(
-        directionRouteResponse: directionRouteResponse);
-
     // textToSpeech.setLanguage('en-US');
     // navigationController.setEnableAudio(enableAudio: true, textToSpeech: textToSpeech );
-
-    navigationController.findInstructionsCoordsAndIndex(
-        directionRouteResponse: directionRouteResponse);
   }
 
   void onFeatureTap(dynamic featureId, Point point, LatLng latLng) async {

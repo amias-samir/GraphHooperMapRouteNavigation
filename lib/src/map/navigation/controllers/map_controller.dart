@@ -218,11 +218,93 @@ class MapScreenController extends ChangeNotifier {
         bearing: bearing ?? userLocation.bearing!)));
   }
 
-  /// Method to intialize Direction route response
+  /// Method to simulate routing
   ///
-  void initializeDirectionRouteRes({
-    required DirectionRouteResponse directionRouteResponse,
-  }) {
-    this.directionRouteResponse = directionRouteResponse;
+  void simulateRouting(
+      DirectionRouteResponse? directionRouteResponse, UserLocation userLocation,
+      {bool simulateRoute = true}) async {
+    List<List<double>> points =
+        directionRouteResponse!.paths![0].points!.coordinates!;
+
+    // hadSpokenInstructionsIdentifier.value = [];
+
+    DateTime dateTimePrev = DateTime.now();
+
+    int count = 0;
+    Timer.periodic(const Duration(seconds: 2), (timer) async {
+      if (!simulateRoute) {
+        count = 0;
+        timer.cancel();
+      }
+
+      if (count < points.length) {
+        if (count < points.length - 1) {
+          UserLocation userLocation1 = UserLocation(
+              position: LatLng(points[count][1], points[count][0]),
+              altitude: userLocation.altitude,
+              bearing: userLocation.bearing,
+              speed: userLocation.speed,
+              horizontalAccuracy: userLocation.horizontalAccuracy,
+              verticalAccuracy: userLocation.verticalAccuracy,
+              timestamp: userLocation.timestamp,
+              heading: UserHeading(
+                  magneticHeading: 0.0,
+                  trueHeading: 0.0,
+                  headingAccuracy: 0.0,
+                  x: 0.0,
+                  y: 0.0,
+                  z: 0.0,
+                  timestamp: userLocation.timestamp));
+
+          // use map controller to animate camera with bearing value
+          await mapScreenController
+              .updateUserLocationCircleAndAnimate(userLocation1);
+
+          // use map controller to update bearing
+          mapScreenController.animateCameraWithBearingValue(
+            bearingValue: MapUtils.calculateBearingBtnTwoCords(
+                startLatLng: LatLng(points[count][1], points[count][0]),
+                endLatLng: LatLng(points[count + 1][1], points[count + 1][0])),
+          );
+
+          Duration diff = DateTime.now().difference(dateTimePrev);
+          dateTimePrev = DateTime.now();
+
+          // calculateSpeed(
+          //     calculateDistance(LatLng(points[count][1], points[count][0]),
+          //         LatLng(points[count + 1][1], points[count + 1][0])),
+          //     diff.inMicroseconds);
+
+          checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
+        }
+      } else if (count == points.length) {
+        UserLocation userLocation1 = UserLocation(
+            position: LatLng(points[count - 1][1], points[count - 1][0]),
+            altitude: userLocation.altitude,
+            bearing: userLocation.bearing,
+            speed: userLocation.speed,
+            horizontalAccuracy: userLocation.horizontalAccuracy,
+            verticalAccuracy: userLocation.verticalAccuracy,
+            timestamp: userLocation.timestamp,
+            heading: UserHeading(
+                magneticHeading: 0.0,
+                trueHeading: 0.0,
+                headingAccuracy: 0.0,
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                timestamp: userLocation.timestamp));
+
+        // use map controller to animate camera with bearing value
+        await mapScreenController
+            .updateUserLocationCircleAndAnimate(userLocation1);
+
+        checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
+
+        timer.cancel();
+      }
+
+      count = count + 1;
+    });
   }
 }

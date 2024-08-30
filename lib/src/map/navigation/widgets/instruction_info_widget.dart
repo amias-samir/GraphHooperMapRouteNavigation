@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/controllers/navigation_instruction_controller.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/providers/instruction_controller_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/constants.dart';
 
 /// Gives Instruction info which appears at the top when the user is navigating

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/controllers/navigation_instruction_controller.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/audio_instruction_provider.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/providers/instruction_controller_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/screens/map_route_navigation_screen.dart';
 
@@ -39,7 +40,8 @@ class _WrapperScreenState extends State<WrapperScreen> {
       child: AudioInstructionProvider(
         audioInstructionController: audioInstructionController,
         child: NavigationInstructionProvider(
-          navigationInstructionController: navigationInstructionProvider,
+          navigationInstructionController: NavigationInstructionController(
+              directionRouteResponse: widget.directionRouteResponse),
           child: MapRouteNavigationScreenPage(widget.directionRouteResponse),
         ),
       ),

@@ -1,18 +1,24 @@
 import 'package:flutter/widgets.dart';
+import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/audio_instruction_controller.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/model/instructions.dart';
-import 'package:graphhooper_route_navigation/src/map/navigation/screens/wrapper_screen.dart';
-
-///
-/// [NavigationInstructionController] global instance which is used in [WrapperScreen] to pass down values to widget
-/// This is used in the wrapper screen .
-/// Only use this instance to call the methods of the controller not to get state values
-///
-final navigationInstructionProvider = NavigationInstructionController();
+import 'package:graphhooper_route_navigation/src/map/navigation/model/instructions_coords_and_index_list.dart';
 
 /// [NavigationInstructionController] holds all the logic for showing the navigation instruction
 /// on the screen.
 ///
 class NavigationInstructionController extends ChangeNotifier {
+  NavigationInstructionController({
+    required DirectionRouteResponse directionRouteResponse,
+    required this.audioInstructionController,
+  }) {
+    computeInstructionsCoordsAndIndex(directionRouteResponse);
+  }
+
+  /// [AudioInstructionController] instance
+  ///
+  final AudioInstructionController audioInstructionController;
+
   /// Private [Instruction] instance variable
   ///
   Instruction _instruction = Instruction();
@@ -21,38 +27,96 @@ class NavigationInstructionController extends ChangeNotifier {
   ///
   Instruction get instruction => _instruction;
 
+  /// [InstructionsCoordsAndIndexList] instance
+  ///
+  InstructionsCoordsAndIndexList? instructionsCoordsAndIndexList;
+
   /// Updates [_instruction]
   ///
   void updateInstructions(Instruction instruction) {
     _instruction = instruction;
     notifyListeners();
   }
-}
 
-/// Provider Container or Widget for [NavigationInstructionController]
-/// Uses [InheritedWidget].
-class NavigationInstructionProvider extends InheritedWidget {
-  final NavigationInstructionController navigationInstructionController;
+  /// compute instructions cordinates and index
+  ///
+  void computeInstructionsCoordsAndIndex(
+      DirectionRouteResponse directionRouteResponse) {
+    final instructions =
+        directionRouteResponse.paths![0].instructions?.reversed.toList() ?? [];
 
-  // Constructor that takes the controller and child widget
-  const NavigationInstructionProvider({
-    super.key,
-    required this.navigationInstructionController,
-    required super.child,
-  });
+    final indexList = <int>[];
+    final instructionsCoordList = <List<double>>[];
 
-  // Method to access the provider in the widget tree
-  static NavigationInstructionController? of(BuildContext context) {
-    // Using context to find the nearest instance of the provider
-    return context
-        .dependOnInheritedWidgetOfExactType<NavigationInstructionProvider>()
-        ?.navigationInstructionController;
+    for (final instruction in instructions) {
+      final index = instruction.interval![0];
+      indexList.add(index);
+      instructionsCoordList
+          .add(directionRouteResponse.paths![0].points!.coordinates![index]);
+    }
+
+    instructionsCoordsAndIndexList =
+        InstructionsCoordsAndIndexList(instructionsCoordList, indexList);
   }
 
-  @override
-  bool updateShouldNotify(covariant NavigationInstructionProvider oldWidget) {
-    // Return true if the controller reference has changed
-    return oldWidget.navigationInstructionController !=
-        navigationInstructionController;
+  void checkIsCoordinateInsideCircle({
+    required DirectionRouteResponse directionRouteResponse,
+    required LatLng usersLatLng,
+  }) async {
+    InstructionsCoordsIndexListAndUsersLoc
+        instructionsCoordsIndexListAndUsersLoc =
+        InstructionsCoordsIndexListAndUsersLoc(
+            instructionsCoordsAndIndexList!.instructionsCoordsList,
+            instructionsCoordsAndIndexList!.instructionsIndexList,
+            directionRouteResponse,
+            usersLatLng);
+
+    Instruction instruction =
+        computingCoordinateInsideCircle(instructionsCoordsIndexListAndUsersLoc);
+    // await compute(computingCoordinateInsideCircle,
+    //     instructionsCoordsIndexListAndUsersLoc);
+    debugPrint(
+        'RouteNavigationRouteController outCompute ${instruction.toJson()}');
+
+    if (instruction.text != null && instruction.text!.isNotEmpty) {
+      // update the intruction with response
+      updateInstructions(instruction);
+    }
+
+    // AudioInstruction audioInstruction = AudioInstruction(tts: tts.value, instructions: instructions, enableAudio: enabledAudio.value,
+    //     instructionsList: hadSpokenInstructions, instructionsIdentifier: hadSpokenInstructionsIdentifier );
+    //
+    // await compute(computeAndPlayInstructionAudio, audioInstruction);
+
+    audioInstructionController.speakInstruction(instruction: instruction);
+  }
+
+  Instruction computingCoordinateInsideCircle(
+      InstructionsCoordsIndexListAndUsersLoc
+          instructionsCoordsIndexListAndUsersLoc) {
+    DirectionRouteResponse directionRouteResponse1 =
+        instructionsCoordsIndexListAndUsersLoc.directionRouteResponse;
+    Instruction instruction = Instruction(text: '');
+    List<List<double>> instructionPoints =
+        instructionsCoordsIndexListAndUsersLoc.instructionsCoordsList;
+
+    if (instructionPoints.isNotEmpty) {
+      for (int index = 0; index < instructionPoints.length; index++) {
+        if (CalculatorUtils.isCoordinateInside(
+            instructionLatLng: LatLng(
+                instructionPoints[index][1], instructionPoints[index][0]),
+            usersLatLng: instructionsCoordsIndexListAndUsersLoc.usersLatLng)) {
+          // TODO: make he direction route response a single variable
+          instruction = directionRouteResponse1.paths![0].instructions!.reversed
+              .toList()[index];
+          debugPrint(
+              'RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');
+        }
+        // else{
+        //    instruction = directionRouteResponse1.paths![0].instructions![index];
+        // }
+      }
+    }
+    return instruction;
   }
 }

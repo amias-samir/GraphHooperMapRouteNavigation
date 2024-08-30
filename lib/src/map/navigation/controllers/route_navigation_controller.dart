@@ -7,10 +7,6 @@ import 'package:graphhooper_route_navigation/src/map/navigation/controllers/navi
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/map_utils.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
-import 'package:text_to_speech/text_to_speech.dart';
-import 'dart:math' show asin, cos, sqrt;
-
-import '../model/audio_instruction.dart';
 import '../model/direction_route_response.dart';
 import '../model/instructions.dart';
 import '../model/instructions_coords_and_index_list.dart';
@@ -41,32 +37,29 @@ class RouteNavigationRouteController extends GetxController {
   //distance between two coordinates in list
   // RxList<double> distanceBtnCOOrds = (List<double>.of([0.0])).obs;
 
-  //user's speed
-  RxDouble userSpeed = 0.0.obs;
-
   //remaining distance from user's location to the nearest instruction point
   double remaingDistanceToTheInstructionPoint = 0.0;
 
   //list of instructions that had spoken once
-  RxList<Instruction> hadSpokenInstructions = (List<Instruction>.of([])).obs;
+  // RxList<Instruction> hadSpokenInstructions = (List<Instruction>.of([])).obs;
 
   //list of instructions identifier that had spoken once (generate unique by using instructions multiple value)
-  RxList<String> hadSpokenInstructionsIdentifier = (List<String>.of([])).obs;
+  // RxList<String> hadSpokenInstructionsIdentifier = (List<String>.of([])).obs;
 
   //direction route response
-  Rx<DirectionRouteResponse> directionRouteResponse =
-      DirectionRouteResponse().obs;
+  // Rx<DirectionRouteResponse> directionRouteResponse =
+  //     DirectionRouteResponse().obs;
 
   //list of instruction's index value (instructions found in direction route response)
-  RxList<int> instructionsIndexList = (List<int>.of([])).obs;
+  // RxList<int> instructionsIndexList = (List<int>.of([])).obs;
 
   //list of instruction's Coordinate value (instructions found in direction route response)
-  RxList<List<double>> instructionsCoordList = (List<List<double>>.of([])).obs;
+  // RxList<List<double>> instructionsCoordList = (List<List<double>>.of([])).obs;
 
   // RxDouble distanceToTheInstPoint = 0.0.obs;
 
   //enable/disable test to speech
-  RxBool enabledAudio = true.obs;
+  // RxBool enabledAudio = true.obs;
 
   //initialize Text To Speech
   // Rx<TextToSpeech> tts = TextToSpeech().obs ;
@@ -94,7 +87,7 @@ class RouteNavigationRouteController extends GetxController {
   double calculateSpeed(double distance, int time) {
     double microToSecond = time / 1000000;
     double speed = distance / microToSecond;
-    updateSpeed(speed: speed);
+    // updateSpeed(speed: speed);
     debugPrint('RouteNavigationRouteController speed :  $speed');
     return speed;
   }
@@ -114,13 +107,9 @@ class RouteNavigationRouteController extends GetxController {
   //   distanceToTheInstPoint.value  = double.parse(distance.toStringAsFixed(2));
   // }
 
-  void updateSpeed({required double speed}) {
-    userSpeed.value = double.parse(speed.toStringAsFixed(3));
-  }
-
-  void updateUserLocation({required UserLocation userLocation}) {
-    this.userLocation.value = userLocation;
-  }
+  // void updateUserLocation({required UserLocation userLocation}) {
+  //   this.userLocation.value = userLocation;
+  // }
 
   void simulateRouting(
       DirectionRouteResponse? directionRouteResponse, UserLocation userLocation,
@@ -211,51 +200,51 @@ class RouteNavigationRouteController extends GetxController {
   }
 
   /// This method finds instructions co-ordinates i.e latitude ra longitude
-  void findInstructionsCoordsAndIndex(
-      {required DirectionRouteResponse directionRouteResponse}) async {
-    // initializes controller's directionRoute response variable
-    this.directionRouteResponse.value = directionRouteResponse;
+  // void findInstructionsCoordsAndIndex(
+  //     {required DirectionRouteResponse directionRouteResponse}) async {
+  // initializes controller's directionRoute response variable
+  // this.directionRouteResponse.value = directionRouteResponse;
 
-    // call func
-    // setEnableAudio();
+  // call func
+  // setEnableAudio();
 
-    InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
-        await computeInstructionsCoordsAndIndex(directionRouteResponse);
-    // await compute(
-    //     computeInstructionsCoordsAndIndex, directionRouteResponse);
-    // InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
-    //     await compute(
-    //         computeInstructionsCoordsAndIndex, directionRouteResponse);
+  // InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
+  //      computeInstructionsCoordsAndIndex(directionRouteResponse);
+  // await compute(
+  //     computeInstructionsCoordsAndIndex, directionRouteResponse);
+  // InstructionsCoordsAndIndexList instructionsCoordsAndIndexList =
+  //     await compute(
+  //         computeInstructionsCoordsAndIndex, directionRouteResponse);
 
-    // update the rx variables in the controller
-    instructionsIndexList.value =
-        instructionsCoordsAndIndexList.instructionsIndexList;
-    instructionsCoordList.value =
-        instructionsCoordsAndIndexList.instructionsCoordsList;
+  // update the rx variables in the controller
+  // instructionsIndexList.value =
+  //     instructionsCoordsAndIndexList.instructionsIndexList;
+  // instructionsCoordList.value =
+  //     instructionsCoordsAndIndexList.instructionsCoordsList;
 
-    // debugPrint('findInstructionsCoordsAndIndex  indexList : ${instructionsCoordsAndIndexList.instructionsIndexList}');
-    // debugPrint('findInstructionsCoordsAndIndex  coordsList : ${instructionsCoordsAndIndexList.instructionsCoordsList}');
-  }
+  // debugPrint('findInstructionsCoordsAndIndex  indexList : ${instructionsCoordsAndIndexList.instructionsIndexList}');
+  // debugPrint('findInstructionsCoordsAndIndex  coordsList : ${instructionsCoordsAndIndexList.instructionsCoordsList}');
+  // }
 
   /// compute instructions cordinates and index
   ///
-  InstructionsCoordsAndIndexList computeInstructionsCoordsAndIndex(
-      DirectionRouteResponse directionRouteResponse) {
-    final instructions =
-        directionRouteResponse.paths![0].instructions?.reversed.toList() ?? [];
+  // InstructionsCoordsAndIndexList computeInstructionsCoordsAndIndex(
+  //     DirectionRouteResponse directionRouteResponse) {
+  //   final instructions =
+  //       directionRouteResponse.paths![0].instructions?.reversed.toList() ?? [];
 
-    final indexList = <int>[];
-    final instructionsCoordList = <List<double>>[];
+  //   final indexList = <int>[];
+  //   final instructionsCoordList = <List<double>>[];
 
-    for (final instruction in instructions) {
-      final index = instruction.interval![0];
-      indexList.add(index);
-      instructionsCoordList
-          .add(directionRouteResponse.paths![0].points!.coordinates![index]);
-    }
+  //   for (final instruction in instructions) {
+  //     final index = instruction.interval![0];
+  //     indexList.add(index);
+  //     instructionsCoordList
+  //         .add(directionRouteResponse.paths![0].points!.coordinates![index]);
+  //   }
 
-    return InstructionsCoordsAndIndexList(instructionsCoordList, indexList);
-  }
+  //   return InstructionsCoordsAndIndexList(instructionsCoordList, indexList);
+  // }
 
   // void getInstructionByIndex(
   //     {required DirectionRouteResponse directionRouteResponse,
@@ -263,66 +252,66 @@ class RouteNavigationRouteController extends GetxController {
   //   instruction.value = directionRouteResponse.paths![0].instructions![index];
   // }
 
-  void checkIsCoordinateInsideCircle({
-    required LatLng usersLatLng,
-  }) async {
-    InstructionsCoordsIndexListAndUsersLoc
-        instructionsCoordsIndexListAndUsersLoc =
-        InstructionsCoordsIndexListAndUsersLoc(
-            instructionsCoordList.toList(),
-            instructionsIndexList.toList(),
-            directionRouteResponse.value,
-            usersLatLng);
+  // void checkIsCoordinateInsideCircle({
+  //   required LatLng usersLatLng,
+  // }) async {
+  //   InstructionsCoordsIndexListAndUsersLoc
+  //       instructionsCoordsIndexListAndUsersLoc =
+  //       InstructionsCoordsIndexListAndUsersLoc(
+  //           instructionsCoordList.toList(),
+  //           instructionsIndexList.toList(),
+  //           directionRouteResponse.value,
+  //           usersLatLng);
 
-    Instruction instruction =
-        computingCoordinateInsideCircle(instructionsCoordsIndexListAndUsersLoc);
-    // await compute(computingCoordinateInsideCircle,
-    //     instructionsCoordsIndexListAndUsersLoc);
-    debugPrint(
-        'RouteNavigationRouteController outCompute ${instruction.toJson()}');
+  //   Instruction instruction =
+  //       computingCoordinateInsideCircle(instructionsCoordsIndexListAndUsersLoc);
+  //   // await compute(computingCoordinateInsideCircle,
+  //   //     instructionsCoordsIndexListAndUsersLoc);
+  //   debugPrint(
+  //       'RouteNavigationRouteController outCompute ${instruction.toJson()}');
 
-    if (instruction.text != null && instruction.text!.isNotEmpty) {
-      // update the intruction with response
-      navigationInstructionProvider.updateInstructions(instruction);
-    }
+  //   if (instruction.text != null && instruction.text!.isNotEmpty) {
+  //     // update the intruction with response
+  //     navigationInstructionProvider.updateInstructions(instruction);
+  //   }
 
-    // AudioInstruction audioInstruction = AudioInstruction(tts: tts.value, instructions: instructions, enableAudio: enabledAudio.value,
-    //     instructionsList: hadSpokenInstructions, instructionsIdentifier: hadSpokenInstructionsIdentifier );
-    //
-    // await compute(computeAndPlayInstructionAudio, audioInstruction);
+  //   // AudioInstruction audioInstruction = AudioInstruction(tts: tts.value, instructions: instructions, enableAudio: enabledAudio.value,
+  //   //     instructionsList: hadSpokenInstructions, instructionsIdentifier: hadSpokenInstructionsIdentifier );
+  //   //
+  //   // await compute(computeAndPlayInstructionAudio, audioInstruction);
 
-    //TODO: call speakInstruction() method here
-  }
+  //   //TODO: call speakInstruction() method here
+  // }
 }
 
-Instruction computingCoordinateInsideCircle(
-    InstructionsCoordsIndexListAndUsersLoc
-        instructionsCoordsIndexListAndUsersLoc) {
-  DirectionRouteResponse directionRouteResponse1 =
-      instructionsCoordsIndexListAndUsersLoc.directionRouteResponse;
-  Instruction instruction = Instruction(text: '');
-  List<List<double>> instructionPoints =
-      instructionsCoordsIndexListAndUsersLoc.instructionsCoordsList;
+// Instruction computingCoordinateInsideCircle(
+//     InstructionsCoordsIndexListAndUsersLoc
+//         instructionsCoordsIndexListAndUsersLoc) {
+//   DirectionRouteResponse directionRouteResponse1 =
+//       instructionsCoordsIndexListAndUsersLoc.directionRouteResponse;
+//   Instruction instruction = Instruction(text: '');
+//   List<List<double>> instructionPoints =
+//       instructionsCoordsIndexListAndUsersLoc.instructionsCoordsList;
 
-  if (instructionPoints.isNotEmpty) {
-    for (int index = 0; index < instructionPoints.length; index++) {
-      if (CalculatorUtils.isCoordinateInside(
-          instructionLatLng:
-              LatLng(instructionPoints[index][1], instructionPoints[index][0]),
-          usersLatLng: instructionsCoordsIndexListAndUsersLoc.usersLatLng)) {
-        // TODO: make he direction route response a single variable
-        instruction = directionRouteResponse1.paths![0].instructions!.reversed
-            .toList()[index];
-        debugPrint(
-            'RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');
-      }
-      // else{
-      //    instruction = directionRouteResponse1.paths![0].instructions![index];
-      // }
-    }
-  }
-  return instruction;
-}
+//   if (instructionPoints.isNotEmpty) {
+//     for (int index = 0; index < instructionPoints.length; index++) {
+//       if (CalculatorUtils.isCoordinateInside(
+//           instructionLatLng:
+//               LatLng(instructionPoints[index][1], instructionPoints[index][0]),
+//           usersLatLng: instructionsCoordsIndexListAndUsersLoc.usersLatLng)) {
+//         // TODO: make he direction route response a single variable
+//         instruction = directionRouteResponse1.paths![0].instructions!.reversed
+//             .toList()[index];
+//         debugPrint(
+//             'RouteNavigationRouteController compute : ${directionRouteResponse1.paths![0].instructions![index].toJson()}');
+//       }
+//       // else{
+//       //    instruction = directionRouteResponse1.paths![0].instructions![index];
+//       // }
+//     }
+//   }
+//   return instruction;
+// }
 
 // computeAndPlayInstructionAudio(AudioInstruction audioInstruction) async {
 //   switch (audioInstruction.enableAudio) {
