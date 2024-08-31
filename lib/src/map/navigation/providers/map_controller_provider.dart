@@ -3,10 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/controllers/map_controller.dart';
 
-/// [MapScreenController] instance which is used in wrapper scree
-///
-final mapScreenController = MapScreenController();
-
 /// A provider class for [MapScreenController] that extends [InheritedWidget].
 /// This class allows the [MapScreenController] instance to be accessed
 /// from the widget tree easily.

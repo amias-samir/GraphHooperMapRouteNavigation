@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/speed_notifier.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/audio_instruction_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/providers/user_speed_notifier_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/app_styles.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/utils/constants.dart';
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
@@ -42,8 +44,6 @@ class MapRouteNavigationScreenPageState
   // late UserLocation userLocation;
 
   late DirectionRouteResponse directionRouteResponse;
-
-  bool isSimulateRouting = false;
 
   final GlobalKey<ScaffoldMessengerState> _scaffoldKeyRoute =
       GlobalKey<ScaffoldMessengerState>();
@@ -94,7 +94,9 @@ class MapRouteNavigationScreenPageState
             persistentContentHeight: MediaQuery.of(context).size.height * 0.1,
             background: buildBackgroundUi(),
             persistentHeader: buildPersistentHeaderUi(),
-            expandableContent: buildExpandableContentUi(),
+            expandableContent: NavigationInfoUi(
+              directionRouteResponse: directionRouteResponse,
+            ),
           ),
         ),
       ),
@@ -109,132 +111,6 @@ class MapRouteNavigationScreenPageState
       buildCompass(),
       const InstructionInfo()
     ]);
-  }
-
-  buildNavigationInfoUi() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        children: [
-          Column(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.08,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Obx(() {
-                          return Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 8.0, left: 20.0),
-                            child: Text(
-                                'Speed : ${navigationController.userSpeed.value}',
-                                style: CustomAppStyle.headline6(context)),
-                          );
-                        }),
-
-                        // Obx((){
-                        //   // List<double> list = navigationController.distanceBtnCOOrds;
-                        //   return Padding(padding: const EdgeInsets.only(bottom: 8.0, right: 20.0),
-                        //   child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
-                        // }),
-
-                        SizedBox(
-                          height: 30.0,
-                          child: MaterialButton(
-                              child: const Text(
-                                'Simulate',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                              onPressed: () {
-                                isSimulateRouting = !isSimulateRouting;
-                                navigationController.simulateRouting(
-                                    directionRouteResponse,
-                                    mapScreenController.userLocation,
-                                    simulateRoute: isSimulateRouting);
-                              }),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: Text(
-                              'Distance : ${CalculatorUtils.calculateDistance(distanceInMeter: directionRouteResponse.paths![0].distance!)}',
-                              style: CustomAppStyle.headline6(context)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: Text(
-                              'Time : ${CalculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)}',
-                              style: CustomAppStyle.headline6(context)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                child: ListView.builder(
-                    itemCount:
-                        directionRouteResponse.paths![0].instructions!.length,
-                    itemBuilder: (buildContext, index) {
-                      return buildNavigationInfoItemUi(
-                          index: index,
-                          instructions: directionRouteResponse
-                              .paths![0].instructions![index]);
-                    }),
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  buildNavigationInfoItemUi(
-      {required index, required Instruction instructions}) {
-    return Column(
-      children: [
-        ListTile(
-          leading: index != 0 && instructions.sign! == 0
-              ? NavigationInstructionsType.getDirectionIconByInstructionType(
-                  instructionType: index == 0 ? 10 : instructions.sign!)
-              : NavigationInstructionsType.getDirectionIconByInstructionType(
-                  instructionType: index == 0 ? 10 : instructions.sign!),
-          trailing: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                  CalculatorUtils.calculateDistance(
-                      distanceInMeter: instructions.distance!),
-                  style: CustomAppStyle.body12pxRegular(context)),
-              Text(
-                  CalculatorUtils.calculateTime(
-                      miliSeconds: instructions.time!),
-                  style: CustomAppStyle.body12pxRegular(context)),
-            ],
-          ),
-          title: Text(instructions.text!,
-              style: CustomAppStyle.body12pxRegular(context)),
-        ),
-        Container(
-          height: 1.0,
-          width: MediaQuery.of(context).size.width,
-          color: NavigationColors.greyLight,
-        )
-      ],
-    );
   }
 
   Widget buildCompass() {
@@ -294,13 +170,13 @@ class MapRouteNavigationScreenPageState
     );
   }
 
-  Container buildExpandableContentUi() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.71,
-      color: Colors.white,
-      child: buildNavigationInfoUi(),
-    );
-  }
+  // Container buildExpandableContentUi() {
+  //   return Container(
+  //     height: MediaQuery.of(context).size.height * 0.71,
+  //     color: Colors.white,
+  //     child: NavigationInfoUi(directionRouteResponse: directionRouteResponse),
+  //   );
+  // }
 
   Future<Uint8List> loadMarkerImage(String assetsPath) async {
     var byteData = await rootBundle.load(assetsPath);
@@ -317,6 +193,187 @@ class MapRouteNavigationScreenPageState
   //     // navigationController.updateDistanceBtnCOOrds(distance: event);
   //   });
   // }
+}
+
+class NavigationInfoUi extends StatelessWidget {
+  /// Creates [NavigationInfoUi] instance
+  ///
+  const NavigationInfoUi({
+    super.key,
+    required this.directionRouteResponse,
+  });
+
+  /// [DirectionRouteResponse] instance
+  ///
+  final DirectionRouteResponse directionRouteResponse;
+
+  @override
+  Widget build(BuildContext context) {
+    final speedNotifier = UserSpeedProvider.of(context);
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.71,
+      color: Colors.white,
+      margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        children: [
+          Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.08,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // listener to update the value of the speed
+                        ListenableBuilder(
+                            listenable: speedNotifier,
+                            builder: (context, child) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 8.0, left: 20.0),
+                                child: Text(
+                                  speedNotifier.speed.toString(),
+                                  style: CustomAppStyle.headline6(context),
+                                ),
+                              );
+                            }),
+
+                        // Obx((){
+                        //   // List<double> list = navigationController.distanceBtnCOOrds;
+                        //   return Padding(padding: const EdgeInsets.only(bottom: 8.0, right: 20.0),
+                        //   child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
+                        // }),
+
+                        SimulateButton(),
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Text(
+                              'Distance : ${CalculatorUtils.calculateDistance(distanceInMeter: directionRouteResponse.paths![0].distance!)}',
+                              style: CustomAppStyle.headline6(context)),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: Text(
+                              'Time : ${CalculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)}',
+                              style: CustomAppStyle.headline6(context)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.6,
+                child: ListView.builder(
+                    itemCount:
+                        directionRouteResponse.paths![0].instructions!.length,
+                    itemBuilder: (buildContext, index) {
+                      return NavigationInfoItemUi(
+                        index: index,
+                        instruction: directionRouteResponse
+                            .paths![0].instructions![index],
+                      );
+                    }),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class SimulateButton extends StatefulWidget {
+  const SimulateButton({
+    super.key,
+  });
+
+  @override
+  State<SimulateButton> createState() => _SimulateButtonState();
+}
+
+class _SimulateButtonState extends State<SimulateButton> {
+  bool isSimulateRouting = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final mapController = MapControllerProvider.of(context);
+    return SizedBox(
+      height: 30.0,
+      child: MaterialButton(
+          child: const Text(
+            'Simulate',
+            style: TextStyle(color: Colors.black),
+          ),
+          onPressed: () {
+            isSimulateRouting = !isSimulateRouting;
+            mapController.simulateRouting();
+          }),
+    );
+  }
+}
+
+class NavigationInfoItemUi extends StatelessWidget {
+  /// Creates [NavigationInfoItemUi] instance
+  ///
+  const NavigationInfoItemUi({
+    super.key,
+    required this.index,
+    required this.instruction,
+  });
+
+  /// [index] integer value
+  ///
+  final int index;
+
+  /// [Instruction] instance
+  ///
+  final Instruction instruction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          leading: index != 0 && instruction.sign! == 0
+              ? NavigationInstructionsType.getDirectionIconByInstructionType(
+                  instructionType: index == 0 ? 10 : instruction.sign!)
+              : NavigationInstructionsType.getDirectionIconByInstructionType(
+                  instructionType: index == 0 ? 10 : instruction.sign!),
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                  CalculatorUtils.calculateDistance(
+                      distanceInMeter: instruction.distance!),
+                  style: CustomAppStyle.body12pxRegular(context)),
+              Text(
+                  CalculatorUtils.calculateTime(miliSeconds: instruction.time!),
+                  style: CustomAppStyle.body12pxRegular(context)),
+            ],
+          ),
+          title: Text(instruction.text!,
+              style: CustomAppStyle.body12pxRegular(context)),
+        ),
+        Container(
+          height: 1.0,
+          width: MediaQuery.of(context).size.width,
+          color: NavigationColors.greyLight,
+        )
+      ],
+    );
+  }
 }
 
 class AudioIconWidget extends StatelessWidget {

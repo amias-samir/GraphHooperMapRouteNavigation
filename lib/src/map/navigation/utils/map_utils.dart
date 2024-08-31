@@ -30,7 +30,7 @@ class MapUtils {
 
   /// Calculates Distance between two coordinates
   ///
-  double calculateDistanceBtnTwoCoords({
+  static double calculateDistanceBtnTwoCoords({
     required LatLng startLatLng,
     required LatLng endLatLng,
   }) {
@@ -49,5 +49,14 @@ class MapUtils {
     double distance = 12742 * asin(sqrt(a)) * 1000;
 
     return distance;
+  }
+
+  /// Calculate speed
+  ///
+  static double calculateSpeed(double distance, int time) {
+    double microToSecond = time / 1000000;
+    double speed = distance / microToSecond;
+    // updateSpeed(speed: speed);
+    return speed;
   }
 }

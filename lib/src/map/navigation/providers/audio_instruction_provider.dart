@@ -2,10 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/controllers/audio_instruction_controller.dart';
 import 'package:flutter/material.dart';
 
-/// [AudioInstructionController] instance this class will be passed down the widget tree.
-///
-final audioInstructionController = AudioInstructionController();
-
 /// Provides an instance of [AudioInstructionController] to its descendants in the widget tree.
 ///
 /// This is an [InheritedWidget] that allows widgets to access the [AudioInstructionController]

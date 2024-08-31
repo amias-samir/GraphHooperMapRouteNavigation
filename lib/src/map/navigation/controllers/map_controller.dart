@@ -1,10 +1,36 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/navigation_instruction_controller.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/speed_notifier.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/utils/map_utils.dart';
 
 ///
 /// Notifier class for [MapScreen]
 ///
 class MapScreenController extends ChangeNotifier {
+  ///
+  /// [NavigationInstructionController] instance
+  ///
+  final NavigationInstructionController navigationInstructionController;
+
+  /// [UserSpeedNotifier] instance
+  ///
+  final UserSpeedNotifier userSpeedNotifier;
+
+  /// [DirectionRouteResponse] instance variable that comes from Api Call.
+  ///
+  final DirectionRouteResponse directionRouteResponse;
+
+  /// Creates [MapScreenController] instance
+  ///
+  MapScreenController({
+    required this.navigationInstructionController,
+    required this.userSpeedNotifier,
+    required this.directionRouteResponse,
+  });
+
   /// private [MaplibreMapController] instance
   ///
   MaplibreMapController? _mapController;
@@ -16,10 +42,6 @@ class MapScreenController extends ChangeNotifier {
   /// User's starting Location circle
   ///
   Circle? startingUserLocationCircle;
-
-  /// [DirectionRouteResponse] instance variable that comes from Api Call.
-  ///
-  DirectionRouteResponse? directionRouteResponse;
 
   /// Map zoom level
   ///
@@ -57,13 +79,13 @@ class MapScreenController extends ChangeNotifier {
     // initialize map controller
     _mapController = mapLibreMapController;
 
-    if (directionRouteResponse == null || _mapController == null) return;
+    if (_mapController == null) return;
 
-    if (directionRouteResponse!.toJson().isNotEmpty) {
+    if (directionRouteResponse.toJson().isNotEmpty) {
       Map<String, dynamic> routeResponse = {
-        "geometry": directionRouteResponse!.paths![0].points!.toJson(),
-        "duration": directionRouteResponse!.paths![0].time,
-        "distance": directionRouteResponse!.paths![0].distance,
+        "geometry": directionRouteResponse.paths![0].points!.toJson(),
+        "duration": directionRouteResponse.paths![0].time,
+        "distance": directionRouteResponse.paths![0].distance,
       };
       addSourceAndLineLayer(routeResponse);
     }
@@ -126,7 +148,7 @@ class MapScreenController extends ChangeNotifier {
   ///
   Future<void> addStartAndEndMarker() async {
     // if null return
-    if (_mapController == null || directionRouteResponse == null) {
+    if (_mapController == null) {
       return;
     }
 
@@ -134,9 +156,9 @@ class MapScreenController extends ChangeNotifier {
     startingUserLocationCircle = await _mapController!.addCircle(
       CircleOptions(
           geometry: LatLng(
-              directionRouteResponse!
+              directionRouteResponse
                   .paths![0].snappedWaypoints!.coordinates!.first[1],
-              directionRouteResponse!
+              directionRouteResponse
                   .paths![0].snappedWaypoints!.coordinates!.first[0]),
           circleColor: NavigationColors.green.toHexStringRGB(),
           circleRadius: 12),
@@ -146,9 +168,9 @@ class MapScreenController extends ChangeNotifier {
     _mapController!.addCircle(
       CircleOptions(
           geometry: LatLng(
-              directionRouteResponse!
+              directionRouteResponse
                   .paths![0].snappedWaypoints!.coordinates!.last[1],
-              directionRouteResponse!
+              directionRouteResponse
                   .paths![0].snappedWaypoints!.coordinates!.last[0]),
           circleColor: NavigationColors.red.toHexStringRGB(),
           circleRadius: 12),
@@ -220,11 +242,9 @@ class MapScreenController extends ChangeNotifier {
 
   /// Method to simulate routing
   ///
-  void simulateRouting(
-      DirectionRouteResponse? directionRouteResponse, UserLocation userLocation,
-      {bool simulateRoute = true}) async {
+  void simulateRouting({bool simulateRoute = true}) async {
     List<List<double>> points =
-        directionRouteResponse!.paths![0].points!.coordinates!;
+        directionRouteResponse.paths![0].points!.coordinates!;
 
     // hadSpokenInstructionsIdentifier.value = [];
 
@@ -256,12 +276,11 @@ class MapScreenController extends ChangeNotifier {
                   z: 0.0,
                   timestamp: userLocation.timestamp));
 
-          // use map controller to animate camera with bearing value
-          await mapScreenController
-              .updateUserLocationCircleAndAnimate(userLocation1);
+          // animate camera with bearing value
+          await updateUserLocationCircleAndAnimate(userLocation1);
 
-          // use map controller to update bearing
-          mapScreenController.animateCameraWithBearingValue(
+          // update bearing
+          animateCameraWithBearingValue(
             bearingValue: MapUtils.calculateBearingBtnTwoCords(
                 startLatLng: LatLng(points[count][1], points[count][0]),
                 endLatLng: LatLng(points[count + 1][1], points[count + 1][0])),
@@ -270,12 +289,24 @@ class MapScreenController extends ChangeNotifier {
           Duration diff = DateTime.now().difference(dateTimePrev);
           dateTimePrev = DateTime.now();
 
+          final distanceBtnTwoCords = MapUtils.calculateDistanceBtnTwoCoords(
+              startLatLng: LatLng(points[count][1], points[count][0]),
+              endLatLng: LatLng(points[count + 1][1], points[count + 1][0]));
+
+          final speed =
+              MapUtils.calculateSpeed(distanceBtnTwoCords, diff.inMicroseconds);
+
+          // set the user speed
+          userSpeedNotifier.setUserSpeed(speed: speed);
+
           // calculateSpeed(
           //     calculateDistance(LatLng(points[count][1], points[count][0]),
           //         LatLng(points[count + 1][1], points[count + 1][0])),
           //     diff.inMicroseconds);
 
-          checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
+          navigationInstructionController.checkIsCoordinateInsideCircle(
+              directionRouteResponse: directionRouteResponse,
+              usersLatLng: userLocation1.position);
         }
       } else if (count == points.length) {
         UserLocation userLocation1 = UserLocation(
@@ -296,10 +327,11 @@ class MapScreenController extends ChangeNotifier {
                 timestamp: userLocation.timestamp));
 
         // use map controller to animate camera with bearing value
-        await mapScreenController
-            .updateUserLocationCircleAndAnimate(userLocation1);
+        await updateUserLocationCircleAndAnimate(userLocation1);
 
-        checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
+        navigationInstructionController.checkIsCoordinateInsideCircle(
+            directionRouteResponse: directionRouteResponse,
+            usersLatLng: userLocation1.position);
 
         timer.cancel();
       }

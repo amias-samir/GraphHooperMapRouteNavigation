@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/audio_instruction_controller.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/map_controller.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/controllers/navigation_instruction_controller.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/speed_notifier.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/audio_instruction_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/instruction_controller_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/providers/user_speed_notifier_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/screens/map_route_navigation_screen.dart';
 
 /// WrapperScreen: A composite screen that chains multiple InheritedWidgets to manage
@@ -33,16 +37,39 @@ class WrapperScreen extends StatefulWidget {
 }
 
 class _WrapperScreenState extends State<WrapperScreen> {
+  /// [AudioInstructionController] instance this class will be passed down the widget tree.
+  ///
+  final audioInstructionController = AudioInstructionController();
+
+  /// [NavigationInstructionController] that will be passed down the widget tree
+  ///
+  late final navigationInstructionController = NavigationInstructionController(
+    directionRouteResponse: widget.directionRouteResponse,
+    audioInstructionController: audioInstructionController,
+  );
+
+  /// [MapScreenController] instance that will be passed down the widget tree
+  ///
+  late final mapScreenController = MapScreenController(
+    directionRouteResponse: widget.directionRouteResponse,
+    navigationInstructionController: navigationInstructionController,
+    userSpeedNotifier: userSpeedNotifier,
+  );
+
+  final userSpeedNotifier = UserSpeedNotifier();
+
   @override
   Widget build(BuildContext context) {
-    return MapControllerProvider(
-      mapController: mapScreenController,
-      child: AudioInstructionProvider(
-        audioInstructionController: audioInstructionController,
-        child: NavigationInstructionProvider(
-          navigationInstructionController: NavigationInstructionController(
-              directionRouteResponse: widget.directionRouteResponse),
-          child: MapRouteNavigationScreenPage(widget.directionRouteResponse),
+    return UserSpeedProvider(
+      userSpeedNotifier: userSpeedNotifier,
+      child: NavigationInstructionProvider(
+        navigationInstructionController: navigationInstructionController,
+        child: MapControllerProvider(
+          mapController: mapScreenController,
+          child: AudioInstructionProvider(
+            audioInstructionController: audioInstructionController,
+            child: MapRouteNavigationScreenPage(widget.directionRouteResponse),
+          ),
         ),
       ),
     );
