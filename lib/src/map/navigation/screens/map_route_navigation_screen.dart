@@ -1,25 +1,17 @@
-import 'dart:math';
-import 'package:graphhooper_route_navigation/src/map/navigation/controllers/speed_notifier.dart';
-import 'package:graphhooper_route_navigation/src/map/navigation/providers/audio_instruction_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
-import 'package:graphhooper_route_navigation/src/map/navigation/providers/user_speed_notifier_provider.dart';
-import 'package:graphhooper_route_navigation/src/map/navigation/utils/app_styles.dart';
-import 'package:graphhooper_route_navigation/src/map/navigation/utils/constants.dart';
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/widgets/audio_icon_widget.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/instruction_info_widget.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/map_compass_widget.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/map_widget.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/my_location_zoom_icon_widget.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/widgets/navigation_info_widget.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
-import '../controllers/route_navigation_controller.dart';
 import '../model/direction_route_response.dart';
-import '../model/instructions.dart';
-import '../utils/calculator_utils.dart';
-import '../utils/navigation_app_colors.dart';
 
 class MapRouteNavigationScreenPage extends StatefulWidget {
   final DirectionRouteResponse directionRouteResponse;
@@ -36,12 +28,7 @@ class MapRouteNavigationScreenPage extends StatefulWidget {
 
 class MapRouteNavigationScreenPageState
     extends State<MapRouteNavigationScreenPage> {
-  final navigationController = Get.put(RouteNavigationRouteController());
-
-  // TextToSpeech textToSpeech = TextToSpeech();
-
   late MaplibreMapController controller;
-  // late UserLocation userLocation;
 
   late DirectionRouteResponse directionRouteResponse;
 
@@ -54,14 +41,6 @@ class MapRouteNavigationScreenPageState
 
     // direction route response initialization
     directionRouteResponse = widget.directionRouteResponse;
-
-    // textToSpeech.setLanguage('en-US');
-    // navigationController.setEnableAudio(enableAudio: true, textToSpeech: textToSpeech );
-  }
-
-  void onFeatureTap(dynamic featureId, Point point, LatLng latLng) async {
-    // Fluttertoast.showToast(msg: 'Feature ID: ${featureId.toString()} \n '
-    //     'Coordinates: ${latLng.toString()}');
   }
 
   void showInSnackBar(String value) {
@@ -80,8 +59,6 @@ class MapRouteNavigationScreenPageState
   @override
   Widget build(BuildContext context) {
     WidgetsFlutterBinding.ensureInitialized();
-
-    // TODO: implement build
     return PopScope(
       canPop: true,
       onPopInvoked: (bool didPop) {
@@ -170,6 +147,17 @@ class MapRouteNavigationScreenPageState
     );
   }
 
+  Future<Uint8List> loadMarkerImage(String assetsPath) async {
+    var byteData = await rootBundle.load(assetsPath);
+    return byteData.buffer
+        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+  }
+
+  // void onFeatureTap(dynamic featureId, Point point, LatLng latLng) async {
+  //   // Fluttertoast.showToast(msg: 'Feature ID: ${featureId.toString()} \n '
+  //   //     'Coordinates: ${latLng.toString()}');
+  // }
+
   // Container buildExpandableContentUi() {
   //   return Container(
   //     height: MediaQuery.of(context).size.height * 0.71,
@@ -177,225 +165,4 @@ class MapRouteNavigationScreenPageState
   //     child: NavigationInfoUi(directionRouteResponse: directionRouteResponse),
   //   );
   // }
-
-  Future<Uint8List> loadMarkerImage(String assetsPath) async {
-    var byteData = await rootBundle.load(assetsPath);
-    return byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-  }
-
-  /// This function rotates the map on the bearing change
-  ///
-  // void rotateMapOnBearingChange() {
-  //   navigationController.bearingBtnCOOrds.stream.listen((event) {
-  //     controller.animateCamera(
-  //         CameraUpdate.bearingTo(navigationController.bearingBtnCOOrds.value));
-  //     // navigationController.updateDistanceBtnCOOrds(distance: event);
-  //   });
-  // }
-}
-
-class NavigationInfoUi extends StatelessWidget {
-  /// Creates [NavigationInfoUi] instance
-  ///
-  const NavigationInfoUi({
-    super.key,
-    required this.directionRouteResponse,
-  });
-
-  /// [DirectionRouteResponse] instance
-  ///
-  final DirectionRouteResponse directionRouteResponse;
-
-  @override
-  Widget build(BuildContext context) {
-    final speedNotifier = UserSpeedProvider.of(context);
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.71,
-      color: Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        children: [
-          Column(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.08,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // listener to update the value of the speed
-                        ListenableBuilder(
-                            listenable: speedNotifier,
-                            builder: (context, child) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: 8.0, left: 20.0),
-                                child: Text(
-                                  speedNotifier.speed.toString(),
-                                  style: CustomAppStyle.headline6(context),
-                                ),
-                              );
-                            }),
-
-                        // Obx((){
-                        //   // List<double> list = navigationController.distanceBtnCOOrds;
-                        //   return Padding(padding: const EdgeInsets.only(bottom: 8.0, right: 20.0),
-                        //   child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
-                        // }),
-
-                        SimulateButton(),
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: Text(
-                              'Distance : ${CalculatorUtils.calculateDistance(distanceInMeter: directionRouteResponse.paths![0].distance!)}',
-                              style: CustomAppStyle.headline6(context)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: Text(
-                              'Time : ${CalculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)}',
-                              style: CustomAppStyle.headline6(context)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                child: ListView.builder(
-                    itemCount:
-                        directionRouteResponse.paths![0].instructions!.length,
-                    itemBuilder: (buildContext, index) {
-                      return NavigationInfoItemUi(
-                        index: index,
-                        instruction: directionRouteResponse
-                            .paths![0].instructions![index],
-                      );
-                    }),
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class SimulateButton extends StatefulWidget {
-  const SimulateButton({
-    super.key,
-  });
-
-  @override
-  State<SimulateButton> createState() => _SimulateButtonState();
-}
-
-class _SimulateButtonState extends State<SimulateButton> {
-  bool isSimulateRouting = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final mapController = MapControllerProvider.of(context);
-    return SizedBox(
-      height: 30.0,
-      child: MaterialButton(
-          child: const Text(
-            'Simulate',
-            style: TextStyle(color: Colors.black),
-          ),
-          onPressed: () {
-            isSimulateRouting = !isSimulateRouting;
-            mapController.simulateRouting();
-          }),
-    );
-  }
-}
-
-class NavigationInfoItemUi extends StatelessWidget {
-  /// Creates [NavigationInfoItemUi] instance
-  ///
-  const NavigationInfoItemUi({
-    super.key,
-    required this.index,
-    required this.instruction,
-  });
-
-  /// [index] integer value
-  ///
-  final int index;
-
-  /// [Instruction] instance
-  ///
-  final Instruction instruction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          leading: index != 0 && instruction.sign! == 0
-              ? NavigationInstructionsType.getDirectionIconByInstructionType(
-                  instructionType: index == 0 ? 10 : instruction.sign!)
-              : NavigationInstructionsType.getDirectionIconByInstructionType(
-                  instructionType: index == 0 ? 10 : instruction.sign!),
-          trailing: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                  CalculatorUtils.calculateDistance(
-                      distanceInMeter: instruction.distance!),
-                  style: CustomAppStyle.body12pxRegular(context)),
-              Text(
-                  CalculatorUtils.calculateTime(miliSeconds: instruction.time!),
-                  style: CustomAppStyle.body12pxRegular(context)),
-            ],
-          ),
-          title: Text(instruction.text!,
-              style: CustomAppStyle.body12pxRegular(context)),
-        ),
-        Container(
-          height: 1.0,
-          width: MediaQuery.of(context).size.width,
-          color: NavigationColors.greyLight,
-        )
-      ],
-    );
-  }
-}
-
-class AudioIconWidget extends StatelessWidget {
-  const AudioIconWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final audioInstructionController = AudioInstructionProvider.of(context);
-    return ListenableBuilder(
-        listenable: audioInstructionController,
-        builder: (context, child) {
-          final isAudioEnabled = audioInstructionController.enableAudio;
-
-          return CustomFloatingActionButton(
-              heroTag: 'tag_sound_enable_disable',
-              onPressed: () {
-                // toggle enable audio
-                audioInstructionController.setEnableAudio(
-                  enableAudio: !isAudioEnabled,
-                );
-              },
-              iconData: isAudioEnabled ? Icons.volume_up : Icons.volume_off);
-        });
-  }
 }

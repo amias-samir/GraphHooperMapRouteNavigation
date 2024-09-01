@@ -1,16 +1,5 @@
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
-
 import 'package:get/get.dart';
-import 'package:graphhooper_route_navigation/src/map/navigation/controllers/navigation_instruction_controller.dart';
-import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
-import 'package:graphhooper_route_navigation/src/map/navigation/utils/map_utils.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
-import '../model/direction_route_response.dart';
-import '../model/instructions.dart';
-import '../model/instructions_coords_and_index_list.dart';
-import '../utils/calculator_utils.dart';
 
 class RouteNavigationRouteController extends GetxController {
   // update user location  while simulating route
@@ -84,13 +73,13 @@ class RouteNavigationRouteController extends GetxController {
   //   return distance;
   // }
 
-  double calculateSpeed(double distance, int time) {
-    double microToSecond = time / 1000000;
-    double speed = distance / microToSecond;
-    // updateSpeed(speed: speed);
-    debugPrint('RouteNavigationRouteController speed :  $speed');
-    return speed;
-  }
+  // double calculateSpeed(double distance, int time) {
+  //   double microToSecond = time / 1000000;
+  //   double speed = distance / microToSecond;
+  //   // updateSpeed(speed: speed);
+  //   debugPrint('RouteNavigationRouteController speed :  $speed');
+  //   return speed;
+  // }
 
   // updateDistanceBtnCOOrds({required double distance}) {
   //   distanceBtnCOOrds.refresh();
@@ -110,94 +99,6 @@ class RouteNavigationRouteController extends GetxController {
   // void updateUserLocation({required UserLocation userLocation}) {
   //   this.userLocation.value = userLocation;
   // }
-
-  void simulateRouting(
-      DirectionRouteResponse? directionRouteResponse, UserLocation userLocation,
-      {bool simulateRoute = true}) async {
-    List<List<double>> points =
-        directionRouteResponse!.paths![0].points!.coordinates!;
-
-    // hadSpokenInstructionsIdentifier.value = [];
-
-    DateTime dateTimePrev = DateTime.now();
-
-    int count = 0;
-    Timer.periodic(const Duration(seconds: 2), (timer) async {
-      if (!simulateRoute) {
-        count = 0;
-        timer.cancel();
-      }
-
-      if (count < points.length) {
-        if (count < points.length - 1) {
-          UserLocation userLocation1 = UserLocation(
-              position: LatLng(points[count][1], points[count][0]),
-              altitude: userLocation.altitude,
-              bearing: userLocation.bearing,
-              speed: userLocation.speed,
-              horizontalAccuracy: userLocation.horizontalAccuracy,
-              verticalAccuracy: userLocation.verticalAccuracy,
-              timestamp: userLocation.timestamp,
-              heading: UserHeading(
-                  magneticHeading: 0.0,
-                  trueHeading: 0.0,
-                  headingAccuracy: 0.0,
-                  x: 0.0,
-                  y: 0.0,
-                  z: 0.0,
-                  timestamp: userLocation.timestamp));
-
-          // use map controller to animate camera with bearing value
-          await mapScreenController
-              .updateUserLocationCircleAndAnimate(userLocation1);
-
-          // use map controller to update bearing
-          mapScreenController.animateCameraWithBearingValue(
-            bearingValue: MapUtils.calculateBearingBtnTwoCords(
-                startLatLng: LatLng(points[count][1], points[count][0]),
-                endLatLng: LatLng(points[count + 1][1], points[count + 1][0])),
-          );
-
-          Duration diff = DateTime.now().difference(dateTimePrev);
-          dateTimePrev = DateTime.now();
-
-          // calculateSpeed(
-          //     calculateDistance(LatLng(points[count][1], points[count][0]),
-          //         LatLng(points[count + 1][1], points[count + 1][0])),
-          //     diff.inMicroseconds);
-
-          checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
-        }
-      } else if (count == points.length) {
-        UserLocation userLocation1 = UserLocation(
-            position: LatLng(points[count - 1][1], points[count - 1][0]),
-            altitude: userLocation.altitude,
-            bearing: userLocation.bearing,
-            speed: userLocation.speed,
-            horizontalAccuracy: userLocation.horizontalAccuracy,
-            verticalAccuracy: userLocation.verticalAccuracy,
-            timestamp: userLocation.timestamp,
-            heading: UserHeading(
-                magneticHeading: 0.0,
-                trueHeading: 0.0,
-                headingAccuracy: 0.0,
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-                timestamp: userLocation.timestamp));
-
-        // use map controller to animate camera with bearing value
-        await mapScreenController
-            .updateUserLocationCircleAndAnimate(userLocation1);
-
-        checkIsCoordinateInsideCircle(usersLatLng: userLocation1.position);
-
-        timer.cancel();
-      }
-
-      count = count + 1;
-    });
-  }
 
   /// This method finds instructions co-ordinates i.e latitude ra longitude
   // void findInstructionsCoordsAndIndex(
