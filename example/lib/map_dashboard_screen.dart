@@ -215,8 +215,9 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
               onPressed: () async {
                 // Get.back();
                 SchedulerBinding.instance.addPostFrameCallback((_) {
-                  Get.to(() =>
-                      MapRouteNavigationScreenPage(directionRouteResponse));
+                  Get.to(() => WrapperScreen(
+                        directionRouteResponse: directionRouteResponse,
+                      ));
                 });
               },
               icon: const Icon(

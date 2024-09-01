@@ -1,4 +1,3 @@
-
 import 'package:graphhooper_route_navigation/src/map/navigation/model/points.dart';
 
 import 'instructions.dart';
@@ -11,12 +10,23 @@ class Paths {
   bool? pointsEncoded;
   List<double>? bbox;
   Points? points;
-  List<Instructions>? instructions;
+  List<Instruction>? instructions;
   int? ascend;
   int? descend;
   Points? snappedWaypoints;
 
-  Paths({double? distance, double? weight, int? time, int? transfers, bool? pointsEncoded, List<double>? bbox, Points? points, List<Instructions>? instructions, int? ascend, int? descend, Points? snappedWaypoints}) {
+  Paths(
+      {double? distance,
+      double? weight,
+      int? time,
+      int? transfers,
+      bool? pointsEncoded,
+      List<double>? bbox,
+      Points? points,
+      List<Instruction>? instructions,
+      int? ascend,
+      int? descend,
+      Points? snappedWaypoints}) {
     if (distance != null) {
       distance = distance;
     }
@@ -61,12 +71,16 @@ class Paths {
     bbox = json['bbox'].cast<double>();
     points = json['points'] != null ? Points.fromJson(json['points']) : null;
     if (json['instructions'] != null) {
-      instructions = <Instructions>[];
-      json['instructions'].forEach((v) { instructions!.add(Instructions.fromJson(v)); });
+      instructions = <Instruction>[];
+      json['instructions'].forEach((v) {
+        instructions!.add(Instruction.fromJson(v));
+      });
     }
     ascend = json['ascend'].toInt();
     descend = json['descend'].toInt();
-    snappedWaypoints = json['snapped_waypoints'] != null ? Points.fromJson(json['snapped_waypoints']) : null;
+    snappedWaypoints = json['snapped_waypoints'] != null
+        ? Points.fromJson(json['snapped_waypoints'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
