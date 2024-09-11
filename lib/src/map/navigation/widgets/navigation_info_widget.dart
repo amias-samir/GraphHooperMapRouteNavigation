@@ -20,85 +20,79 @@ class NavigationInfoUi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final speedNotifier = UserSpeedProvider.of(context);
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.71,
-      color: Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        children: [
-          Column(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.08,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // listener to update the value of the speed
-                        ListenableBuilder(
-                            listenable: speedNotifier,
-                            builder: (context, child) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: 8.0, left: 20.0),
-                                child: Text(
-                                  speedNotifier.speed.toString(),
-                                  style: CustomAppStyle.headline6(context),
-                                ),
-                              );
-                            }),
+    return Column(
+      children: [
+        Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.08,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // listener to update the value of the speed
+                      ListenableBuilder(
+                          listenable: speedNotifier,
+                          builder: (context, child) {
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 8.0, left: 20.0),
+                              child: Text(
+                                speedNotifier.speed.toString(),
+                                style: CustomAppStyle.headline6(context),
+                              ),
+                            );
+                          }),
 
-                        // Obx((){
-                        //   // List<double> list = navigationController.distanceBtnCOOrds;
-                        //   return Padding(padding: const EdgeInsets.only(bottom: 8.0, right: 20.0),
-                        //   child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
-                        // }),
+                      // Obx((){
+                      //   // List<double> list = navigationController.distanceBtnCOOrds;
+                      //   return Padding(padding: const EdgeInsets.only(bottom: 8.0, right: 20.0),
+                      //   child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
+                      // }),
 
-                        const SimulateButton(),
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: Text(
-                              'Distance : ${CalculatorUtils.calculateDistance(distanceInMeter: directionRouteResponse.paths![0].distance!)}',
-                              style: CustomAppStyle.headline6(context)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: Text(
-                              'Time : ${CalculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)}',
-                              style: CustomAppStyle.headline6(context)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      const SimulateButton(),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: Text(
+                            'Distance : ${CalculatorUtils.calculateDistance(distanceInMeter: directionRouteResponse.paths![0].distance!)}',
+                            style: CustomAppStyle.headline6(context)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20.0),
+                        child: Text(
+                            'Time : ${CalculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)}',
+                            style: CustomAppStyle.headline6(context)),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                child: ListView.builder(
-                    itemCount:
-                        directionRouteResponse.paths![0].instructions!.length,
-                    itemBuilder: (buildContext, index) {
-                      return NavigationInfoItemUi(
-                        index: index,
-                        instruction: directionRouteResponse
-                            .paths![0].instructions![index],
-                      );
-                    }),
-              )
-            ],
-          )
-        ],
-      ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: ListView.builder(
+                  itemCount:
+                      directionRouteResponse.paths![0].instructions!.length,
+                  itemBuilder: (buildContext, index) {
+                    return NavigationInfoItemUi(
+                      index: index,
+                      instruction:
+                          directionRouteResponse.paths![0].instructions![index],
+                    );
+                  }),
+            )
+          ],
+        )
+      ],
     );
   }
 }

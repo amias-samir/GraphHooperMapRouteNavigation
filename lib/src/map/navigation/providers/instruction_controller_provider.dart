@@ -14,11 +14,11 @@ class NavigationInstructionProvider extends InheritedWidget {
   });
 
   // Method to access the provider in the widget tree
-  static NavigationInstructionController? of(BuildContext context) {
+  static NavigationInstructionController of(BuildContext context) {
     // Using context to find the nearest instance of the provider
     return context
-        .dependOnInheritedWidgetOfExactType<NavigationInstructionProvider>()
-        ?.navigationInstructionController;
+        .dependOnInheritedWidgetOfExactType<NavigationInstructionProvider>()!
+        .navigationInstructionController;
   }
 
   @override

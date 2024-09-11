@@ -12,9 +12,9 @@ class UserSpeedNotifier extends ChangeNotifier {
   /// set the user's speed
   ///
   void setUserSpeed({
-    required double speed,
+    required double? speed,
   }) {
-    _speed = speed;
+    _speed = speed ?? 0.0;
     notifyListeners();
   }
 }

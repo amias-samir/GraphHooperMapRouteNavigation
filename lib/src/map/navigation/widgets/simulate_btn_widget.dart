@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/is_simulate_routing_notifier_controller.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
 
 class SimulateButton extends StatefulWidget {
@@ -11,8 +12,6 @@ class SimulateButton extends StatefulWidget {
 }
 
 class _SimulateButtonState extends State<SimulateButton> {
-  bool isSimulateRouting = false;
-
   @override
   Widget build(BuildContext context) {
     final mapController = MapControllerProvider.of(context);
@@ -24,7 +23,10 @@ class _SimulateButtonState extends State<SimulateButton> {
             style: TextStyle(color: Colors.black),
           ),
           onPressed: () {
-            isSimulateRouting = !isSimulateRouting;
+            // toggle the value
+            IsSimulateRoutingNotifierController.toggleIsSimulatingValue();
+
+            // calls method
             mapController.simulateRouting();
           }),
     );

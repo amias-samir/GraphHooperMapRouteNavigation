@@ -53,7 +53,7 @@ class MapScreenController extends ChangeNotifier {
 
   /// User's starting location [UserLocation]
   ///
-  final UserLocation userLocation = UserLocation(
+  UserLocation userLocation = UserLocation(
       position: const LatLng(28.987280, 80.1652),
       altitude: 1200.0,
       bearing: 0.0,
@@ -207,22 +207,24 @@ class MapScreenController extends ChangeNotifier {
     //  Animate the camera to the user's location
     mapController!.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
-          target: LatLng(
-              userLocation.position.latitude, userLocation.position.longitude),
-          zoom: mapZoomLevel,
-          bearing: bearingBtnTwoCoords
-          // bearing: navigationController.bearingBtnCOOrds.value,
-          ),
+        target: LatLng(
+            userLocation.position.latitude, userLocation.position.longitude),
+        zoom: mapZoomLevel,
+        // bearing: bearingBtnTwoCoords
+      ),
     ));
   }
 
   /// Method to update bearing value
   ///
   void animateCameraWithBearingValue({
-    required double bearingValue,
+    required double? bearingValue,
   }) {
-    bearingBtnTwoCoords = bearingValue;
+    // if value is null return
+    if (bearingValue == null) return;
 
+    bearingBtnTwoCoords = bearingValue;
+    notifyListeners();
     mapController!.animateCamera(CameraUpdate.bearingTo(bearingBtnTwoCoords));
   }
 
@@ -276,15 +278,15 @@ class MapScreenController extends ChangeNotifier {
                   z: 0.0,
                   timestamp: userLocation.timestamp));
 
-          // animate camera with bearing value
-          await updateUserLocationCircleAndAnimate(userLocation1);
-
           // update bearing
           animateCameraWithBearingValue(
             bearingValue: MapUtils.calculateBearingBtnTwoCords(
                 startLatLng: LatLng(points[count][1], points[count][0]),
                 endLatLng: LatLng(points[count + 1][1], points[count + 1][0])),
           );
+
+          // animate camera with new location
+          await updateUserLocationCircleAndAnimate(userLocation1);
 
           Duration diff = DateTime.now().difference(dateTimePrev);
           dateTimePrev = DateTime.now();
@@ -338,5 +340,13 @@ class MapScreenController extends ChangeNotifier {
 
       count = count + 1;
     });
+  }
+
+  /// Method to update user location
+  ///
+  void updateUserLocation({
+    required UserLocation userLocation,
+  }) {
+    this.userLocation = userLocation;
   }
 }

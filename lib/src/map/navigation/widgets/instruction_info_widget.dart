@@ -14,8 +14,7 @@ class InstructionInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // get navigation instruction controller class
-    final instructionInfoController =
-        NavigationInstructionProvider.of(context)!;
+    final instructionInfoController = NavigationInstructionProvider.of(context);
 
     // Below widget gets rebuilt whenever there is change in the controller [instructionInfoController]
     return ListenableBuilder(

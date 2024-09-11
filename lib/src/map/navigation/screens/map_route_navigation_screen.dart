@@ -71,9 +71,7 @@ class MapRouteNavigationScreenPageState
             persistentContentHeight: MediaQuery.of(context).size.height * 0.1,
             background: buildBackgroundUi(),
             persistentHeader: buildPersistentHeaderUi(),
-            expandableContent: NavigationInfoUi(
-              directionRouteResponse: directionRouteResponse,
-            ),
+            expandableContent: buildExpandableContentUi(),
           ),
         ),
       ),
@@ -147,6 +145,14 @@ class MapRouteNavigationScreenPageState
     );
   }
 
+  Container buildExpandableContentUi() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.71,
+      color: Colors.white,
+      child: NavigationInfoUi(directionRouteResponse: directionRouteResponse),
+    );
+  }
+
   Future<Uint8List> loadMarkerImage(String assetsPath) async {
     var byteData = await rootBundle.load(assetsPath);
     return byteData.buffer
@@ -156,13 +162,5 @@ class MapRouteNavigationScreenPageState
   // void onFeatureTap(dynamic featureId, Point point, LatLng latLng) async {
   //   // Fluttertoast.showToast(msg: 'Feature ID: ${featureId.toString()} \n '
   //   //     'Coordinates: ${latLng.toString()}');
-  // }
-
-  // Container buildExpandableContentUi() {
-  //   return Container(
-  //     height: MediaQuery.of(context).size.height * 0.71,
-  //     color: Colors.white,
-  //     child: NavigationInfoUi(directionRouteResponse: directionRouteResponse),
-  //   );
   // }
 }

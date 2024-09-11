@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/controllers/is_simulate_routing_notifier_controller.dart';
+import 'package:graphhooper_route_navigation/src/map/navigation/providers/instruction_controller_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/map_controller_provider.dart';
-
-//TODO: Uncomment onUser location updated call back
+import 'package:graphhooper_route_navigation/src/map/navigation/providers/user_speed_notifier_provider.dart';
 
 /// This is Map Screen which will show up after we start navigation.
 ///
@@ -54,23 +55,31 @@ class MapWidget extends StatelessWidget {
       myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
       myLocationRenderMode: MyLocationRenderMode.GPS,
 
-      // onUserLocationUpdated: (userLocation) {
-      //   this.userLocation = userLocation;
+      onUserLocationUpdated: (userLocation) {
+        // navigation instruction controller
+        final navigationInstructionController =
+            NavigationInstructionProvider.of(context);
 
-      //   if (!isSimulateRouting) {
-      //     navigationController.checkIsCoordinateInsideCircle(
-      //         usersLatLng: userLocation.position);
-      //     controller.animateCamera(CameraUpdate.newCameraPosition(
-      //         CameraPosition(
-      //             target: LatLng(userLocation.position.latitude,
-      //                 userLocation.position.longitude),
-      //             zoom: mapZoomLevel,
-      //             bearing: userLocation.bearing!)));
+        // speed controller
+        final speedNotifierController = UserSpeedProvider.of(context);
 
-      //     navigationController.updateSpeed(speed: userLocation.speed!);
-      //     navigationController.updateBearing(bearing: userLocation.bearing!);
-      //   }
-      // },
+        mapController.updateUserLocationCircleAndAnimate(userLocation);
+
+        if (!IsSimulateRoutingNotifierController.isSimulateRouting) {
+          // checks if the coordinate is inside the circle
+          navigationInstructionController.checkIsCoordinateInsideCircle(
+            directionRouteResponse: directionRouteResponse,
+            usersLatLng: userLocation.position,
+          );
+
+          // update user's speed
+          speedNotifierController.setUserSpeed(speed: userLocation.speed);
+
+          // update the bearing value
+          mapController.animateCameraWithBearingValue(
+              bearingValue: userLocation.bearing);
+        }
+      },
       // cameraTargetBounds: CameraTargetBounds(LatLngBounds( southwest: const LatLng(26.3978980576, 80.0884245137), northeast: const LatLng(26.3978980576, 80.0884245137))),
     );
   }
@@ -91,45 +100,3 @@ class MapWidget extends StatelessWidget {
     )));
   }
 }
-
-//  Widget buildMapUi() {
-//     return MaplibreMap(
-//       styleString:
-//           'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-//       onMapCreated: ,
-//       onStyleLoadedCallback: _onStyleLoadedCallback,
-//       initialCameraPosition: CameraPosition(
-//         target: LatLng(
-//             directionRouteResponse
-//                 .paths![0].snappedWaypoints!.coordinates!.first[1],
-//             directionRouteResponse
-//                 .paths![0].snappedWaypoints!.coordinates!.first[0]),
-//         zoom: mapZoomLevel,
-//       ),
-//       minMaxZoomPreference: const MinMaxZoomPreference(6, 19),
-//       myLocationEnabled: true,
-//       trackCameraPosition: true,
-//       compassEnabled: false,
-//       compassViewPosition: CompassViewPosition.TopRight,
-//       myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-//       myLocationRenderMode: MyLocationRenderMode.GPS,
-//       onUserLocationUpdated: (userLocation) {
-//         this.userLocation = userLocation;
-
-//         if (!isSimulateRouting) {
-//           navigationController.checkIsCoordinateInsideCircle(
-//               usersLatLng: userLocation.position);
-//           controller.animateCamera(CameraUpdate.newCameraPosition(
-//               CameraPosition(
-//                   target: LatLng(userLocation.position.latitude,
-//                       userLocation.position.longitude),
-//                   zoom: mapZoomLevel,
-//                   bearing: userLocation.bearing!)));
-
-//           navigationController.updateSpeed(speed: userLocation.speed!);
-//           navigationController.updateBearing(bearing: userLocation.bearing!);
-//         }
-//       },
-//       // cameraTargetBounds: CameraTargetBounds(LatLngBounds( southwest: const LatLng(26.3978980576, 80.0884245137), northeast: const LatLng(26.3978980576, 80.0884245137))),
-//     );
-//   }
