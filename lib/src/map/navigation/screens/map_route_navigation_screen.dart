@@ -3,7 +3,6 @@ import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/audio_icon_widget.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/instruction_info_widget.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/map_compass_widget.dart';
@@ -51,7 +50,7 @@ class MapRouteNavigationScreenPageState
 
   Future<bool> _willPopCallback(bool didPop) async {
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Get.back();
+      Navigator.of(context).pop();
     });
     return Future.value(true);
   }

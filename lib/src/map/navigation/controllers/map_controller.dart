@@ -207,11 +207,10 @@ class MapScreenController extends ChangeNotifier {
     //  Animate the camera to the user's location
     mapController!.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
-        target: LatLng(
-            userLocation.position.latitude, userLocation.position.longitude),
-        zoom: mapZoomLevel,
-        // bearing: bearingBtnTwoCoords
-      ),
+          target: LatLng(
+              userLocation.position.latitude, userLocation.position.longitude),
+          zoom: mapZoomLevel,
+          bearing: bearingBtnTwoCoords),
     ));
   }
 
@@ -225,7 +224,6 @@ class MapScreenController extends ChangeNotifier {
 
     bearingBtnTwoCoords = bearingValue;
     notifyListeners();
-    mapController!.animateCamera(CameraUpdate.bearingTo(bearingBtnTwoCoords));
   }
 
   /// Method to animate camera to user's current location

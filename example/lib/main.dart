@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
-import 'bindings/controller_binding.dart';
 import 'bindings/http_overrides.dart';
 import 'map_dashboard_screen.dart';
 
@@ -37,7 +35,7 @@ class _MyAppState extends State<MyApp> {
   // Platform messages are asynchronous, so we initialize in an async method.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp(
       title: 'Ghaphhooper Map Route Navigation',
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
@@ -45,7 +43,6 @@ class _MyAppState extends State<MyApp> {
       darkTheme: ThemeData(brightness: Brightness.dark),
       themeMode: ThemeMode.dark,
       home: const MapDashboardScreen(),
-      initialBinding: ControllerBinding(),
     );
   }
 }

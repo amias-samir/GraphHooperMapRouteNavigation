@@ -16,14 +16,16 @@ class MapDashboardScreen extends StatefulWidget {
 
 class MapDashboardScreenState extends State<MapDashboardScreen> {
   MaplibreMapController? controller;
+
   // ScrollController? draggableSheetController;
 
-  // water
+  /// water color raster id
   final watercolorRasterId = "watercolorRaster";
 
+  /// selected style id
   int selectedStyleId = 0;
 
-  // some static user location
+  /// some static user location
   UserLocation userLocation = UserLocation(
       position: const LatLng(28.987280, 80.1652),
       altitude: 1200.0,
@@ -40,8 +42,9 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
           y: 0.0,
           z: 0.0,
           timestamp: DateTime.now()));
-  bool isInitialize = false;
 
+
+  bool isInitialize = false;
   double markerSize = 0.5;
   double mapZoomLevel = 14.0;
 
@@ -49,7 +52,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  _onMapCreated(MaplibreMapController controller) async {
+ void _onMapCreated(MaplibreMapController controller) async {
     this.controller = controller;
 
     controller.onFeatureTapped.add(onFeatureTap);
@@ -75,7 +78,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     if (!mounted) return;
   }
 
-  addLayerToMap(DirectionRouteResponse directionRouteResponse) async {
+ void  addLayerToMap(DirectionRouteResponse directionRouteResponse) async {
     controller!.clearCircles();
     controller!.clearSymbols();
 
@@ -89,6 +92,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
   // }
 
   Symbol? symbol;
+
   Future<void> getDataFromTheServer(LatLng latLng) async {
     debugPrint(
       'getDataFromTheServer LatLng: ${latLng.toString()}  \n',
@@ -196,7 +200,8 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
               ),
               IconButton(
                   onPressed: () {
-                    Get.back();
+                    // pop the bottom sheet
+                    Navigator.canPop(context) ? Navigator.pop(context) : null;
                   },
                   icon: const Icon(
                     Icons.close,
@@ -215,8 +220,11 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
               onPressed: () async {
                 // Get.back();
                 SchedulerBinding.instance.addPostFrameCallback((_) {
-                  Get.to(() => WrapperScreen(
-                        directionRouteResponse: directionRouteResponse,
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WrapperScreen(
+                            directionRouteResponse: directionRouteResponse),
                       ));
                 });
               },
@@ -274,13 +282,11 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   void onFeatureTap(id, Point<double> point, LatLng coordinates) {
     if (directionRouteResponse.toJson().isNotEmpty) {
-      Get.bottomSheet(
-        buildNavigateToBottomSheetUI(directionRouteResponse),
-        enableDrag: true,
-        persistent: false,
-        ignoreSafeArea: true,
-        isScrollControlled: true,
-      );
+      // shows modal bottom sheet to start navigation
+      showModalBottomSheet(
+          context: context,
+          builder: (context) =>
+              buildNavigateToBottomSheetUI(directionRouteResponse));
     }
   }
 }
