@@ -371,5 +371,8 @@ class MapScreenController extends ChangeNotifier {
     required UserLocation userLocation,
   }) {
     this.userLocation = userLocation;
+
+    // animate camera
+    mapController?.animateCamera(CameraUpdate.newLatLng(userLocation.position));
   }
 }

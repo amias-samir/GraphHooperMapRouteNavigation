@@ -15,8 +15,7 @@ class _SimulateButtonState extends State<SimulateButton> {
   @override
   Widget build(BuildContext context) {
     final mapController = MapControllerProvider.of(context);
-    final isSimulatingRouting =
-        IsSimulateRoutingNotifierController.isSimulateRouting;
+
     return SizedBox(
       height: 30.0,
       child: MaterialButton(

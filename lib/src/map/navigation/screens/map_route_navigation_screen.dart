@@ -13,7 +13,6 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import '../model/direction_route_response.dart';
 
 class MapRouteNavigationScreenPage extends StatefulWidget {
-
   /// [DirectionRouteResponse] instance
   ///
   final DirectionRouteResponse directionRouteResponse;
@@ -35,7 +34,6 @@ class MapRouteNavigationScreenPage extends StatefulWidget {
 
 class MapRouteNavigationScreenPageState
     extends State<MapRouteNavigationScreenPage> {
-
   late MaplibreMapController controller;
 
   late DirectionRouteResponse directionRouteResponse;
@@ -76,7 +74,7 @@ class MapRouteNavigationScreenPageState
         key: _scaffoldKeyRoute,
         body: SafeArea(
           child: ExpandableBottomSheet(
-            persistentContentHeight: MediaQuery.of(context).size.height * 0.1,
+            persistentContentHeight: MediaQuery.of(context).size.height * 0.09,
             background: buildBackgroundUi(),
             persistentHeader: buildPersistentHeaderUi(),
             expandableContent: buildExpandableContentUi(),
