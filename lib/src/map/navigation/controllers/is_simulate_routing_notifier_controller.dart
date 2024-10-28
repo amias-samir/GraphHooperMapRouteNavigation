@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
 
 class IsSimulateRoutingNotifierController {
-  static final ValueNotifier<bool> _isSimulateRouting =
+  static final ValueNotifier<bool> isSimulateRoutingNotifier =
       ValueNotifier<bool>(false);
 
-  static bool get isSimulateRouting => _isSimulateRouting.value;
+  static bool get isSimulateRouting => isSimulateRoutingNotifier.value;
 
-  static void updateIsSimulateRoutingValue({
-    required bool simulateRouting,
+  /// Method to toggle the value of the [isSimulateRoutingNotifier]
+  /// if the value is already simulating then on again calling this function
+  /// stops the simulation
+  ///
+  static void toggleIsSimulatingValue({
+    required VoidCallback onSimulationStopped,
+    required VoidCallback onSimulationStart,
   }) {
-    _isSimulateRouting.value = simulateRouting;
-  }
+    if (isSimulateRouting) {
+      onSimulationStopped.call();
+    } else {
+      onSimulationStart.call();
+    }
 
-  static void toggleIsSimulatingValue() {
-    _isSimulateRouting.value = !isSimulateRouting;
+    // update the notifier
+    isSimulateRoutingNotifier.value = !isSimulateRouting;
   }
 }

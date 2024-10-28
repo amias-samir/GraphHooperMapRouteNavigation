@@ -63,9 +63,10 @@ class MapWidget extends StatelessWidget {
         // speed controller
         final speedNotifierController = UserSpeedProvider.of(context);
 
-        mapController.updateUserLocationCircleAndAnimate(userLocation);
-
         if (!IsSimulateRoutingNotifierController.isSimulateRouting) {
+          // update user's physical real location
+          mapController.updateUserLocation(userLocation: userLocation);
+
           // checks if the coordinate is inside the circle
           navigationInstructionController.checkIsCoordinateInsideCircle(
             directionRouteResponse: directionRouteResponse,
@@ -76,7 +77,7 @@ class MapWidget extends StatelessWidget {
           speedNotifierController.setUserSpeed(speed: userLocation.speed);
 
           // update the bearing value
-          mapController.animateCameraWithBearingValue(
+          mapController.updateBearingBtnTwoCoords(
               bearingValue: userLocation.bearing);
         }
       },

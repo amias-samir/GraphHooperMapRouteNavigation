@@ -13,10 +13,18 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import '../model/direction_route_response.dart';
 
 class MapRouteNavigationScreenPage extends StatefulWidget {
+
+  /// [DirectionRouteResponse] instance
+  ///
   final DirectionRouteResponse directionRouteResponse;
+
+  /// compass icon data
+  ///
   static const IconData compass =
       IconData(0xf8ca, fontFamily: 'iconFont', fontPackage: 'iconFontPackage');
 
+  /// Constructor
+  ///
   const MapRouteNavigationScreenPage(this.directionRouteResponse, {super.key});
 
   @override
@@ -27,6 +35,7 @@ class MapRouteNavigationScreenPage extends StatefulWidget {
 
 class MapRouteNavigationScreenPageState
     extends State<MapRouteNavigationScreenPage> {
+
   late MaplibreMapController controller;
 
   late DirectionRouteResponse directionRouteResponse;

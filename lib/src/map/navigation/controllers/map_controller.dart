@@ -51,6 +51,10 @@ class MapScreenController extends ChangeNotifier {
   ///
   double bearingBtnTwoCoords = 0.0;
 
+  /// [Timer] instance for simulate routing
+  ///
+  Timer? _routingtimer;
+
   /// User's starting location [UserLocation]
   ///
   UserLocation userLocation = UserLocation(
@@ -107,8 +111,8 @@ class MapScreenController extends ChangeNotifier {
   ///
   Future<void> addSourceAndLineLayer(
       Map<String, dynamic> modifiedResponse) async {
-    // add start and end marker i.e --> green and red respectively
-    addStartAndEndMarker();
+    // add end marker
+    addDestinationCircle();
 
     // feature collection object
     final fills = {
@@ -142,27 +146,36 @@ class MapScreenController extends ChangeNotifier {
     );
   }
 
-  /// This method adds start and end marker which is circle
-  /// [Red color] denotes the destination
+  /// This method adds start marker which is circle
   /// [Green color] denotes the starting point for the user
   ///
-  Future<void> addStartAndEndMarker() async {
+  // Future<void> addSimulationStartCircle() async {
+  //   // if null return
+  //   if (_mapController == null) {
+  //     return;
+  //   }
+
+  //   // starting circle
+  //   startingUserLocationCircle = await _mapController!.addCircle(
+  //     CircleOptions(
+  //         geometry: LatLng(
+  //             directionRouteResponse
+  //                 .paths![0].snappedWaypoints!.coordinates!.first[1],
+  //             directionRouteResponse
+  //                 .paths![0].snappedWaypoints!.coordinates!.first[0]),
+  //         circleColor: NavigationColors.green.toHexStringRGB(),
+  //         circleRadius: 12),
+  //   );
+  // }
+
+  /// This method addsend marker which is circle
+  /// [Red color] denotes the destination
+  ///
+  void addDestinationCircle() {
     // if null return
     if (_mapController == null) {
       return;
     }
-
-    // starting circle
-    startingUserLocationCircle = await _mapController!.addCircle(
-      CircleOptions(
-          geometry: LatLng(
-              directionRouteResponse
-                  .paths![0].snappedWaypoints!.coordinates!.first[1],
-              directionRouteResponse
-                  .paths![0].snappedWaypoints!.coordinates!.first[0]),
-          circleColor: NavigationColors.green.toHexStringRGB(),
-          circleRadius: 12),
-    );
 
     // destination circle
     _mapController!.addCircle(
@@ -178,7 +191,7 @@ class MapScreenController extends ChangeNotifier {
   }
 
   /// Method to update [UserLocation] circle
-  /// And animate camera to user location
+  /// And animate camera to user location (simulated user location)
   ///
   Future<void> updateUserLocationCircleAndAnimate(
       UserLocation userLocation) async {
@@ -204,11 +217,10 @@ class MapScreenController extends ChangeNotifier {
           .updateCircle(startingUserLocationCircle!, circleOptions);
     }
 
-    //  Animate the camera to the user's location
+    // //  Animate the camera to new circle location
     mapController!.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
-          target: LatLng(
-              userLocation.position.latitude, userLocation.position.longitude),
+          target: newLocationFromRes,
           zoom: mapZoomLevel,
           bearing: bearingBtnTwoCoords),
     ));
@@ -216,7 +228,7 @@ class MapScreenController extends ChangeNotifier {
 
   /// Method to update bearing value
   ///
-  void animateCameraWithBearingValue({
+  void updateBearingBtnTwoCoords({
     required double? bearingValue,
   }) {
     // if value is null return
@@ -226,18 +238,31 @@ class MapScreenController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Method to animate camera to user's current location
+  /// Method to animate camera to user's current physical real location
   ///
   void animateUserToCurrentLocation({
     double? zoomLevel,
     double? bearing,
   }) {
-    // TODO: update user location as he or she starts to move using maplibre onUserLocation updated
     mapController?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(
             userLocation.position.latitude, userLocation.position.longitude),
         zoom: zoomLevel ?? mapZoomLevel,
         bearing: bearing ?? userLocation.bearing!)));
+  }
+
+  /// Method to stop simulation
+  ///
+  void stopSimulation() async {
+    // cancel the routing timer and re-initialize it to null
+    _routingtimer?.cancel();
+    _routingtimer = null;
+
+    // remove the green circle which denotes user's current location but in simulation
+    if (mapController == null || startingUserLocationCircle == null) return;
+
+    await mapController!.removeCircle(startingUserLocationCircle!);
+    startingUserLocationCircle = null;
   }
 
   /// Method to simulate routing
@@ -251,7 +276,7 @@ class MapScreenController extends ChangeNotifier {
     DateTime dateTimePrev = DateTime.now();
 
     int count = 0;
-    Timer.periodic(const Duration(seconds: 2), (timer) async {
+    _routingtimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       if (!simulateRoute) {
         count = 0;
         timer.cancel();
@@ -259,7 +284,7 @@ class MapScreenController extends ChangeNotifier {
 
       if (count < points.length) {
         if (count < points.length - 1) {
-          UserLocation userLocation1 = UserLocation(
+          UserLocation simulatedUserLocation = UserLocation(
               position: LatLng(points[count][1], points[count][0]),
               altitude: userLocation.altitude,
               bearing: userLocation.bearing,
@@ -277,14 +302,14 @@ class MapScreenController extends ChangeNotifier {
                   timestamp: userLocation.timestamp));
 
           // update bearing
-          animateCameraWithBearingValue(
+          updateBearingBtnTwoCoords(
             bearingValue: MapUtils.calculateBearingBtnTwoCords(
                 startLatLng: LatLng(points[count][1], points[count][0]),
                 endLatLng: LatLng(points[count + 1][1], points[count + 1][0])),
           );
 
           // animate camera with new location
-          await updateUserLocationCircleAndAnimate(userLocation1);
+          await updateUserLocationCircleAndAnimate(simulatedUserLocation);
 
           Duration diff = DateTime.now().difference(dateTimePrev);
           dateTimePrev = DateTime.now();
@@ -306,10 +331,10 @@ class MapScreenController extends ChangeNotifier {
 
           navigationInstructionController.checkIsCoordinateInsideCircle(
               directionRouteResponse: directionRouteResponse,
-              usersLatLng: userLocation1.position);
+              usersLatLng: simulatedUserLocation.position);
         }
       } else if (count == points.length) {
-        UserLocation userLocation1 = UserLocation(
+        UserLocation simulatedUserLocation = UserLocation(
             position: LatLng(points[count - 1][1], points[count - 1][0]),
             altitude: userLocation.altitude,
             bearing: userLocation.bearing,
@@ -327,11 +352,11 @@ class MapScreenController extends ChangeNotifier {
                 timestamp: userLocation.timestamp));
 
         // use map controller to animate camera with bearing value
-        await updateUserLocationCircleAndAnimate(userLocation1);
+        await updateUserLocationCircleAndAnimate(simulatedUserLocation);
 
         navigationInstructionController.checkIsCoordinateInsideCircle(
             directionRouteResponse: directionRouteResponse,
-            usersLatLng: userLocation1.position);
+            usersLatLng: simulatedUserLocation.position);
 
         timer.cancel();
       }

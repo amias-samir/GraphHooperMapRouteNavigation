@@ -24,7 +24,7 @@ class MapCompassWidget extends StatelessWidget {
         //         tilt: 0,
         //         bearing: 0.0)))
         //         ;
-        mapController.animateCameraWithBearingValue(bearingValue: 0.0);
+        mapController.updateBearingBtnTwoCoords(bearingValue: 0.0);
       },
       child: Container(
         height: 50,

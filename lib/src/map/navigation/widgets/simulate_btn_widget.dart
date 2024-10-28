@@ -15,19 +15,30 @@ class _SimulateButtonState extends State<SimulateButton> {
   @override
   Widget build(BuildContext context) {
     final mapController = MapControllerProvider.of(context);
+    final isSimulatingRouting =
+        IsSimulateRoutingNotifierController.isSimulateRouting;
     return SizedBox(
       height: 30.0,
       child: MaterialButton(
-          child: const Text(
-            'Simulate',
-            style: TextStyle(color: Colors.black),
-          ),
+          child: ValueListenableBuilder<bool>(
+              valueListenable:
+                  IsSimulateRoutingNotifierController.isSimulateRoutingNotifier,
+              builder: (context, val, child) {
+                return Text(
+                  val ? 'Stop Simulation' : "Simulate",
+                  style: const TextStyle(color: Colors.black),
+                );
+              }),
           onPressed: () {
             // toggle the value
-            IsSimulateRoutingNotifierController.toggleIsSimulatingValue();
-
-            // calls method
-            mapController.simulateRouting();
+            IsSimulateRoutingNotifierController.toggleIsSimulatingValue(
+              onSimulationStopped: () {
+                mapController.stopSimulation();
+              },
+              onSimulationStart: () {
+                mapController.simulateRouting();
+              },
+            );
           }),
     );
   }

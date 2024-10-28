@@ -25,24 +25,9 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
   /// selected style id
   int selectedStyleId = 0;
 
-  /// some static user location
-  UserLocation userLocation = UserLocation(
-      position: const LatLng(28.987280, 80.1652),
-      altitude: 1200.0,
-      bearing: 0.0,
-      speed: 0.0,
-      horizontalAccuracy: 0.0,
-      verticalAccuracy: 0.0,
-      timestamp: DateTime.now(),
-      heading: UserHeading(
-          magneticHeading: 0.0,
-          trueHeading: 0.0,
-          headingAccuracy: 0.0,
-          x: 0.0,
-          y: 0.0,
-          z: 0.0,
-          timestamp: DateTime.now()));
-
+  /// User location instance
+  ///
+  UserLocation? userLocation;
 
   bool isInitialize = false;
   double markerSize = 0.5;
@@ -52,7 +37,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
- void _onMapCreated(MaplibreMapController controller) async {
+  void _onMapCreated(MaplibreMapController controller) async {
     this.controller = controller;
 
     controller.onFeatureTapped.add(onFeatureTap);
@@ -78,7 +63,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     if (!mounted) return;
   }
 
- void  addLayerToMap(DirectionRouteResponse directionRouteResponse) async {
+  void addLayerToMap(DirectionRouteResponse directionRouteResponse) async {
     controller!.clearCircles();
     controller!.clearSymbols();
 
@@ -94,6 +79,8 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
   Symbol? symbol;
 
   Future<void> getDataFromTheServer(LatLng latLng) async {
+    if (userLocation == null) return;
+
     debugPrint(
       'getDataFromTheServer LatLng: ${latLng.toString()}  \n',
     );
@@ -113,7 +100,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     ApiRequest apiRequest = ApiRequest();
 
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
-        source: userLocation.position,
+        source: userLocation!.position,
         destination: latLng,
         navigationType: NavigationProfile.car,
         graphHooperApiKey:
@@ -260,9 +247,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
       onMapCreated: _onMapCreated,
       // onStyleLoadedCallback: _onStyleLoadedCallback,
       initialCameraPosition: CameraPosition(
-        target: userLocation.position.latitude != 0.0
-            ? userLocation.position
-            : const LatLng(27.700769, 85.300140),
+        target: const LatLng(27.700769, 85.300140),
         zoom: mapZoomLevel,
       ),
       minMaxZoomPreference: const MinMaxZoomPreference(5, 19),
@@ -274,6 +259,9 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
       myLocationRenderMode: MyLocationRenderMode.GPS,
       onMapClick: (point, latLng) {
         getDataFromTheServer(latLng);
+      },
+      onUserLocationUpdated: (location) {
+        userLocation = location;
       },
 
       // cameraTargetBounds: CameraTargetBounds(LatLngBounds( southwest: const LatLng( 25.873742 ,79.338507), northeast: const LatLng(28.147416, 89.009072))),
