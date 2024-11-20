@@ -37,7 +37,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _onMapCreated(MaplibreMapController controller) async {
+  void _onMapCreated(MapLibreMapController controller) async {
     this.controller = controller;
 
     controller.onFeatureTapped.add(onFeatureTap);

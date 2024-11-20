@@ -1,3 +1,6 @@
+## 0.0.8
+* update deprecated map controller with the newer one
+
 ## 0.0.7
 * update deprecated map controller with the newer one
 
