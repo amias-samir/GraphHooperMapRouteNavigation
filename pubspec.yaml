@@ -1,6 +1,6 @@
 name: graphhooper_route_navigation
 description: A new plugin for graphhooper route navigation. Use Mapbox Map as a base layer & map styles and Graphhooper Map route navigation data for polyline, duration and time.
-version: 0.0.5
+version: 0.0.6
 homepage: https://github.com/amias-samir/GraphHooperMapRouteNavigation.git
 
 environment:
@@ -13,22 +13,21 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   text_to_speech: ^0.2.3
-  flutter_plugin_android_lifecycle: ^2.0.20
+  flutter_plugin_android_lifecycle: ^2.0.22
   plugin_platform_interface: ^2.1.8
   vector_math: ^2.1.4
   expandable_bottom_sheet: ^1.1.1+1
 
   #  mapbox_gl: ^0.16.0
-  maplibre_gl: ^0.19.0+2
+  maplibre_gl: ^0.20.0
   #  maplibre_gl:
   #    git:
   #      url: https://github.com/maplibre/flutter-maplibre-gl.git
   #      ref: main
-  get: ^4.6.6
-  http: ^1.2.1
+  http: ^1.2.2
 
 dependency_overrides:
-  js: ^0.7.1
+#  js: ^0.7.1
 
 dev_dependencies:
   flutter_test:

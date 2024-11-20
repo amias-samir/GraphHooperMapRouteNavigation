@@ -16,32 +16,20 @@ class MapDashboardScreen extends StatefulWidget {
 
 class MapDashboardScreenState extends State<MapDashboardScreen> {
   MaplibreMapController? controller;
+
   // ScrollController? draggableSheetController;
 
-  // water
+  /// water color raster id
   final watercolorRasterId = "watercolorRaster";
 
+  /// selected style id
   int selectedStyleId = 0;
 
-  // some static user location
-  UserLocation userLocation = UserLocation(
-      position: const LatLng(28.987280, 80.1652),
-      altitude: 1200.0,
-      bearing: 0.0,
-      speed: 0.0,
-      horizontalAccuracy: 0.0,
-      verticalAccuracy: 0.0,
-      timestamp: DateTime.now(),
-      heading: UserHeading(
-          magneticHeading: 0.0,
-          trueHeading: 0.0,
-          headingAccuracy: 0.0,
-          x: 0.0,
-          y: 0.0,
-          z: 0.0,
-          timestamp: DateTime.now()));
-  bool isInitialize = false;
+  /// User location instance
+  ///
+  UserLocation? userLocation;
 
+  bool isInitialize = false;
   double markerSize = 0.5;
   double mapZoomLevel = 14.0;
 
@@ -49,7 +37,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  _onMapCreated(MaplibreMapController controller) async {
+  void _onMapCreated(MaplibreMapController controller) async {
     this.controller = controller;
 
     controller.onFeatureTapped.add(onFeatureTap);
@@ -75,7 +63,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     if (!mounted) return;
   }
 
-  addLayerToMap(DirectionRouteResponse directionRouteResponse) async {
+  void addLayerToMap(DirectionRouteResponse directionRouteResponse) async {
     controller!.clearCircles();
     controller!.clearSymbols();
 
@@ -89,7 +77,10 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
   // }
 
   Symbol? symbol;
+
   Future<void> getDataFromTheServer(LatLng latLng) async {
+    if (userLocation == null) return;
+
     debugPrint(
       'getDataFromTheServer LatLng: ${latLng.toString()}  \n',
     );
@@ -109,11 +100,15 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     ApiRequest apiRequest = ApiRequest();
 
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
-        source: userLocation.position,
+        source: userLocation!.position,
         destination: latLng,
+        //optional [customBaseUrl]
+        customBaseUrl:dotenv.env["CUSTOM_BASE_URL"] ,
         navigationType: NavigationProfile.car,
-        graphHooperApiKey:
-            dotenv.env["API_KEY"] ?? "Include your API key in the env file");
+        // api key is optional if you use your own custom url
+        // if you are using graphhooper map routing service then [graphHooperApiKey] is needed to fetch route data
+        graphHooperApiKey: dotenv.env["API_KEY"] ?? "Your GraphHooper API key"
+    );
 
     if (directionRouteResponse.toJson().isNotEmpty) {
       _addSourceAndLineLayer(directionRouteResponse);
@@ -196,7 +191,8 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
               ),
               IconButton(
                   onPressed: () {
-                    Get.back();
+                    // pop the bottom sheet
+                    Navigator.canPop(context) ? Navigator.pop(context) : null;
                   },
                   icon: const Icon(
                     Icons.close,
@@ -215,8 +211,12 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
               onPressed: () async {
                 // Get.back();
                 SchedulerBinding.instance.addPostFrameCallback((_) {
-                  Get.to(() =>
-                      MapRouteNavigationScreenPage(directionRouteResponse));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NavigationWrapperScreen(
+                            directionRouteResponse: directionRouteResponse),
+                      ));
                 });
               },
               icon: const Icon(
@@ -251,20 +251,21 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
       onMapCreated: _onMapCreated,
       // onStyleLoadedCallback: _onStyleLoadedCallback,
       initialCameraPosition: CameraPosition(
-        target: userLocation.position.latitude != 0.0
-            ? userLocation.position
-            : const LatLng(27.700769, 85.300140),
+        target: const LatLng(27.700769, 85.300140),
         zoom: mapZoomLevel,
       ),
       minMaxZoomPreference: const MinMaxZoomPreference(5, 19),
       myLocationEnabled: true,
       trackCameraPosition: true,
       compassEnabled: true,
-      compassViewPosition: CompassViewPosition.TopRight,
-      myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-      myLocationRenderMode: MyLocationRenderMode.GPS,
+      compassViewPosition: CompassViewPosition.topRight,
+      myLocationTrackingMode: MyLocationTrackingMode.trackingGps,
+      myLocationRenderMode: MyLocationRenderMode.gps,
       onMapClick: (point, latLng) {
         getDataFromTheServer(latLng);
+      },
+      onUserLocationUpdated: (location) {
+        userLocation = location;
       },
 
       // cameraTargetBounds: CameraTargetBounds(LatLngBounds( southwest: const LatLng( 25.873742 ,79.338507), northeast: const LatLng(28.147416, 89.009072))),
@@ -273,13 +274,11 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
 
   void onFeatureTap(id, Point<double> point, LatLng coordinates) {
     if (directionRouteResponse.toJson().isNotEmpty) {
-      Get.bottomSheet(
-        buildNavigateToBottomSheetUI(directionRouteResponse),
-        enableDrag: true,
-        persistent: false,
-        ignoreSafeArea: true,
-        isScrollControlled: true,
-      );
+      // shows modal bottom sheet to start navigation
+      showModalBottomSheet(
+          context: context,
+          builder: (context) =>
+              buildNavigateToBottomSheetUI(directionRouteResponse));
     }
   }
 }

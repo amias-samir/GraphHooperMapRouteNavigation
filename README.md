@@ -23,17 +23,32 @@ This plugin is yet to test on iOS device.
 ## Import package:
 ```
  import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
- import 'package:get/get.dart';
  ```
 
 
 ```
-MaterialButton(onPressed: () async{
+MaterialButton(
+    onPressed: () async{
                     ApiRequest apiRequest = ApiRequest();
 
-    DirectionRouteResponse directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(usersCurrentLatLng, destinationLatLng, NavigationProfile.car);
-    Get.to(MapRouteNavigationScreenPage(directionRouteResponse, mapAccessToken));
-              },
+                    DirectionRouteResponse directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
+                                                                        source: userLocation!.position,
+                                                                        destination: latLng,
+                                                                        //optional [customBaseUrl]
+                                                                        customBaseUrl:dotenv.env["CUSTOM_BASE_URL"] ,
+                                                                        navigationType: NavigationProfile.car,
+                                                                        // api key is optional if you use your own custom url
+                                                                        // if you are using graphhooper map routing service then [graphHooperApiKey] is needed to fetch route data
+                                                                        graphHooperApiKey: dotenv.env["API_KEY"] ?? "Your GraphHooper API key"
+                                                                        );
+                   
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NavigationWrapperScreen(
+                            directionRouteResponse: directionRouteResponse),
+                      ));
+                     },
                 child: Text('Navigate'),
               )
 ```

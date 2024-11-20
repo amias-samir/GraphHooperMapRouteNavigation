@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Points {
   String? type;
   List<List<double>>? coordinates;
