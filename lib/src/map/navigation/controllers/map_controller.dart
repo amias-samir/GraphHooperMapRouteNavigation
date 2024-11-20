@@ -31,13 +31,13 @@ class MapScreenController extends ChangeNotifier {
     required this.directionRouteResponse,
   });
 
-  /// private [MaplibreMapController] instance
+  /// private [MapLibreMapController] instance
   ///
-  MaplibreMapController? _mapController;
+  MapLibreMapController? _mapController;
 
   /// Getter for mapbox controller instance
   ///
-  MaplibreMapController? get mapController => _mapController;
+  MapLibreMapController? get mapController => _mapController;
 
   /// User's starting Location circle
   ///
@@ -77,7 +77,7 @@ class MapScreenController extends ChangeNotifier {
   /// Method to handle on map created callback
   ///
   void onMapCreated({
-    required MaplibreMapController mapLibreMapController,
+    required MapLibreMapController mapLibreMapController,
     VoidCallback? extraFunc,
   }) {
     // initialize map controller

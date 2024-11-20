@@ -86,7 +86,7 @@ class MapWidget extends StatelessWidget {
   }
 
   void _onStyleLoadedCallback(
-    MaplibreMapController mapLibreMapController,
+    MapLibreMapController mapLibreMapController,
     DirectionRouteResponse directionRouteResponse,
     double zoomLevel,
   ) async {
