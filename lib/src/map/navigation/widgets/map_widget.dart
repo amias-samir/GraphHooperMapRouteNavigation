@@ -51,9 +51,9 @@ class MapWidget extends StatelessWidget {
       myLocationEnabled: true,
       trackCameraPosition: true,
       compassEnabled: false,
-      compassViewPosition: CompassViewPosition.TopRight,
-      myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-      myLocationRenderMode: MyLocationRenderMode.GPS,
+      compassViewPosition: CompassViewPosition.topRight,
+      myLocationTrackingMode: MyLocationTrackingMode.trackingGps,
+      myLocationRenderMode: MyLocationRenderMode.gps,
 
       onUserLocationUpdated: (userLocation) {
         // navigation instruction controller

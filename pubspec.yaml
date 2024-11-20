@@ -13,18 +13,18 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   text_to_speech: ^0.2.3
-  flutter_plugin_android_lifecycle: ^2.0.20
+  flutter_plugin_android_lifecycle: ^2.0.22
   plugin_platform_interface: ^2.1.8
   vector_math: ^2.1.4
   expandable_bottom_sheet: ^1.1.1+1
 
   #  mapbox_gl: ^0.16.0
-  maplibre_gl: ^0.19.0+2
+  maplibre_gl: ^0.20.0
   #  maplibre_gl:
   #    git:
   #      url: https://github.com/maplibre/flutter-maplibre-gl.git
   #      ref: main
-  http: ^1.2.1
+  http: ^1.2.2
 
 dependency_overrides:
   js: ^0.7.1

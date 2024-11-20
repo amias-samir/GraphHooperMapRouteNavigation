@@ -107,7 +107,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
         navigationType: NavigationProfile.car,
         // api key is optional if you use your own custom url
         // if you are using graphhooper map routing service then [graphHooperApiKey] is needed to fetch route data
-        graphHooperApiKey: dotenv.env["API_KEY"] ?? "Include your API key in the env file"
+        graphHooperApiKey: dotenv.env["API_KEY"] ?? "Your GraphHooper API key"
     );
 
     if (directionRouteResponse.toJson().isNotEmpty) {
@@ -258,9 +258,9 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
       myLocationEnabled: true,
       trackCameraPosition: true,
       compassEnabled: true,
-      compassViewPosition: CompassViewPosition.TopRight,
-      myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-      myLocationRenderMode: MyLocationRenderMode.GPS,
+      compassViewPosition: CompassViewPosition.topRight,
+      myLocationTrackingMode: MyLocationTrackingMode.trackingGps,
+      myLocationRenderMode: MyLocationRenderMode.gps,
       onMapClick: (point, latLng) {
         getDataFromTheServer(latLng);
       },
