@@ -15,7 +15,7 @@ class MapDashboardScreen extends StatefulWidget {
 }
 
 class MapDashboardScreenState extends State<MapDashboardScreen> {
-  MaplibreMapController? controller;
+  MapLibreMapController? controller;
 
   // ScrollController? draggableSheetController;
 
