@@ -27,7 +27,7 @@ dependencies:
   http: ^1.2.2
 
 dependency_overrides:
-  js: ^0.7.1
+#  js: ^0.7.1
 
 dev_dependencies:
   flutter_test:

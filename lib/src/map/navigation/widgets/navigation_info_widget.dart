@@ -3,8 +3,6 @@ import 'package:graphhooper_route_navigation/graphhooper_route_navigation.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/providers/user_speed_notifier_provider.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/widgets/navigation_info_item_widget.dart';
 
-import 'simulate_btn_widget.dart';
-
 class NavigationInfoUi extends StatelessWidget {
   /// Creates [NavigationInfoUi] instance
   ///
