@@ -1,4 +1,8 @@
 
+## 0.0.6
+* Remove getX and use Flutter's default ChangeNotifier to update state
+* update packages
+
 ## 0.0.5
 * Minor enhancement
   
