@@ -20,23 +20,23 @@ import 'package:graphhooper_route_navigation/src/map/navigation/screens/map_rout
 ///   allowing seamless integration of various state controllers (e.g., user settings, theme settings, navigation instructions).
 /// - To facilitate easy state access and updates without relying on third-party dependencies
 ///   like Provider, thus keeping the package lightweight and focused on built-in Flutter mechanisms.
-class WrapperScreen extends StatefulWidget {
+class NavigationWrapperScreen extends StatefulWidget {
   /// [DirectionRouteResponse] instance
   ///
   final DirectionRouteResponse directionRouteResponse;
 
   /// [WrapperScreen] constructor
   ///
-  const WrapperScreen({
+  const NavigationWrapperScreen({
     super.key,
     required this.directionRouteResponse,
   });
 
   @override
-  State<WrapperScreen> createState() => _WrapperScreenState();
+  State<NavigationWrapperScreen> createState() => _WrapperScreenState();
 }
 
-class _WrapperScreenState extends State<WrapperScreen> {
+class _WrapperScreenState extends State<NavigationWrapperScreen> {
   /// [AudioInstructionController] instance this class will be passed down the widget tree.
   ///
   final audioInstructionController = AudioInstructionController();

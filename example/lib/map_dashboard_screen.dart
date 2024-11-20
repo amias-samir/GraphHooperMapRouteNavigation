@@ -214,7 +214,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => WrapperScreen(
+                        builder: (context) => NavigationWrapperScreen(
                             directionRouteResponse: directionRouteResponse),
                       ));
                 });
