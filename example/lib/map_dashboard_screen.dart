@@ -102,9 +102,13 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
         source: userLocation!.position,
         destination: latLng,
+        //optional [customBaseUrl]
+        customBaseUrl:dotenv.env["CUSTOM_BASE_URL"] ,
         navigationType: NavigationProfile.car,
-        graphHooperApiKey:
-            dotenv.env["API_KEY"] ?? "Include your API key in the env file");
+        // api key is optional if you use your own custom url
+        // if you are using graphhooper map routing service then [graphHooperApiKey] is needed to fetch route data
+        graphHooperApiKey: dotenv.env["API_KEY"] ?? "Include your API key in the env file"
+    );
 
     if (directionRouteResponse.toJson().isNotEmpty) {
       _addSourceAndLineLayer(directionRouteResponse);

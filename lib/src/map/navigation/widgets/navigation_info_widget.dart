@@ -41,7 +41,7 @@ class NavigationInfoUi extends StatelessWidget {
                               padding: const EdgeInsets.only(
                                   bottom: 8.0, left: 20.0),
                               child: Text(
-                                speedNotifier.speed.toString(),
+                                'Speed: ${speedNotifier.speed.toStringAsFixed(2)} Km/Hr',
                                 style: CustomAppStyle.headline6(context),
                               ),
                             );
@@ -53,7 +53,7 @@ class NavigationInfoUi extends StatelessWidget {
                       //   child: Text('Distance: ${navigationController.distanceBtnCOOrds.value}', style: CustomAppStyle.headline6(context),),);
                       // }),
 
-                      const SimulateButton(),
+                      // const SimulateButton(),
                     ],
                   ),
                   Row(
@@ -69,7 +69,7 @@ class NavigationInfoUi extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(right: 20.0),
                         child: Text(
-                            'Time : ${CalculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)}',
+                            'Expected Time : ${CalculatorUtils.calculateTime(miliSeconds: directionRouteResponse.paths![0].time!)}',
                             style: CustomAppStyle.headline6(context)),
                       ),
                     ],

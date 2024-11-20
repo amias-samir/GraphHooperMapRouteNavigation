@@ -54,9 +54,15 @@ class MapUtils {
   /// Calculate speed
   ///
   static double calculateSpeed(double distance, int time) {
-    double microToSecond = time / 1000000;
-    double speed = distance / microToSecond;
+    //distance in meters and time in microseconds
+
+    double timeInHrs = time / (60 * 60 * 1000000);
+    double distanceInKms = distance/1000;
+
+    double speed = distanceInKms / timeInHrs;
     // updateSpeed(speed: speed);
+
+    //return speed in Km per hour
     return speed;
   }
 }
