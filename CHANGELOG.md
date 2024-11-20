@@ -1,3 +1,5 @@
+## 0.0.7
+* update deprecated map controller with the newer one
 
 ## 0.0.6
 * Remove getX and use Flutter's default ChangeNotifier to update state

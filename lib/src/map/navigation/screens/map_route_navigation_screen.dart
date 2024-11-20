@@ -34,7 +34,7 @@ class MapRouteNavigationScreenPage extends StatefulWidget {
 
 class MapRouteNavigationScreenPageState
     extends State<MapRouteNavigationScreenPage> {
-  late MaplibreMapController controller;
+  late MapLibreMapController controller;
 
   late DirectionRouteResponse directionRouteResponse;
 
