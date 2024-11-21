@@ -245,7 +245,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
   }
 
   Widget buildMapUI() {
-    return MaplibreMap(
+    return MapLibreMap(
       styleString:
           'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       onMapCreated: _onMapCreated,

@@ -24,7 +24,7 @@ class MapWidget extends StatelessWidget {
     // map controller
     final mapController = MapControllerProvider.of(context);
     //
-    return MaplibreMap(
+    return MapLibreMap(
       styleString:
           'https://tiles.basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
       onMapCreated: (mapLibreController) {
