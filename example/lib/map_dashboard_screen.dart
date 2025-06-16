@@ -272,7 +272,7 @@ class MapDashboardScreenState extends State<MapDashboardScreen> {
     );
   }
 
-  void onFeatureTap(id, Point<double> point, LatLng coordinates) {
+  void onFeatureTap(id, Point<double> point, LatLng coordinates, String layer) {
     if (directionRouteResponse.toJson().isNotEmpty) {
       // shows modal bottom sheet to start navigation
       showModalBottomSheet(
