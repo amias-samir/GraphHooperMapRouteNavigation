@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:graphhooper_route_navigation/src/map/navigation/model/instructions.dart';
-import 'package:text_to_speech/text_to_speech.dart';
 
 class AudioInstructionController extends ChangeNotifier {
   // text audio ko instace yaha banayera enable audio disable garauney yaha bata
@@ -16,7 +16,7 @@ class AudioInstructionController extends ChangeNotifier {
 
   /// [TextToSpeech] instance
   ///
-  final TextToSpeech tts = TextToSpeech();
+  final FlutterTts tts = FlutterTts();
 
   /// Enable audio instance variable
   ///

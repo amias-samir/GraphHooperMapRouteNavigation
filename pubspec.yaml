@@ -1,74 +1,45 @@
 name: graphhooper_route_navigation
-description: A new plugin for GraphHooper route navigation. Use Mapbox Map as a base layer & map styles and Graphhooper Map route navigation data for polyline, duration and time.
+description: "A new plugin for GraphHooper route navigation. Use Mapbox Map as a base layer & map styles and Graphhooper Map route navigation data for polyline, duration and time."
 version: 0.0.8
 homepage: https://github.com/amias-samir/GraphHooperMapRouteNavigation.git
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.10.0"
+  sdk: ^3.8.0
+  flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_web_plugins:
-    sdk: flutter
-  text_to_speech: ^0.2.3
-  flutter_plugin_android_lifecycle: ^2.0.22
-  plugin_platform_interface: ^2.1.8
+
+  maplibre_gl: ^0.22.0
   vector_math: ^2.1.4
   expandable_bottom_sheet: ^1.1.1+1
-
-  #  mapbox_gl: ^0.16.0
-  maplibre_gl: ^0.20.0
-  #  maplibre_gl:
-  #    git:
-  #      url: https://github.com/maplibre/flutter-maplibre-gl.git
-  #      ref: main
-  http: ^1.2.2
-
-dependency_overrides:
-#  js: ^0.7.1
+  flutter_tts: ^4.2.3
+  http: ^1.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-  # This section identifies this Flutter project as a plugin project.
-  # The 'pluginClass' specifies the class (in Java, Kotlin, Swift, Objective-C, etc.)
-  # which should be registered in the plugin registry. This is required for
-  # using method channels.
-  # The Android 'package' specifies package in which the registered class is.
-  # This is required for using method channels on Android.
-  # The 'ffiPlugin' specifies that native code should be built and bundled.
-  # This is required for using `dart:ffi`.
-  # All these are used by the tooling to maintain consistency when
-  # adding or updating assets for this project.
-  plugin:
-    platforms:
-      android:
-        package: com.route.naxa.graphhooper_route_navigation
-        pluginClass: GraphhooperRouteNavigationPlugin
-      ios:
-        pluginClass: GraphhooperRouteNavigationPlugin
 
-  # To add assets to your plugin package, add an assets section, like this:
+  # To add assets to your package, add an assets section, like this:
   assets:
     - assets/
   #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see
-  # https://flutter.dev/assets-and-images/#from-packages
+  # https://flutter.dev/to/asset-from-package
   #
   # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
+  # https://flutter.dev/to/resolution-aware-images
 
-  # To add custom fonts to your plugin package, add a fonts section here,
+  # To add custom fonts to your package, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
@@ -86,4 +57,4 @@ flutter:
   #         weight: 700
   #
   # For details regarding fonts in packages, see
-  # https://flutter.dev/custom-fonts/#from-packages
+  # https://flutter.dev/to/font-from-package

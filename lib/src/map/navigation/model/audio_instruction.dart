@@ -1,17 +1,17 @@
-import 'package:text_to_speech/text_to_speech.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import 'instructions.dart';
 
 class AudioInstruction {
-  TextToSpeech? _tts;
+  FlutterTts? _tts;
   List<Instruction>? _instructionsList;
   List<String>? _instructionsIdentifier;
   Instruction? _instructions;
   bool? _enableAudio;
 
-  TextToSpeech get tts => _tts!;
+  FlutterTts get tts => _tts!;
 
-  set tts(TextToSpeech value) {
+  set tts(FlutterTts value) {
     _tts = value;
   }
 
@@ -39,12 +39,13 @@ class AudioInstruction {
     _instructionsIdentifier = value;
   }
 
-  AudioInstruction(
-      {required TextToSpeech tts,
-      List<Instruction>? instructionsList,
-      List<String>? instructionsIdentifier,
-      required Instruction instructions,
-      required bool enableAudio}) {
+  AudioInstruction({
+    required FlutterTts tts,
+    List<Instruction>? instructionsList,
+    List<String>? instructionsIdentifier,
+    required Instruction instructions,
+    required bool enableAudio,
+  }) {
     _tts = tts;
     _instructionsList = instructionsList;
     _instructionsIdentifier = instructionsIdentifier;
