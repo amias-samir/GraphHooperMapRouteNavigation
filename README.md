@@ -29,28 +29,24 @@ This plugin is yet to test on iOS device.
 ```
 MaterialButton(
     onPressed: () async{
-                    ApiRequest apiRequest = ApiRequest();
+        ApiRequest apiRequest = ApiRequest();
 
-                    DirectionRouteResponse directionRouteResponse = await apiRequest.getDrivingRouteUsingGraphHooper(
-                                                                        source: userLocation!.position,
-                                                                        destination: latLng,
-                                                                        //optional [customBaseUrl]
-                                                                        customBaseUrl:dotenv.env["CUSTOM_BASE_URL"] ,
-                                                                        navigationType: NavigationProfile.car,
-                                                                        // api key is optional if you use your own custom url
-                                                                        // if you are using graphhooper map routing service then [graphHooperApiKey] is needed to fetch route data
-                                                                        graphHooperApiKey: dotenv.env["API_KEY"] ?? "Your GraphHooper API key"
-                                                                        );
+        DirectionRouteResponse directionRouteResponse = await apiRequest
+                                                              .getDrivingRouteUsingGraphHooper(
+                                                                source: userLocation!.position,
+                                                                destination: latLng,
+                                                                //optional [customBaseUrl]
+                                                                customBaseUrl:dotenv.env["CUSTOM_BASE_URL"] ,
+                                                                navigationType: NavigationProfile.car,
+                                                                // api key is optional if you use your own custom url
+                                                                // if you are using graphhooper map routing service then [graphHooperApiKey] is needed to fetch route data                                                                                    graphHooperApiKey: dotenv.env["API_KEY"] ?? "Your GraphHooper API key"
+                                                            );
                    
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NavigationWrapperScreen(
-                            directionRouteResponse: directionRouteResponse),
-                      ));
-                     },
-                child: Text('Navigate'),
-              )
+                    Navigator.push(context, MaterialPageRoute( builder: (context) => NavigationWrapperScreen(
+                            directionRouteResponse: directionRouteResponse),));
+              },
+   child: Text('Navigate'),
+)
 ```
 <p float="middle">  
 <img src="https://user-images.githubusercontent.com/17323912/209923884-2c939623-a9f2-4572-a793-4d64b09664e6.jpg" width=20% height=20%>
