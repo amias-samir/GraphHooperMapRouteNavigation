@@ -1,3 +1,6 @@
+## 0.0.9
+* remove unused codebase and make it as a package
+
 ## 0.0.8
 * update deprecated map controller with the newer one
 

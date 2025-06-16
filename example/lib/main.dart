@@ -8,7 +8,7 @@ import 'map_dashboard_screen.dart';
 
 Future<void> main() async {
   // loads the env file if doesnt exist then throws error
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env.example");
 
   // ensures the initialization
   WidgetsFlutterBinding.ensureInitialized();
